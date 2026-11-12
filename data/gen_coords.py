@@ -1,5 +1,16 @@
 # -*- coding: utf-8 -*-
-"""从 OSM 拉取数据生成 sh_coords.json：所有线路站点坐标（权威顺序、缺失站近似+标注）"""
+"""
+中国城市地铁与超级桥梁 · 三维立体视图 —— 数据生成脚本
+https://github.com/DeXuan/metro3d
+
+MIT License - Copyright (c) 2026 DeXuan
+
+免责声明：本脚本生成的数据仅供可视化演示与学习参考，禁止用于工程、施工、
+测绘、导航或军事等专业用途。生成的埋深为示意值（非实测数据）。
+详见 README「数据精度与使用限制」。
+
+从 OSM 拉取数据生成 sh_coords.json：所有线路站点坐标（权威顺序、缺失站近似+标注）
+"""
 import json
 
 def approx(name, lng, lat, note='坐标为近似估算'):

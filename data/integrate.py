@@ -1,5 +1,16 @@
 # -*- coding: utf-8 -*-
-"""把 sh_lines.json 集成进 index.html：替换 METRO_DATA，并升级为多线路渲染版本。"""
+"""
+中国城市地铁与超级桥梁 · 三维立体视图 —— 数据生成脚本
+https://github.com/DeXuan/metro3d
+
+MIT License - Copyright (c) 2026 DeXuan
+
+免责声明：本脚本生成的数据仅供可视化演示与学习参考，禁止用于工程、施工、
+测绘、导航或军事等专业用途。生成的埋深为示意值（非实测数据）。
+详见 README「数据精度与使用限制」。
+
+把 sh_lines.json 集成进 index.html：替换 METRO_DATA，并升级为多线路渲染版本。
+"""
 import io, json, re
 
 JSON_PATH = 'sh_lines.json'

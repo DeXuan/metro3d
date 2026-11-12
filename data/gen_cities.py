@@ -1,5 +1,16 @@
 # -*- coding: utf-8 -*-
-"""解析高德地铁数据（北京/南京/郑州/洛阳）→ 统一线路格式 other_cities.json
+"""
+中国城市地铁与超级桥梁 · 三维立体视图 —— 数据生成脚本
+https://github.com/DeXuan/metro3d
+
+MIT License - Copyright (c) 2026 DeXuan
+
+免责声明：本脚本生成的数据仅供可视化演示与学习参考，禁止用于工程、施工、
+测绘、导航或军事等专业用途。生成的埋深为示意值（非实测数据）。
+详见 README「数据精度与使用限制」。
+
+解析高德地铁数据（北京/南京/郑州/洛阳）→ 统一线路格式 other_cities.json
+
 字段：id/name/color/loop/from/to/lengthKm/stations[{name,lng,lat,type,depth|height,transfer}]
 深度为示意值；高架/地面按线路结构知识标注。
 """
