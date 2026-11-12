@@ -1,0 +1,4964 @@
+[
+ {
+  "id": "sh-1",
+  "name": "1号线",
+  "color": "#E4002B",
+  "from": "莘庄",
+  "to": "富锦路",
+  "lengthKm": 36.9,
+  "stations": [
+   {
+    "name": "莘庄",
+    "lng": 121.3802901,
+    "lat": 31.1123564,
+    "type": "underground",
+    "depth": 8,
+    "transfer": [
+     "1",
+     "5"
+    ]
+   },
+   {
+    "name": "外环路",
+    "lng": 121.3883592,
+    "lat": 31.1228133,
+    "type": "underground",
+    "depth": 15.4
+   },
+   {
+    "name": "莲花路",
+    "lng": 121.3982456,
+    "lat": 31.1328778,
+    "type": "underground",
+    "depth": 10.7
+   },
+   {
+    "name": "锦江乐园",
+    "lng": 121.4094802,
+    "lat": 31.1440955,
+    "type": "underground",
+    "depth": 13.9
+   },
+   {
+    "name": "上海南站",
+    "lng": 121.4255161,
+    "lat": 31.1565507,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "1",
+     "3",
+     "15"
+    ]
+   },
+   {
+    "name": "漕宝路",
+    "lng": 121.4303275,
+    "lat": 31.170067,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "1",
+     "12"
+    ]
+   },
+   {
+    "name": "上海体育馆",
+    "lng": 121.4317914,
+    "lat": 31.1838605,
+    "type": "underground",
+    "depth": 17
+   },
+   {
+    "name": "徐家汇",
+    "lng": 121.4339448,
+    "lat": 31.1950706,
+    "type": "underground",
+    "depth": 24,
+    "transfer": [
+     "1",
+     "9",
+     "11"
+    ]
+   },
+   {
+    "name": "衡山路",
+    "lng": 121.4419629,
+    "lat": 31.2064374,
+    "type": "underground",
+    "depth": 14.3
+   },
+   {
+    "name": "常熟路",
+    "lng": 121.4464941,
+    "lat": 31.2151406,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "1",
+     "7"
+    ]
+   },
+   {
+    "name": "陕西南路",
+    "lng": 121.4552824,
+    "lat": 31.2188733,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "1",
+     "10",
+     "12"
+    ]
+   },
+   {
+    "name": "一大会址·黄陂南路",
+    "lng": 121.4693648,
+    "lat": 31.2249043,
+    "type": "underground",
+    "depth": 11.0,
+    "transfer": [
+     "1",
+     "14"
+    ]
+   },
+   {
+    "name": "人民广场",
+    "lng": 121.4708951,
+    "lat": 31.2340677,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "1",
+     "2",
+     "8"
+    ]
+   },
+   {
+    "name": "新闸路",
+    "lng": 121.4636702,
+    "lat": 31.2405923,
+    "type": "underground",
+    "depth": 14
+   },
+   {
+    "name": "汉中路",
+    "lng": 121.4537311,
+    "lat": 31.2438092,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "1",
+     "12",
+     "13"
+    ]
+   },
+   {
+    "name": "上海火车站",
+    "lng": 121.4512676,
+    "lat": 31.2490863,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "1",
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "中山北路",
+    "lng": 121.4545011,
+    "lat": 31.2614942,
+    "type": "underground",
+    "depth": 12
+   },
+   {
+    "name": "延长路",
+    "lng": 121.4507865,
+    "lat": 31.2733265,
+    "type": "underground",
+    "depth": 12.2
+   },
+   {
+    "name": "上海马戏城",
+    "lng": 121.4473838,
+    "lat": 31.2818235,
+    "type": "underground",
+    "depth": 13.4
+   },
+   {
+    "name": "汶水路",
+    "lng": 121.4456298,
+    "lat": 31.2945085,
+    "type": "underground",
+    "depth": 10.8
+   },
+   {
+    "name": "彭浦新村",
+    "lng": 121.4439674,
+    "lat": 31.3074975,
+    "type": "underground",
+    "depth": 13
+   },
+   {
+    "name": "共康路",
+    "lng": 121.4420573,
+    "lat": 31.3217132,
+    "type": "underground",
+    "depth": 12.0
+   },
+   {
+    "name": "通河新村",
+    "lng": 121.4366581,
+    "lat": 31.3335374,
+    "type": "underground",
+    "depth": 10.7
+   },
+   {
+    "name": "呼兰路",
+    "lng": 121.4328088,
+    "lat": 31.3423077,
+    "type": "underground",
+    "depth": 13.7,
+    "transfer": [
+     "1",
+     "18"
+    ]
+   },
+   {
+    "name": "共富新村",
+    "lng": 121.4293774,
+    "lat": 31.3577078,
+    "type": "underground",
+    "depth": 11.9
+   },
+   {
+    "name": "宝安公路",
+    "lng": 121.4261394,
+    "lat": 31.3721781,
+    "type": "underground",
+    "depth": 12.4
+   },
+   {
+    "name": "友谊西路",
+    "lng": 121.4231229,
+    "lat": 31.3837478,
+    "type": "underground",
+    "depth": 13.0
+   },
+   {
+    "name": "富锦路",
+    "lng": 121.4197766,
+    "lat": 31.3948771,
+    "type": "underground",
+    "depth": 10
+   }
+  ]
+ },
+ {
+  "id": "sh-2",
+  "name": "2号线",
+  "color": "#90D04B",
+  "from": "蟠祥路",
+  "to": "浦东1号2号航站楼",
+  "lengthKm": 64.5,
+  "stations": [
+   {
+    "name": "蟠祥路",
+    "lng": 121.2818,
+    "lat": 31.1834,
+    "type": "underground",
+    "depth": 10.8,
+    "note": "2026年开通的西延伸站，坐标为OSM节点"
+   },
+   {
+    "name": "徐泾东",
+    "lng": 121.3062,
+    "lat": 31.1944,
+    "type": "underground",
+    "depth": 13.8,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "虹桥火车站",
+    "lng": 121.3143112,
+    "lat": 31.1959576,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "2",
+     "10",
+     "17"
+    ]
+   },
+   {
+    "name": "虹桥2号航站楼",
+    "lng": 121.3224926,
+    "lat": 31.1964183,
+    "type": "underground",
+    "depth": 24,
+    "transfer": [
+     "2",
+     "10",
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "淞虹路",
+    "lng": 121.3558155,
+    "lat": 31.2199236,
+    "type": "underground",
+    "depth": 13
+   },
+   {
+    "name": "北新泾",
+    "lng": 121.3690729,
+    "lat": 31.2183539,
+    "type": "underground",
+    "depth": 13.8
+   },
+   {
+    "name": "威宁路",
+    "lng": 121.3826842,
+    "lat": 31.216753,
+    "type": "underground",
+    "depth": 13
+   },
+   {
+    "name": "娄山关路",
+    "lng": 121.3991747,
+    "lat": 31.2130267,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "2",
+     "15"
+    ]
+   },
+   {
+    "name": "中山公园",
+    "lng": 121.4116514,
+    "lat": 31.2197283,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "2",
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "江苏路",
+    "lng": 121.4270178,
+    "lat": 31.2214151,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "2",
+     "11"
+    ]
+   },
+   {
+    "name": "静安寺",
+    "lng": 121.4422253,
+    "lat": 31.2252915,
+    "type": "underground",
+    "depth": 21,
+    "transfer": [
+     "2",
+     "7",
+     "14"
+    ]
+   },
+   {
+    "name": "南京西路",
+    "lng": 121.4560334,
+    "lat": 31.2318048,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "2",
+     "12",
+     "13"
+    ]
+   },
+   {
+    "name": "人民广场",
+    "lng": 121.4693327,
+    "lat": 31.2356383,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "1",
+     "2",
+     "8"
+    ]
+   },
+   {
+    "name": "南京东路",
+    "lng": 121.4792398,
+    "lat": 31.239101,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "2",
+     "10"
+    ]
+   },
+   {
+    "name": "陆家嘴",
+    "lng": 121.4981186,
+    "lat": 31.2401354,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "2",
+     "14"
+    ]
+   },
+   {
+    "name": "东昌路",
+    "lng": 121.511049,
+    "lat": 31.2353384,
+    "type": "underground",
+    "depth": 18
+   },
+   {
+    "name": "世纪大道",
+    "lng": 121.5228835,
+    "lat": 31.2306737,
+    "type": "underground",
+    "depth": 26,
+    "transfer": [
+     "2",
+     "4",
+     "6",
+     "9"
+    ]
+   },
+   {
+    "name": "上海科技馆",
+    "lng": 121.5386472,
+    "lat": 31.2218727,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "2"
+    ]
+   },
+   {
+    "name": "世纪公园",
+    "lng": 121.5467294,
+    "lat": 31.2108255,
+    "type": "underground",
+    "depth": 11.1,
+    "transfer": [
+     "2"
+    ]
+   },
+   {
+    "name": "龙阳路",
+    "lng": 121.5534366,
+    "lat": 31.2053139,
+    "type": "underground",
+    "depth": 20,
+    "transfer": [
+     "2",
+     "7",
+     "16",
+     "18",
+     "磁浮线"
+    ]
+   },
+   {
+    "name": "张江高科",
+    "lng": 121.5833571,
+    "lat": 31.2039693,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "2"
+    ]
+   },
+   {
+    "name": "金科路",
+    "lng": 121.5978417,
+    "lat": 31.2063809,
+    "type": "underground",
+    "depth": 15.5,
+    "transfer": [
+     "2"
+    ]
+   },
+   {
+    "name": "广兰路",
+    "lng": 121.6168805,
+    "lat": 31.2130974,
+    "type": "underground",
+    "depth": 13,
+    "transfer": [
+     "2"
+    ]
+   },
+   {
+    "name": "唐镇",
+    "lng": 121.6518735,
+    "lat": 31.2163578,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "2"
+    ]
+   },
+   {
+    "name": "创新中路",
+    "lng": 121.6698087,
+    "lat": 31.2155134,
+    "type": "underground",
+    "depth": 12.9
+   },
+   {
+    "name": "华夏东路",
+    "lng": 121.6766605,
+    "lat": 31.1988417,
+    "type": "underground",
+    "depth": 14.6
+   },
+   {
+    "name": "川沙",
+    "lng": 121.6936943,
+    "lat": 31.1887359,
+    "type": "underground",
+    "depth": 14.5
+   },
+   {
+    "name": "凌空路",
+    "lng": 121.7195215,
+    "lat": 31.1948047,
+    "type": "underground",
+    "depth": 14.3
+   },
+   {
+    "name": "远东大道",
+    "lng": 121.7516361,
+    "lat": 31.2014044,
+    "type": "underground",
+    "depth": 12.8
+   },
+   {
+    "name": "海天三路",
+    "lng": 121.7929866,
+    "lat": 31.1699603,
+    "type": "underground",
+    "depth": 12.2
+   },
+   {
+    "name": "浦东1号2号航站楼",
+    "lng": 121.801856,
+    "lat": 31.1524717,
+    "type": "underground",
+    "depth": 15
+   }
+  ]
+ },
+ {
+  "id": "sh-3",
+  "name": "3号线",
+  "color": "#FDDB00",
+  "from": "上海南站",
+  "to": "江杨北路",
+  "lengthKm": 40.3,
+  "stations": [
+   {
+    "name": "上海南站",
+    "lng": 121.4271766,
+    "lat": 31.15561,
+    "type": "ground",
+    "height": 0,
+    "transfer": [
+     "1",
+     "3",
+     "15"
+    ]
+   },
+   {
+    "name": "石龙路",
+    "lng": 121.4393282,
+    "lat": 31.1600976,
+    "type": "elevated",
+    "height": 15.6
+   },
+   {
+    "name": "龙漕路",
+    "lng": 121.4399564,
+    "lat": 31.1707099,
+    "type": "elevated",
+    "height": 13.3
+   },
+   {
+    "name": "漕溪路",
+    "lng": 121.4344163,
+    "lat": 31.1781746,
+    "type": "elevated",
+    "height": 13.8
+   },
+   {
+    "name": "宜山路",
+    "lng": 121.4229946,
+    "lat": 31.1879465,
+    "type": "elevated",
+    "height": 14.2,
+    "transfer": [
+     "3",
+     "4",
+     "9"
+    ]
+   },
+   {
+    "name": "虹桥路",
+    "lng": 121.4163853,
+    "lat": 31.1986765,
+    "type": "elevated",
+    "height": 13.3,
+    "transfer": [
+     "3",
+     "4",
+     "10"
+    ]
+   },
+   {
+    "name": "延安西路",
+    "lng": 121.4125522,
+    "lat": 31.2120742,
+    "type": "elevated",
+    "height": 12.4,
+    "transfer": [
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "中山公园",
+    "lng": 121.4113723,
+    "lat": 31.2191136,
+    "type": "elevated",
+    "height": 12.4,
+    "transfer": [
+     "2",
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "金沙江路",
+    "lng": 121.4083746,
+    "lat": 31.2334443,
+    "type": "elevated",
+    "height": 15.7,
+    "transfer": [
+     "3",
+     "4",
+     "13"
+    ]
+   },
+   {
+    "name": "曹杨路",
+    "lng": 121.412465,
+    "lat": 31.2406868,
+    "type": "elevated",
+    "height": 12.1,
+    "transfer": [
+     "3",
+     "4",
+     "11"
+    ]
+   },
+   {
+    "name": "镇坪路",
+    "lng": 121.425799,
+    "lat": 31.2486167,
+    "type": "elevated",
+    "height": 15.7,
+    "transfer": [
+     "3",
+     "4",
+     "7"
+    ]
+   },
+   {
+    "name": "中潭路",
+    "lng": 121.4356266,
+    "lat": 31.2563362,
+    "type": "elevated",
+    "height": 11.7
+   },
+   {
+    "name": "上海火车站",
+    "lng": 121.4523857,
+    "lat": 31.2520583,
+    "type": "elevated",
+    "height": 10.3,
+    "transfer": [
+     "1",
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "宝山路",
+    "lng": 121.4724778,
+    "lat": 31.2537805,
+    "type": "elevated",
+    "height": 10.1,
+    "transfer": [
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "东宝兴路",
+    "lng": 121.4757568,
+    "lat": 31.2612062,
+    "type": "elevated",
+    "height": 10.5
+   },
+   {
+    "name": "虹口足球场",
+    "lng": 121.474796,
+    "lat": 31.2725646,
+    "type": "elevated",
+    "height": 12.2,
+    "transfer": [
+     "3",
+     "8"
+    ]
+   },
+   {
+    "name": "赤峰路",
+    "lng": 121.4778472,
+    "lat": 31.2824973,
+    "type": "elevated",
+    "height": 14.4
+   },
+   {
+    "name": "大柏树",
+    "lng": 121.4788012,
+    "lat": 31.2920828,
+    "type": "elevated",
+    "height": 10.2
+   },
+   {
+    "name": "江湾镇",
+    "lng": 121.4805201,
+    "lat": 31.3068183,
+    "type": "elevated",
+    "height": 12.6
+   },
+   {
+    "name": "殷高西路",
+    "lng": 121.4804198,
+    "lat": 31.3213309,
+    "type": "elevated",
+    "height": 11.3
+   },
+   {
+    "name": "长江南路",
+    "lng": 121.4874529,
+    "lat": 31.3345102,
+    "type": "elevated",
+    "height": 12.3,
+    "transfer": [
+     "3",
+     "18"
+    ]
+   },
+   {
+    "name": "淞发路",
+    "lng": 121.495606,
+    "lat": 31.3466275,
+    "type": "elevated",
+    "height": 10.6
+   },
+   {
+    "name": "张华浜",
+    "lng": 121.493984,
+    "lat": 31.3606309,
+    "type": "elevated",
+    "height": 14.6
+   },
+   {
+    "name": "淞滨路",
+    "lng": 121.4880654,
+    "lat": 31.373561,
+    "type": "elevated",
+    "height": 14.7
+   },
+   {
+    "name": "水产路",
+    "lng": 121.4833454,
+    "lat": 31.3838482,
+    "type": "elevated",
+    "height": 10.3
+   },
+   {
+    "name": "宝杨路",
+    "lng": 121.4748024,
+    "lat": 31.3977889,
+    "type": "elevated",
+    "height": 10.0
+   },
+   {
+    "name": "友谊路",
+    "lng": 121.4715994,
+    "lat": 31.4053452,
+    "type": "elevated",
+    "height": 13.7
+   },
+   {
+    "name": "铁力路",
+    "lng": 121.4558109,
+    "lat": 31.4098031,
+    "type": "elevated",
+    "height": 14.8
+   },
+   {
+    "name": "江杨北路",
+    "lng": 121.435939,
+    "lat": 31.4095962,
+    "type": "elevated",
+    "height": 13.3
+   }
+  ]
+ },
+ {
+  "id": "sh-4",
+  "name": "4号线",
+  "color": "#5D2A7E",
+  "from": "宜山路（环线）",
+  "to": "宜山路（环线）",
+  "lengthKm": 33.7,
+  "stations": [
+   {
+    "name": "宜山路",
+    "lng": 121.4225343,
+    "lat": 31.1891016,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "3",
+     "4",
+     "9"
+    ]
+   },
+   {
+    "name": "上海体育馆",
+    "lng": 121.4328872,
+    "lat": 31.1847674,
+    "type": "underground",
+    "depth": 17
+   },
+   {
+    "name": "上海体育场",
+    "lng": 121.4391017,
+    "lat": 31.1874075,
+    "type": "underground",
+    "depth": 16
+   },
+   {
+    "name": "东安路",
+    "lng": 121.450173,
+    "lat": 31.1926031,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "4",
+     "7"
+    ]
+   },
+   {
+    "name": "大木桥路",
+    "lng": 121.4590756,
+    "lat": 31.1960515,
+    "type": "underground",
+    "depth": 10.4,
+    "transfer": [
+     "4",
+     "12"
+    ]
+   },
+   {
+    "name": "鲁班路",
+    "lng": 121.4706402,
+    "lat": 31.2011258,
+    "type": "underground",
+    "depth": 15
+   },
+   {
+    "name": "西藏南路",
+    "lng": 121.484599,
+    "lat": 31.2035085,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "4",
+     "8"
+    ]
+   },
+   {
+    "name": "南浦大桥",
+    "lng": 121.4950777,
+    "lat": 31.2104442,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "4"
+    ]
+   },
+   {
+    "name": "塘桥",
+    "lng": 121.5143251,
+    "lat": 31.2119596,
+    "type": "underground",
+    "depth": 9.8
+   },
+   {
+    "name": "蓝村路",
+    "lng": 121.5238557,
+    "lat": 31.2139796,
+    "type": "underground",
+    "depth": 12,
+    "transfer": [
+     "4",
+     "6"
+    ]
+   },
+   {
+    "name": "浦电路",
+    "lng": 121.5245,
+    "lat": 31.2227,
+    "type": "underground",
+    "depth": 13.3,
+    "note": "相对于相邻站插值（OSM缺该站节点）"
+   },
+   {
+    "name": "世纪大道",
+    "lng": 121.5227543,
+    "lat": 31.2309778,
+    "type": "underground",
+    "depth": 26,
+    "transfer": [
+     "2",
+     "4",
+     "6",
+     "9"
+    ]
+   },
+   {
+    "name": "浦东大道",
+    "lng": 121.5149667,
+    "lat": 31.2427402,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "4",
+     "14"
+    ]
+   },
+   {
+    "name": "杨树浦路",
+    "lng": 121.5127562,
+    "lat": 31.2536209,
+    "type": "underground",
+    "depth": 11.4
+   },
+   {
+    "name": "大连路",
+    "lng": 121.5078838,
+    "lat": 31.260774,
+    "type": "underground",
+    "depth": 13,
+    "transfer": [
+     "4",
+     "12"
+    ]
+   },
+   {
+    "name": "临平路",
+    "lng": 121.4962143,
+    "lat": 31.2630097,
+    "type": "underground",
+    "depth": 10.3
+   },
+   {
+    "name": "海伦路",
+    "lng": 121.4853467,
+    "lat": 31.260903,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "4",
+     "10"
+    ]
+   },
+   {
+    "name": "宝山路",
+    "lng": 121.4724778,
+    "lat": 31.2537805,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "上海火车站",
+    "lng": 121.4523857,
+    "lat": 31.2520583,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "1",
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "中潭路",
+    "lng": 121.4356266,
+    "lat": 31.2563362,
+    "type": "underground",
+    "depth": 10.9
+   },
+   {
+    "name": "镇坪路",
+    "lng": 121.425799,
+    "lat": 31.2486167,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "3",
+     "4",
+     "7"
+    ]
+   },
+   {
+    "name": "曹杨路",
+    "lng": 121.412465,
+    "lat": 31.2406868,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "3",
+     "4",
+     "11"
+    ]
+   },
+   {
+    "name": "金沙江路",
+    "lng": 121.4083746,
+    "lat": 31.2334443,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "3",
+     "4",
+     "13"
+    ]
+   },
+   {
+    "name": "中山公园",
+    "lng": 121.4113723,
+    "lat": 31.2191136,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "2",
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "延安西路",
+    "lng": 121.4125522,
+    "lat": 31.2120742,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "3",
+     "4"
+    ]
+   },
+   {
+    "name": "虹桥路",
+    "lng": 121.4163853,
+    "lat": 31.1986765,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "3",
+     "4",
+     "10"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "sh-5",
+  "name": "5号线",
+  "color": "#A83E8B",
+  "from": "莘庄",
+  "to": "闵行开发区",
+  "lengthKm": 17.2,
+  "stations": [
+   {
+    "name": "莘庄",
+    "lng": 121.3801151,
+    "lat": 31.1125906,
+    "type": "ground",
+    "height": 0,
+    "transfer": [
+     "1",
+     "5"
+    ]
+   },
+   {
+    "name": "春申路",
+    "lng": 121.3813013,
+    "lat": 31.099816,
+    "type": "elevated",
+    "height": 6.8
+   },
+   {
+    "name": "银都路",
+    "lng": 121.3857873,
+    "lat": 31.0909175,
+    "type": "elevated",
+    "height": 10.6
+   },
+   {
+    "name": "颛桥",
+    "lng": 121.3973454,
+    "lat": 31.0685784,
+    "type": "elevated",
+    "height": 6.1
+   },
+   {
+    "name": "北桥",
+    "lng": 121.4055012,
+    "lat": 31.0466834,
+    "type": "elevated",
+    "height": 9.3
+   },
+   {
+    "name": "剑川路",
+    "lng": 121.412061,
+    "lat": 31.0280809,
+    "type": "elevated",
+    "height": 10.9
+   },
+   {
+    "name": "东川路",
+    "lng": 121.4152455,
+    "lat": 31.0198086,
+    "type": "elevated",
+    "height": 6.3,
+    "transfer": [
+     "5"
+    ]
+   },
+   {
+    "name": "金平路",
+    "lng": 121.4050856,
+    "lat": 31.0131349,
+    "type": "elevated",
+    "height": 10.5
+   },
+   {
+    "name": "华宁路",
+    "lng": 121.3901748,
+    "lat": 31.0093177,
+    "type": "elevated",
+    "height": 6.4
+   },
+   {
+    "name": "文井路",
+    "lng": 121.3765305,
+    "lat": 31.0056477,
+    "type": "elevated",
+    "height": 10.6
+   },
+   {
+    "name": "闵行开发区",
+    "lng": 121.3654379,
+    "lat": 31.002676,
+    "type": "elevated",
+    "height": 10.7
+   }
+  ]
+ },
+ {
+  "id": "sh-5_br",
+  "name": "5号线支线",
+  "color": "#A83E8B",
+  "from": "东川路",
+  "to": "奉贤新城",
+  "lengthKm": 16.6,
+  "stations": [
+   {
+    "name": "东川路",
+    "lng": 121.4152455,
+    "lat": 31.0198086,
+    "type": "underground",
+    "depth": 11,
+    "transfer": [
+     "5"
+    ]
+   },
+   {
+    "name": "江川路",
+    "lng": 121.4186433,
+    "lat": 31.0077355,
+    "type": "elevated",
+    "height": 8.8
+   },
+   {
+    "name": "西渡",
+    "lng": 121.4277126,
+    "lat": 30.9915646,
+    "type": "elevated",
+    "height": 8.7
+   },
+   {
+    "name": "萧塘",
+    "lng": 121.437324,
+    "lat": 30.9681757,
+    "type": "elevated",
+    "height": 11.6
+   },
+   {
+    "name": "奉浦大道",
+    "lng": 121.4443214,
+    "lat": 30.9447808,
+    "type": "underground",
+    "depth": 9.5
+   },
+   {
+    "name": "环城东路",
+    "lng": 121.4583558,
+    "lat": 30.9329791,
+    "type": "underground",
+    "depth": 7.6
+   },
+   {
+    "name": "望园路",
+    "lng": 121.4792452,
+    "lat": 30.9344565,
+    "type": "underground",
+    "depth": 10.4
+   },
+   {
+    "name": "金海湖",
+    "lng": 121.4876194,
+    "lat": 30.9315536,
+    "type": "underground",
+    "depth": 7.5
+   },
+   {
+    "name": "奉贤新城",
+    "lng": 121.4915886,
+    "lat": 30.9158512,
+    "type": "underground",
+    "depth": 7.5
+   }
+  ],
+  "branchOf": "sh-5"
+ },
+ {
+  "id": "sh-6",
+  "name": "6号线",
+  "color": "#D50A2C",
+  "from": "东方体育中心",
+  "to": "港城路",
+  "lengthKm": 33.5,
+  "stations": [
+   {
+    "name": "东方体育中心",
+    "lng": 121.4760584,
+    "lat": 31.155421,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "6",
+     "8",
+     "11"
+    ]
+   },
+   {
+    "name": "灵岩南路",
+    "lng": 121.4908101,
+    "lat": 31.1507549,
+    "type": "underground",
+    "depth": 14.8
+   },
+   {
+    "name": "上南路",
+    "lng": 121.5019956,
+    "lat": 31.1511766,
+    "type": "underground",
+    "depth": 14.3
+   },
+   {
+    "name": "华夏西路",
+    "lng": 121.51032,
+    "lat": 31.151974,
+    "type": "underground",
+    "depth": 14.7
+   },
+   {
+    "name": "高青路",
+    "lng": 121.5113226,
+    "lat": 31.1614994,
+    "type": "underground",
+    "depth": 13.0
+   },
+   {
+    "name": "东明路",
+    "lng": 121.5066043,
+    "lat": 31.174803,
+    "type": "underground",
+    "depth": 13,
+    "transfer": [
+     "6",
+     "13"
+    ]
+   },
+   {
+    "name": "高科西路",
+    "lng": 121.5056521,
+    "lat": 31.187563,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "6",
+     "7"
+    ]
+   },
+   {
+    "name": "临沂新村",
+    "lng": 121.5131727,
+    "lat": 31.195787,
+    "type": "underground",
+    "depth": 15
+   },
+   {
+    "name": "上海儿童医学中心",
+    "lng": 121.519567,
+    "lat": 31.2061387,
+    "type": "underground",
+    "depth": 14.2
+   },
+   {
+    "name": "蓝村路",
+    "lng": 121.5237086,
+    "lat": 31.2141345,
+    "type": "underground",
+    "depth": 12,
+    "transfer": [
+     "4",
+     "6"
+    ]
+   },
+   {
+    "name": "浦电路",
+    "lng": 121.5244594,
+    "lat": 31.2226916,
+    "type": "underground",
+    "depth": 16.3
+   },
+   {
+    "name": "世纪大道",
+    "lng": 121.5227173,
+    "lat": 31.2307121,
+    "type": "underground",
+    "depth": 26,
+    "transfer": [
+     "2",
+     "4",
+     "6",
+     "9"
+    ]
+   },
+   {
+    "name": "源深体育中心",
+    "lng": 121.5299034,
+    "lat": 31.2350191,
+    "type": "underground",
+    "depth": 17.0
+   },
+   {
+    "name": "民生路",
+    "lng": 121.5402749,
+    "lat": 31.2382859,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "6",
+     "18"
+    ]
+   },
+   {
+    "name": "北洋泾路",
+    "lng": 121.5478075,
+    "lat": 31.2411512,
+    "type": "underground",
+    "depth": 17.0
+   },
+   {
+    "name": "德平路",
+    "lng": 121.5602651,
+    "lat": 31.2476955,
+    "type": "underground",
+    "depth": 15.4
+   },
+   {
+    "name": "云山路",
+    "lng": 121.5677906,
+    "lat": 31.2520996,
+    "type": "underground",
+    "depth": 14.7,
+    "transfer": [
+     "6",
+     "14"
+    ]
+   },
+   {
+    "name": "金桥路",
+    "lng": 121.5776109,
+    "lat": 31.2593106,
+    "type": "underground",
+    "depth": 16.8
+   },
+   {
+    "name": "博兴路",
+    "lng": 121.5826719,
+    "lat": 31.2661344,
+    "type": "underground",
+    "depth": 16.1
+   },
+   {
+    "name": "五莲路",
+    "lng": 121.5838006,
+    "lat": 31.2744761,
+    "type": "underground",
+    "depth": 15.7
+   },
+   {
+    "name": "巨峰路",
+    "lng": 121.5841678,
+    "lat": 31.2824845,
+    "type": "underground",
+    "depth": 13,
+    "transfer": [
+     "6",
+     "12"
+    ]
+   },
+   {
+    "name": "东靖路",
+    "lng": 121.5846691,
+    "lat": 31.2931876,
+    "type": "underground",
+    "depth": 15.7
+   },
+   {
+    "name": "五洲大道",
+    "lng": 121.5851459,
+    "lat": 31.305072,
+    "type": "underground",
+    "depth": 16.4
+   },
+   {
+    "name": "洲海路",
+    "lng": 121.5852282,
+    "lat": 31.3147563,
+    "type": "underground",
+    "depth": 13.1
+   },
+   {
+    "name": "外高桥保税区南",
+    "lng": 121.5979129,
+    "lat": 31.3234475,
+    "type": "underground",
+    "depth": 15.6
+   },
+   {
+    "name": "航津路",
+    "lng": 121.5896358,
+    "lat": 31.3378199,
+    "type": "underground",
+    "depth": 13.3
+   },
+   {
+    "name": "外高桥保税区北",
+    "lng": 121.5826019,
+    "lat": 31.3502815,
+    "type": "underground",
+    "depth": 13.2
+   },
+   {
+    "name": "港城路",
+    "lng": 121.5699877,
+    "lat": 31.3551447,
+    "type": "underground",
+    "depth": 8,
+    "transfer": [
+     "6",
+     "10"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "sh-7",
+  "name": "7号线",
+  "color": "#ED6E00",
+  "from": "美兰湖",
+  "to": "花木路",
+  "lengthKm": 44.4,
+  "stations": [
+   {
+    "name": "美兰湖",
+    "lng": 121.3447683,
+    "lat": 31.4041206,
+    "type": "underground",
+    "depth": 16.2
+   },
+   {
+    "name": "罗南新村",
+    "lng": 121.3529669,
+    "lat": 31.3899534,
+    "type": "underground",
+    "depth": 17.1
+   },
+   {
+    "name": "潘广路",
+    "lng": 121.3508174,
+    "lat": 31.3665756,
+    "type": "underground",
+    "depth": 15.8
+   },
+   {
+    "name": "刘行",
+    "lng": 121.3582022,
+    "lat": 31.3592752,
+    "type": "underground",
+    "depth": 15.9
+   },
+   {
+    "name": "顾村公园",
+    "lng": 121.3681117,
+    "lat": 31.34682,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "7",
+     "15"
+    ]
+   },
+   {
+    "name": "祁华路",
+    "lng": 121.3684408,
+    "lat": 31.3248294,
+    "type": "underground",
+    "depth": 13.9
+   },
+   {
+    "name": "上海大学",
+    "lng": 121.3846558,
+    "lat": 31.3224712,
+    "type": "underground",
+    "depth": 12
+   },
+   {
+    "name": "南陈路",
+    "lng": 121.393022,
+    "lat": 31.3235513,
+    "type": "underground",
+    "depth": 16.4
+   },
+   {
+    "name": "上大路",
+    "lng": 121.4040757,
+    "lat": 31.316375,
+    "type": "underground",
+    "depth": 16.6
+   },
+   {
+    "name": "场中路",
+    "lng": 121.4086273,
+    "lat": 31.3050495,
+    "type": "underground",
+    "depth": 13.3
+   },
+   {
+    "name": "大场镇",
+    "lng": 121.4112933,
+    "lat": 31.2957544,
+    "type": "underground",
+    "depth": 16.9
+   },
+   {
+    "name": "行知路",
+    "lng": 121.4167265,
+    "lat": 31.2866424,
+    "type": "underground",
+    "depth": 12.9
+   },
+   {
+    "name": "大华三路",
+    "lng": 121.4183706,
+    "lat": 31.2756199,
+    "type": "underground",
+    "depth": 15.9
+   },
+   {
+    "name": "新村路",
+    "lng": 121.4180821,
+    "lat": 31.2656734,
+    "type": "underground",
+    "depth": 14.6
+   },
+   {
+    "name": "岚皋路",
+    "lng": 121.4172532,
+    "lat": 31.2572552,
+    "type": "underground",
+    "depth": 12.9
+   },
+   {
+    "name": "镇坪路",
+    "lng": 121.4270004,
+    "lat": 31.2487102,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "3",
+     "4",
+     "7"
+    ]
+   },
+   {
+    "name": "长寿路",
+    "lng": 121.432664,
+    "lat": 31.2425918,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "7",
+     "13"
+    ]
+   },
+   {
+    "name": "昌平路",
+    "lng": 121.4379553,
+    "lat": 31.235781,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "7"
+    ]
+   },
+   {
+    "name": "静安寺",
+    "lng": 121.4438538,
+    "lat": 31.2252219,
+    "type": "underground",
+    "depth": 21,
+    "transfer": [
+     "2",
+     "7",
+     "14"
+    ]
+   },
+   {
+    "name": "常熟路",
+    "lng": 121.4443771,
+    "lat": 31.2158255,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "1",
+     "7"
+    ]
+   },
+   {
+    "name": "肇嘉浜路",
+    "lng": 121.4459396,
+    "lat": 31.2011853,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "7",
+     "9"
+    ]
+   },
+   {
+    "name": "东安路",
+    "lng": 121.4501687,
+    "lat": 31.1929593,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "4",
+     "7"
+    ]
+   },
+   {
+    "name": "龙华中路",
+    "lng": 121.4525262,
+    "lat": 31.1867538,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "7",
+     "12"
+    ]
+   },
+   {
+    "name": "后滩",
+    "lng": 121.4695417,
+    "lat": 31.1740564,
+    "type": "underground",
+    "depth": 14.6
+   },
+   {
+    "name": "长清路",
+    "lng": 121.4811817,
+    "lat": 31.1765063,
+    "type": "underground",
+    "depth": 17.4
+   },
+   {
+    "name": "耀华路",
+    "lng": 121.4896867,
+    "lat": 31.1805434,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "7",
+     "8"
+    ]
+   },
+   {
+    "name": "云台路",
+    "lng": 121.4955227,
+    "lat": 31.1838652,
+    "type": "underground",
+    "depth": 12.8
+   },
+   {
+    "name": "高科西路",
+    "lng": 121.5043561,
+    "lat": 31.1874529,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "6",
+     "7"
+    ]
+   },
+   {
+    "name": "杨高南路",
+    "lng": 121.5198568,
+    "lat": 31.1897314,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "7"
+    ]
+   },
+   {
+    "name": "锦绣路",
+    "lng": 121.5351934,
+    "lat": 31.1897866,
+    "type": "underground",
+    "depth": 17.1
+   },
+   {
+    "name": "芳华路",
+    "lng": 121.5455599,
+    "lat": 31.1957033,
+    "type": "underground",
+    "depth": 15.9
+   },
+   {
+    "name": "龙阳路",
+    "lng": 121.5536224,
+    "lat": 31.205757,
+    "type": "underground",
+    "depth": 20,
+    "transfer": [
+     "2",
+     "7",
+     "16",
+     "18",
+     "磁浮线"
+    ]
+   },
+   {
+    "name": "花木路",
+    "lng": 121.5585621,
+    "lat": 31.2129965,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "7"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "sh-8",
+  "name": "8号线",
+  "color": "#0C7FA5",
+  "from": "市光路",
+  "to": "沈杜公路",
+  "lengthKm": 37.5,
+  "stations": [
+   {
+    "name": "市光路",
+    "lng": 121.5276595,
+    "lat": 31.3247945,
+    "type": "underground",
+    "depth": 12.8
+   },
+   {
+    "name": "嫩江路",
+    "lng": 121.5275679,
+    "lat": 31.3167567,
+    "type": "underground",
+    "depth": 16.1
+   },
+   {
+    "name": "翔殷路",
+    "lng": 121.5276104,
+    "lat": 31.3071134,
+    "type": "underground",
+    "depth": 13.4
+   },
+   {
+    "name": "黄兴公园",
+    "lng": 121.5288453,
+    "lat": 31.2978687,
+    "type": "underground",
+    "depth": 16.6
+   },
+   {
+    "name": "延吉中路",
+    "lng": 121.530645,
+    "lat": 31.290732,
+    "type": "underground",
+    "depth": 15.0
+   },
+   {
+    "name": "黄兴路",
+    "lng": 121.5241046,
+    "lat": 31.2809389,
+    "type": "underground",
+    "depth": 16.2
+   },
+   {
+    "name": "江浦路",
+    "lng": 121.5142018,
+    "lat": 31.2769665,
+    "type": "underground",
+    "depth": 14
+   },
+   {
+    "name": "四平路",
+    "lng": 121.4971093,
+    "lat": 31.276824,
+    "type": "underground",
+    "depth": 20,
+    "transfer": [
+     "8",
+     "10"
+    ]
+   },
+   {
+    "name": "鞍山新村",
+    "lng": 121.5051665,
+    "lat": 31.2752152,
+    "type": "underground",
+    "depth": 17.2
+   },
+   {
+    "name": "曲阳路",
+    "lng": 121.485791,
+    "lat": 31.2785073,
+    "type": "underground",
+    "depth": 14.5
+   },
+   {
+    "name": "虹口足球场",
+    "lng": 121.4747177,
+    "lat": 31.2718356,
+    "type": "underground",
+    "depth": 14.4,
+    "transfer": [
+     "3",
+     "8"
+    ]
+   },
+   {
+    "name": "西藏北路",
+    "lng": 121.4645981,
+    "lat": 31.2655487,
+    "type": "underground",
+    "depth": 14.5
+   },
+   {
+    "name": "中兴路",
+    "lng": 121.4643732,
+    "lat": 31.2550951,
+    "type": "underground",
+    "depth": 15.6
+   },
+   {
+    "name": "曲阜路",
+    "lng": 121.4669863,
+    "lat": 31.2441977,
+    "type": "underground",
+    "depth": 16.1,
+    "transfer": [
+     "8",
+     "12"
+    ]
+   },
+   {
+    "name": "人民广场",
+    "lng": 121.4711371,
+    "lat": 31.2341554,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "1",
+     "2",
+     "8"
+    ]
+   },
+   {
+    "name": "大世界",
+    "lng": 121.474956,
+    "lat": 31.2291572,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "8",
+     "14"
+    ]
+   },
+   {
+    "name": "老西门",
+    "lng": 121.4784267,
+    "lat": 31.2208086,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "8",
+     "10"
+    ]
+   },
+   {
+    "name": "陆家浜路",
+    "lng": 121.4814746,
+    "lat": 31.2139173,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "8",
+     "9"
+    ]
+   },
+   {
+    "name": "西藏南路",
+    "lng": 121.4851508,
+    "lat": 31.2037283,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "4",
+     "8"
+    ]
+   },
+   {
+    "name": "中华艺术宫",
+    "lng": 121.4894217,
+    "lat": 31.1871027,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "8"
+    ]
+   },
+   {
+    "name": "耀华路",
+    "lng": 121.4902088,
+    "lat": 31.1805587,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "7",
+     "8"
+    ]
+   },
+   {
+    "name": "成山路",
+    "lng": 121.4918051,
+    "lat": 31.1727625,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "8",
+     "13"
+    ]
+   },
+   {
+    "name": "杨思",
+    "lng": 121.4890354,
+    "lat": 31.1630048,
+    "type": "underground",
+    "depth": 17.2
+   },
+   {
+    "name": "东方体育中心",
+    "lng": 121.4757981,
+    "lat": 31.1554627,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "6",
+     "8",
+     "11"
+    ]
+   },
+   {
+    "name": "凌兆新村",
+    "lng": 121.4848668,
+    "lat": 31.1432582,
+    "type": "underground",
+    "depth": 14.0
+   },
+   {
+    "name": "芦恒路",
+    "lng": 121.4938452,
+    "lat": 31.1202197,
+    "type": "elevated",
+    "height": 9.4
+   },
+   {
+    "name": "浦江镇",
+    "lng": 121.5019553,
+    "lat": 31.0986256,
+    "type": "elevated",
+    "height": 11.4
+   },
+   {
+    "name": "江月路",
+    "lng": 121.5041451,
+    "lat": 31.0863311,
+    "type": "elevated",
+    "height": 11.5
+   },
+   {
+    "name": "联航路",
+    "lng": 121.5061494,
+    "lat": 31.0756472,
+    "type": "elevated",
+    "height": 11.8
+   },
+   {
+    "name": "沈杜公路",
+    "lng": 121.5078434,
+    "lat": 31.063449,
+    "type": "elevated",
+    "height": 11.4,
+    "transfer": [
+     "8",
+     "浦江线"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "sh-9",
+  "name": "9号线",
+  "color": "#4FC2E8",
+  "from": "上海松江站",
+  "to": "曹路",
+  "lengthKm": 64.5,
+  "stations": [
+   {
+    "name": "上海松江站",
+    "lng": 121.2266151,
+    "lat": 30.9864446,
+    "type": "underground",
+    "depth": 13
+   },
+   {
+    "name": "醉白池",
+    "lng": 121.224526,
+    "lat": 31.0028368,
+    "type": "underground",
+    "depth": 12
+   },
+   {
+    "name": "松江体育中心",
+    "lng": 121.2262839,
+    "lat": 31.0179935,
+    "type": "underground",
+    "depth": 13
+   },
+   {
+    "name": "松江新城",
+    "lng": 121.2262996,
+    "lat": 31.0322106,
+    "type": "underground",
+    "depth": 15
+   },
+   {
+    "name": "松江大学城",
+    "lng": 121.2282186,
+    "lat": 31.0567667,
+    "type": "underground",
+    "depth": 15
+   },
+   {
+    "name": "洞泾",
+    "lng": 121.2260194,
+    "lat": 31.0859548,
+    "type": "elevated",
+    "height": 7.6
+   },
+   {
+    "name": "佘山",
+    "lng": 121.2253423,
+    "lat": 31.1068028,
+    "type": "elevated",
+    "height": 7.9
+   },
+   {
+    "name": "泗泾",
+    "lng": 121.2552291,
+    "lat": 31.1203607,
+    "type": "elevated",
+    "height": 10.5
+   },
+   {
+    "name": "九亭",
+    "lng": 121.315047,
+    "lat": 31.1393187,
+    "type": "elevated",
+    "height": 10.7
+   },
+   {
+    "name": "中春路",
+    "lng": 121.3333435,
+    "lat": 31.1513157,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "9",
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "七宝",
+    "lng": 121.3451869,
+    "lat": 31.1573896,
+    "type": "underground",
+    "depth": 16
+   },
+   {
+    "name": "星中路",
+    "lng": 121.3640715,
+    "lat": 31.1599404,
+    "type": "underground",
+    "depth": 16
+   },
+   {
+    "name": "合川路",
+    "lng": 121.3801522,
+    "lat": 31.1683763,
+    "type": "underground",
+    "depth": 17
+   },
+   {
+    "name": "漕河泾开发区",
+    "lng": 121.3932779,
+    "lat": 31.1724533,
+    "type": "underground",
+    "depth": 16
+   },
+   {
+    "name": "桂林路",
+    "lng": 121.4141575,
+    "lat": 31.1767584,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "9",
+     "15"
+    ]
+   },
+   {
+    "name": "宜山路",
+    "lng": 121.4227572,
+    "lat": 31.186231,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "3",
+     "4",
+     "9"
+    ]
+   },
+   {
+    "name": "徐家汇",
+    "lng": 121.4323716,
+    "lat": 31.1974667,
+    "type": "underground",
+    "depth": 24,
+    "transfer": [
+     "1",
+     "9",
+     "11"
+    ]
+   },
+   {
+    "name": "肇嘉浜路",
+    "lng": 121.4458751,
+    "lat": 31.2013612,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "7",
+     "9"
+    ]
+   },
+   {
+    "name": "嘉善路",
+    "lng": 121.4563758,
+    "lat": 31.2046098,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "9",
+     "12"
+    ]
+   },
+   {
+    "name": "打浦桥",
+    "lng": 121.4640135,
+    "lat": 31.2082185,
+    "type": "underground",
+    "depth": 16
+   },
+   {
+    "name": "马当路",
+    "lng": 121.4720223,
+    "lat": 31.2113075,
+    "type": "underground",
+    "depth": 20,
+    "transfer": [
+     "9",
+     "13"
+    ]
+   },
+   {
+    "name": "陆家浜路",
+    "lng": 121.4811531,
+    "lat": 31.2137878,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "8",
+     "9"
+    ]
+   },
+   {
+    "name": "小南门",
+    "lng": 121.4940871,
+    "lat": 31.2190057,
+    "type": "underground",
+    "depth": 21
+   },
+   {
+    "name": "商城路",
+    "lng": 121.5118575,
+    "lat": 31.2323077,
+    "type": "underground",
+    "depth": 23
+   },
+   {
+    "name": "世纪大道",
+    "lng": 121.5225972,
+    "lat": 31.2306169,
+    "type": "underground",
+    "depth": 26,
+    "transfer": [
+     "2",
+     "4",
+     "6",
+     "9"
+    ]
+   },
+   {
+    "name": "杨高中路",
+    "lng": 121.5437829,
+    "lat": 31.2293858,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "9",
+     "18"
+    ]
+   },
+   {
+    "name": "芳甸路",
+    "lng": 121.5544342,
+    "lat": 31.2343776,
+    "type": "underground",
+    "depth": 15
+   },
+   {
+    "name": "蓝天路",
+    "lng": 121.5736522,
+    "lat": 31.2431953,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "9",
+     "14"
+    ]
+   },
+   {
+    "name": "台儿庄路",
+    "lng": 121.5929494,
+    "lat": 31.2546642,
+    "type": "underground",
+    "depth": 15
+   },
+   {
+    "name": "金桥",
+    "lng": 121.6072301,
+    "lat": 31.2630973,
+    "type": "underground",
+    "depth": 16
+   },
+   {
+    "name": "金吉路",
+    "lng": 121.6212,
+    "lat": 31.2648,
+    "type": "underground",
+    "depth": 14.8,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "金海路",
+    "lng": 121.6351234,
+    "lat": 31.2664061,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "9",
+     "12"
+    ]
+   },
+   {
+    "name": "顾唐路",
+    "lng": 121.6522792,
+    "lat": 31.2682411,
+    "type": "underground",
+    "depth": 15
+   },
+   {
+    "name": "民雷路",
+    "lng": 121.6638097,
+    "lat": 31.2704328,
+    "type": "underground",
+    "depth": 14
+   },
+   {
+    "name": "曹路",
+    "lng": 121.6785346,
+    "lat": 31.2732552,
+    "type": "underground",
+    "depth": 13
+   }
+  ]
+ },
+ {
+  "id": "sh-10",
+  "name": "10号线",
+  "color": "#C1A7DE",
+  "from": "虹桥火车站",
+  "to": "基隆路",
+  "lengthKm": 39.8,
+  "stations": [
+   {
+    "name": "虹桥火车站",
+    "lng": 121.3132532,
+    "lat": 31.1956783,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "2",
+     "10",
+     "17"
+    ]
+   },
+   {
+    "name": "虹桥2号航站楼",
+    "lng": 121.3209362,
+    "lat": 31.1958969,
+    "type": "underground",
+    "depth": 24,
+    "transfer": [
+     "2",
+     "10",
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "虹桥1号航站楼",
+    "lng": 121.3420395,
+    "lat": 31.1932294,
+    "type": "underground",
+    "depth": 15.4
+   },
+   {
+    "name": "上海动物园",
+    "lng": 121.3634113,
+    "lat": 31.1920777,
+    "type": "underground",
+    "depth": 13.7
+   },
+   {
+    "name": "龙溪路",
+    "lng": 121.375864,
+    "lat": 31.1964058,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "10"
+    ]
+   },
+   {
+    "name": "水城路",
+    "lng": 121.3876161,
+    "lat": 31.2012235,
+    "type": "underground",
+    "depth": 15.1
+   },
+   {
+    "name": "伊犁路",
+    "lng": 121.3980124,
+    "lat": 31.2010859,
+    "type": "underground",
+    "depth": 18.0
+   },
+   {
+    "name": "宋园路",
+    "lng": 121.4078985,
+    "lat": 31.1983218,
+    "type": "underground",
+    "depth": 17.1
+   },
+   {
+    "name": "虹桥路",
+    "lng": 121.4175136,
+    "lat": 31.1985523,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "3",
+     "4",
+     "10"
+    ]
+   },
+   {
+    "name": "交通大学",
+    "lng": 121.4304776,
+    "lat": 31.2040209,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "10",
+     "11"
+    ]
+   },
+   {
+    "name": "上海图书馆",
+    "lng": 121.439814,
+    "lat": 31.2099274,
+    "type": "underground",
+    "depth": 16.4,
+    "transfer": [
+     "10"
+    ]
+   },
+   {
+    "name": "陕西南路",
+    "lng": 121.4540441,
+    "lat": 31.216798,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "1",
+     "10",
+     "12"
+    ]
+   },
+   {
+    "name": "一大会址·新天地",
+    "lng": 121.4699225,
+    "lat": 31.2181178,
+    "type": "underground",
+    "depth": 14.6,
+    "transfer": [
+     "10",
+     "13"
+    ]
+   },
+   {
+    "name": "老西门",
+    "lng": 121.4790144,
+    "lat": 31.2209477,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "8",
+     "10"
+    ]
+   },
+   {
+    "name": "豫园",
+    "lng": 121.4829009,
+    "lat": 31.2299247,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "10",
+     "14"
+    ]
+   },
+   {
+    "name": "南京东路",
+    "lng": 121.4801795,
+    "lat": 31.2402618,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "2",
+     "10"
+    ]
+   },
+   {
+    "name": "天潼路",
+    "lng": 121.4778324,
+    "lat": 31.2457632,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "10",
+     "12"
+    ]
+   },
+   {
+    "name": "四川北路",
+    "lng": 121.479494,
+    "lat": 31.2537048,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "10"
+    ]
+   },
+   {
+    "name": "海伦路",
+    "lng": 121.4843498,
+    "lat": 31.2611338,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "4",
+     "10"
+    ]
+   },
+   {
+    "name": "邮电新村",
+    "lng": 121.489829,
+    "lat": 31.270398,
+    "type": "underground",
+    "depth": 14.5,
+    "transfer": [
+     "10"
+    ]
+   },
+   {
+    "name": "四平路",
+    "lng": 121.4970111,
+    "lat": 31.2768364,
+    "type": "underground",
+    "depth": 20,
+    "transfer": [
+     "8",
+     "10"
+    ]
+   },
+   {
+    "name": "同济大学",
+    "lng": 121.5020918,
+    "lat": 31.2844081,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "10"
+    ]
+   },
+   {
+    "name": "国权路",
+    "lng": 121.5056173,
+    "lat": 31.2912473,
+    "type": "underground",
+    "depth": 13.8,
+    "transfer": [
+     "10",
+     "18"
+    ]
+   },
+   {
+    "name": "五角场",
+    "lng": 121.5100904,
+    "lat": 31.2997294,
+    "type": "underground",
+    "depth": 13.5
+   },
+   {
+    "name": "江湾体育场",
+    "lng": 121.5100008,
+    "lat": 31.3050616,
+    "type": "underground",
+    "depth": 16.9
+   },
+   {
+    "name": "三门路",
+    "lng": 121.5039507,
+    "lat": 31.3153133,
+    "type": "underground",
+    "depth": 15.4
+   },
+   {
+    "name": "殷高东路",
+    "lng": 121.5024607,
+    "lat": 31.3237994,
+    "type": "underground",
+    "depth": 16.3
+   },
+   {
+    "name": "新江湾城",
+    "lng": 121.5023788,
+    "lat": 31.330778,
+    "type": "underground",
+    "depth": 17.3
+   },
+   {
+    "name": "国帆路",
+    "lng": 121.5084517,
+    "lat": 31.341132,
+    "type": "underground",
+    "depth": 17.4
+   },
+   {
+    "name": "双江路",
+    "lng": 121.5344903,
+    "lat": 31.3558849,
+    "type": "underground",
+    "depth": 18.1
+   },
+   {
+    "name": "高桥西",
+    "lng": 121.5456471,
+    "lat": 31.3535934,
+    "type": "underground",
+    "depth": 17.4
+   },
+   {
+    "name": "高桥",
+    "lng": 121.5594061,
+    "lat": 31.3547748,
+    "type": "underground",
+    "depth": 14.7
+   },
+   {
+    "name": "港城路",
+    "lng": 121.5700345,
+    "lat": 31.3553137,
+    "type": "underground",
+    "depth": 8,
+    "transfer": [
+     "6",
+     "10"
+    ]
+   },
+   {
+    "name": "基隆路",
+    "lng": 121.5856378,
+    "lat": 31.3538691,
+    "type": "underground",
+    "depth": 15.2
+   }
+  ]
+ },
+ {
+  "id": "sh-10_br",
+  "name": "10号线支线",
+  "color": "#C1A7DE",
+  "from": "龙溪路",
+  "to": "航中路",
+  "lengthKm": 5.0,
+  "stations": [
+   {
+    "name": "龙溪路",
+    "lng": 121.375864,
+    "lat": 31.1964058,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "10"
+    ]
+   },
+   {
+    "name": "龙柏新村",
+    "lng": 121.3659592,
+    "lat": 31.1793188,
+    "type": "underground",
+    "depth": 16.2
+   },
+   {
+    "name": "紫藤路",
+    "lng": 121.3611178,
+    "lat": 31.1717989,
+    "type": "underground",
+    "depth": 14.4
+   },
+   {
+    "name": "航中路",
+    "lng": 121.349164,
+    "lat": 31.1671342,
+    "type": "underground",
+    "depth": 14.8
+   }
+  ],
+  "branchOf": "sh-10"
+ },
+ {
+  "id": "sh-11",
+  "name": "11号线",
+  "color": "#7B2D93",
+  "from": "嘉定北",
+  "to": "迪士尼",
+  "lengthKm": 60.1,
+  "stations": [
+   {
+    "name": "嘉定北",
+    "lng": 121.2336925,
+    "lat": 31.3938876,
+    "type": "elevated",
+    "height": 11.8
+   },
+   {
+    "name": "嘉定西",
+    "lng": 121.2233711,
+    "lat": 31.3784219,
+    "type": "elevated",
+    "height": 14.4
+   },
+   {
+    "name": "白银路",
+    "lng": 121.2411461,
+    "lat": 31.3467606,
+    "type": "elevated",
+    "height": 10.5
+   },
+   {
+    "name": "嘉定新城",
+    "lng": 121.2500345,
+    "lat": 31.3315029,
+    "type": "elevated",
+    "height": 15.6,
+    "transfer": [
+     "11"
+    ]
+   },
+   {
+    "name": "马陆",
+    "lng": 121.2716891,
+    "lat": 31.3214234,
+    "type": "elevated",
+    "height": 10.2
+   },
+   {
+    "name": "陈翔公路",
+    "lng": 121.3018789,
+    "lat": 31.3089729,
+    "type": "elevated",
+    "height": 11.0
+   },
+   {
+    "name": "南翔",
+    "lng": 121.3191941,
+    "lat": 31.2985932,
+    "type": "elevated",
+    "height": 11.3
+   },
+   {
+    "name": "桃浦新村",
+    "lng": 121.3450661,
+    "lat": 31.2834561,
+    "type": "underground",
+    "depth": 17.2
+   },
+   {
+    "name": "武威路",
+    "lng": 121.3602951,
+    "lat": 31.2780239,
+    "type": "underground",
+    "depth": 14.2
+   },
+   {
+    "name": "祁连山路",
+    "lng": 121.3721997,
+    "lat": 31.2733491,
+    "type": "underground",
+    "depth": 13.5
+   },
+   {
+    "name": "李子园",
+    "lng": 121.3853648,
+    "lat": 31.2707732,
+    "type": "underground",
+    "depth": 18.2
+   },
+   {
+    "name": "上海西站",
+    "lng": 121.3957865,
+    "lat": 31.2645197,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "11",
+     "15"
+    ]
+   },
+   {
+    "name": "真如",
+    "lng": 121.4026165,
+    "lat": 31.2527026,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "11",
+     "14"
+    ]
+   },
+   {
+    "name": "枫桥路",
+    "lng": 121.4056945,
+    "lat": 31.2443239,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "11"
+    ]
+   },
+   {
+    "name": "曹杨路",
+    "lng": 121.4121966,
+    "lat": 31.2402785,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "3",
+     "4",
+     "11"
+    ]
+   },
+   {
+    "name": "隆德路",
+    "lng": 121.4189381,
+    "lat": 31.2323912,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "11",
+     "13"
+    ]
+   },
+   {
+    "name": "江苏路",
+    "lng": 121.4262162,
+    "lat": 31.221534,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "2",
+     "11"
+    ]
+   },
+   {
+    "name": "交通大学",
+    "lng": 121.4306402,
+    "lat": 31.2041086,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "10",
+     "11"
+    ]
+   },
+   {
+    "name": "徐家汇",
+    "lng": 121.431323,
+    "lat": 31.1963051,
+    "type": "underground",
+    "depth": 24,
+    "transfer": [
+     "1",
+     "9",
+     "11"
+    ]
+   },
+   {
+    "name": "上海游泳馆",
+    "lng": 121.43673,
+    "lat": 31.1812646,
+    "type": "underground",
+    "depth": 17.3,
+    "transfer": [
+     "11"
+    ]
+   },
+   {
+    "name": "龙华",
+    "lng": 121.448688,
+    "lat": 31.1748183,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "11",
+     "12"
+    ]
+   },
+   {
+    "name": "云锦路",
+    "lng": 121.4538351,
+    "lat": 31.1694968,
+    "type": "underground",
+    "depth": 16.7
+   },
+   {
+    "name": "龙耀路",
+    "lng": 121.4551422,
+    "lat": 31.1615047,
+    "type": "underground",
+    "depth": 14.8
+   },
+   {
+    "name": "东方体育中心",
+    "lng": 121.4758891,
+    "lat": 31.1552737,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "6",
+     "8",
+     "11"
+    ]
+   },
+   {
+    "name": "三林",
+    "lng": 121.5079395,
+    "lat": 31.1453704,
+    "type": "underground",
+    "depth": 18.3
+   },
+   {
+    "name": "三林东",
+    "lng": 121.5188867,
+    "lat": 31.1486148,
+    "type": "underground",
+    "depth": 14.1
+   },
+   {
+    "name": "浦三路",
+    "lng": 121.535061,
+    "lat": 31.1531639,
+    "type": "underground",
+    "depth": 17.5
+   },
+   {
+    "name": "康恒路",
+    "lng": 121.5492865,
+    "lat": 31.1564631,
+    "type": "underground",
+    "depth": 17.6
+   },
+   {
+    "name": "御桥",
+    "lng": 121.5674394,
+    "lat": 31.1605249,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "11",
+     "18"
+    ]
+   },
+   {
+    "name": "罗山路",
+    "lng": 121.5890912,
+    "lat": 31.1549354,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "11",
+     "16"
+    ]
+   },
+   {
+    "name": "秀沿路",
+    "lng": 121.5939919,
+    "lat": 31.1409666,
+    "type": "underground",
+    "depth": 16.3
+   },
+   {
+    "name": "康新公路",
+    "lng": 121.6129339,
+    "lat": 31.1327057,
+    "type": "underground",
+    "depth": 18.1
+   },
+   {
+    "name": "迪士尼",
+    "lng": 121.6645067,
+    "lat": 31.143498,
+    "type": "underground",
+    "depth": 15
+   }
+  ]
+ },
+ {
+  "id": "sh-11_br",
+  "name": "11号线支线",
+  "color": "#7B2D93",
+  "from": "嘉定新城",
+  "to": "花桥",
+  "lengthKm": 21.5,
+  "stations": [
+   {
+    "name": "嘉定新城",
+    "lng": 121.2500345,
+    "lat": 31.3315029,
+    "type": "underground",
+    "depth": 18.2,
+    "transfer": [
+     "11"
+    ]
+   },
+   {
+    "name": "上海赛车场",
+    "lng": 121.2216582,
+    "lat": 31.3338331,
+    "type": "elevated",
+    "height": 9.4
+   },
+   {
+    "name": "昌吉东路",
+    "lng": 121.1953078,
+    "lat": 31.2951195,
+    "type": "elevated",
+    "height": 11.6
+   },
+   {
+    "name": "上海汽车城",
+    "lng": 121.1768832,
+    "lat": 31.2871506,
+    "type": "elevated",
+    "height": 9.9
+   },
+   {
+    "name": "安亭",
+    "lng": 121.15812,
+    "lat": 31.2903512,
+    "type": "elevated",
+    "height": 6.3
+   },
+   {
+    "name": "兆丰路",
+    "lng": 121.1463776,
+    "lat": 31.2906353,
+    "type": "elevated",
+    "height": 7.3
+   },
+   {
+    "name": "光明路",
+    "lng": 121.1132826,
+    "lat": 31.2978985,
+    "type": "elevated",
+    "height": 8.9
+   },
+   {
+    "name": "花桥",
+    "lng": 121.1003662,
+    "lat": 31.3005465,
+    "type": "elevated",
+    "height": 10.2
+   }
+  ],
+  "branchOf": "sh-11"
+ },
+ {
+  "id": "sh-12",
+  "name": "12号线",
+  "color": "#0D5D4A",
+  "from": "七莘路",
+  "to": "金海路",
+  "lengthKm": 40.4,
+  "stations": [
+   {
+    "name": "七莘路",
+    "lng": 121.3585682,
+    "lat": 31.133715,
+    "type": "underground",
+    "depth": 14.7
+   },
+   {
+    "name": "虹莘路",
+    "lng": 121.3758293,
+    "lat": 31.1395514,
+    "type": "underground",
+    "depth": 17.4
+   },
+   {
+    "name": "顾戴路",
+    "lng": 121.3875265,
+    "lat": 31.14296,
+    "type": "underground",
+    "depth": 13.8
+   },
+   {
+    "name": "东兰路",
+    "lng": 121.3871732,
+    "lat": 31.1577116,
+    "type": "underground",
+    "depth": 15.1
+   },
+   {
+    "name": "虹梅路",
+    "lng": 121.392697,
+    "lat": 31.1622381,
+    "type": "underground",
+    "depth": 18.4
+   },
+   {
+    "name": "虹漕路",
+    "lng": 121.4061067,
+    "lat": 31.1662428,
+    "type": "underground",
+    "depth": 18.2
+   },
+   {
+    "name": "桂林公园",
+    "lng": 121.4149641,
+    "lat": 31.1689776,
+    "type": "underground",
+    "depth": 17.8,
+    "transfer": [
+     "12",
+     "15"
+    ]
+   },
+   {
+    "name": "漕宝路",
+    "lng": 121.4290841,
+    "lat": 31.1704272,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "1",
+     "12"
+    ]
+   },
+   {
+    "name": "龙漕路",
+    "lng": 121.4389553,
+    "lat": 31.172043,
+    "type": "underground",
+    "depth": 16.2
+   },
+   {
+    "name": "龙华",
+    "lng": 121.4482038,
+    "lat": 31.1766437,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "11",
+     "12"
+    ]
+   },
+   {
+    "name": "龙华中路",
+    "lng": 121.4518647,
+    "lat": 31.1865276,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "7",
+     "12"
+    ]
+   },
+   {
+    "name": "大木桥路",
+    "lng": 121.4591765,
+    "lat": 31.196056,
+    "type": "underground",
+    "depth": 14.4,
+    "transfer": [
+     "4",
+     "12"
+    ]
+   },
+   {
+    "name": "嘉善路",
+    "lng": 121.4564217,
+    "lat": 31.2042904,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "9",
+     "12"
+    ]
+   },
+   {
+    "name": "陕西南路",
+    "lng": 121.4547198,
+    "lat": 31.2177902,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "1",
+     "10",
+     "12"
+    ]
+   },
+   {
+    "name": "南京西路",
+    "lng": 121.4548158,
+    "lat": 31.229438,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "2",
+     "12",
+     "13"
+    ]
+   },
+   {
+    "name": "汉中路",
+    "lng": 121.4544054,
+    "lat": 31.2425951,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "1",
+     "12",
+     "13"
+    ]
+   },
+   {
+    "name": "曲阜路",
+    "lng": 121.4672583,
+    "lat": 31.2443907,
+    "type": "underground",
+    "depth": 17.1,
+    "transfer": [
+     "8",
+     "12"
+    ]
+   },
+   {
+    "name": "天潼路",
+    "lng": 121.477971,
+    "lat": 31.2457595,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "10",
+     "12"
+    ]
+   },
+   {
+    "name": "国际客运中心",
+    "lng": 121.4939755,
+    "lat": 31.2521208,
+    "type": "underground",
+    "depth": 18.0,
+    "transfer": [
+     "12"
+    ]
+   },
+   {
+    "name": "提篮桥",
+    "lng": 121.5022949,
+    "lat": 31.255347,
+    "type": "underground",
+    "depth": 16.8,
+    "transfer": [
+     "12"
+    ]
+   },
+   {
+    "name": "大连路",
+    "lng": 121.5085756,
+    "lat": 31.2599358,
+    "type": "underground",
+    "depth": 13,
+    "transfer": [
+     "4",
+     "12"
+    ]
+   },
+   {
+    "name": "江浦公园",
+    "lng": 121.5193398,
+    "lat": 31.2665283,
+    "type": "underground",
+    "depth": 15.2,
+    "transfer": [
+     "12",
+     "18"
+    ]
+   },
+   {
+    "name": "宁国路",
+    "lng": 121.5283174,
+    "lat": 31.2706622,
+    "type": "underground",
+    "depth": 17.7,
+    "transfer": [
+     "12"
+    ]
+   },
+   {
+    "name": "隆昌路",
+    "lng": 121.5407282,
+    "lat": 31.2776103,
+    "type": "underground",
+    "depth": 14.5,
+    "transfer": [
+     "12"
+    ]
+   },
+   {
+    "name": "爱国路",
+    "lng": 121.5482851,
+    "lat": 31.2819559,
+    "type": "underground",
+    "depth": 16.9
+   },
+   {
+    "name": "复兴岛",
+    "lng": 121.5569651,
+    "lat": 31.2830035,
+    "type": "underground",
+    "depth": 15.5
+   },
+   {
+    "name": "东陆路",
+    "lng": 121.5746455,
+    "lat": 31.2846637,
+    "type": "underground",
+    "depth": 14.8,
+    "transfer": [
+     "12"
+    ]
+   },
+   {
+    "name": "巨峰路",
+    "lng": 121.5851419,
+    "lat": 31.2822848,
+    "type": "underground",
+    "depth": 13,
+    "transfer": [
+     "6",
+     "12"
+    ]
+   },
+   {
+    "name": "杨高北路",
+    "lng": 121.5987071,
+    "lat": 31.2821858,
+    "type": "underground",
+    "depth": 14.9,
+    "transfer": [
+     "12"
+    ]
+   },
+   {
+    "name": "金京路",
+    "lng": 121.6107893,
+    "lat": 31.2818459,
+    "type": "underground",
+    "depth": 14.9,
+    "transfer": [
+     "12"
+    ]
+   },
+   {
+    "name": "申江路",
+    "lng": 121.6226109,
+    "lat": 31.2822916,
+    "type": "underground",
+    "depth": 15.3,
+    "transfer": [
+     "12"
+    ]
+   },
+   {
+    "name": "金海路",
+    "lng": 121.6343843,
+    "lat": 31.2652003,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "9",
+     "12"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "sh-13",
+  "name": "13号线",
+  "color": "#E99E1A",
+  "from": "金运路",
+  "to": "张江路",
+  "lengthKm": 38.8,
+  "stations": [
+   {
+    "name": "金运路",
+    "lng": 121.3166182,
+    "lat": 31.2429079,
+    "type": "underground",
+    "depth": 12
+   },
+   {
+    "name": "金沙江西路",
+    "lng": 121.3306597,
+    "lat": 31.2430886,
+    "type": "underground",
+    "depth": 13.9
+   },
+   {
+    "name": "丰庄",
+    "lng": 121.3507184,
+    "lat": 31.244304,
+    "type": "underground",
+    "depth": 16.2
+   },
+   {
+    "name": "祁连山南路",
+    "lng": 121.3627051,
+    "lat": 31.2395103,
+    "type": "underground",
+    "depth": 14.0
+   },
+   {
+    "name": "真北路",
+    "lng": 121.3775615,
+    "lat": 31.2340599,
+    "type": "underground",
+    "depth": 17.1
+   },
+   {
+    "name": "大渡河路",
+    "lng": 121.3896152,
+    "lat": 31.2336576,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "13",
+     "15"
+    ]
+   },
+   {
+    "name": "长宁路",
+    "lng": 121.3983,
+    "lat": 31.2265,
+    "type": "underground",
+    "depth": 16.1,
+    "note": "坐标为近似估算（OSM缺该站节点）"
+   },
+   {
+    "name": "隆德路",
+    "lng": 121.418888,
+    "lat": 31.2323034,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "11",
+     "13"
+    ]
+   },
+   {
+    "name": "武宁路",
+    "lng": 121.4260607,
+    "lat": 31.236348,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "13",
+     "14"
+    ]
+   },
+   {
+    "name": "长寿路",
+    "lng": 121.4335758,
+    "lat": 31.2425665,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "7",
+     "13"
+    ]
+   },
+   {
+    "name": "江宁路",
+    "lng": 121.4398399,
+    "lat": 31.2461627,
+    "type": "underground",
+    "depth": 16.0,
+    "transfer": [
+     "13"
+    ]
+   },
+   {
+    "name": "汉中路",
+    "lng": 121.4543015,
+    "lat": 31.2425757,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "1",
+     "12",
+     "13"
+    ]
+   },
+   {
+    "name": "自然博物馆",
+    "lng": 121.4578682,
+    "lat": 31.2382599,
+    "type": "underground",
+    "depth": 18.4
+   },
+   {
+    "name": "南京西路",
+    "lng": 121.4579797,
+    "lat": 31.2304735,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "2",
+     "12",
+     "13"
+    ]
+   },
+   {
+    "name": "淮海中路",
+    "lng": 121.4598571,
+    "lat": 31.2218636,
+    "type": "underground",
+    "depth": 16.7
+   },
+   {
+    "name": "一大会址·新天地",
+    "lng": 121.4697869,
+    "lat": 31.2179388,
+    "type": "underground",
+    "depth": 14.6,
+    "transfer": [
+     "10",
+     "13"
+    ]
+   },
+   {
+    "name": "马当路",
+    "lng": 121.4717336,
+    "lat": 31.2116679,
+    "type": "underground",
+    "depth": 20,
+    "transfer": [
+     "9",
+     "13"
+    ]
+   },
+   {
+    "name": "世博会博物馆",
+    "lng": 121.4771259,
+    "lat": 31.1992464,
+    "type": "underground",
+    "depth": 17.5
+   },
+   {
+    "name": "世博大道",
+    "lng": 121.4799211,
+    "lat": 31.1846627,
+    "type": "underground",
+    "depth": 16.0
+   },
+   {
+    "name": "长清路",
+    "lng": 121.4838312,
+    "lat": 31.1762458,
+    "type": "underground",
+    "depth": 18.4
+   },
+   {
+    "name": "成山路",
+    "lng": 121.4926368,
+    "lat": 31.1734769,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "8",
+     "13"
+    ]
+   },
+   {
+    "name": "东明路",
+    "lng": 121.5070285,
+    "lat": 31.1747956,
+    "type": "underground",
+    "depth": 13,
+    "transfer": [
+     "6",
+     "13"
+    ]
+   },
+   {
+    "name": "华鹏路",
+    "lng": 121.5218918,
+    "lat": 31.1782915,
+    "type": "underground",
+    "depth": 13.8
+   },
+   {
+    "name": "下南路",
+    "lng": 121.5357295,
+    "lat": 31.1814018,
+    "type": "underground",
+    "depth": 15.2
+   },
+   {
+    "name": "北蔡",
+    "lng": 121.5472374,
+    "lat": 31.1821553,
+    "type": "underground",
+    "depth": 14.7
+   },
+   {
+    "name": "陈春路",
+    "lng": 121.5537987,
+    "lat": 31.1773264,
+    "type": "underground",
+    "depth": 16.8
+   },
+   {
+    "name": "莲溪路",
+    "lng": 121.5618736,
+    "lat": 31.1711536,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "13",
+     "18"
+    ]
+   },
+   {
+    "name": "华夏中路",
+    "lng": 121.5767032,
+    "lat": 31.1767149,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "13",
+     "16"
+    ]
+   },
+   {
+    "name": "中科路",
+    "lng": 121.5969064,
+    "lat": 31.1810257,
+    "type": "underground",
+    "depth": 14.3
+   },
+   {
+    "name": "学林路",
+    "lng": 121.6096352,
+    "lat": 31.1853256,
+    "type": "underground",
+    "depth": 17.8
+   },
+   {
+    "name": "张江路",
+    "lng": 121.6252203,
+    "lat": 31.1912459,
+    "type": "underground",
+    "depth": 13.5
+   }
+  ]
+ },
+ {
+  "id": "sh-14",
+  "name": "14号线",
+  "color": "#763231",
+  "from": "封浜",
+  "to": "桂桥路",
+  "lengthKm": 38.5,
+  "stations": [
+   {
+    "name": "封浜",
+    "lng": 121.2925269,
+    "lat": 31.2693892,
+    "type": "underground",
+    "depth": 11
+   },
+   {
+    "name": "乐秀路",
+    "lng": 121.3092355,
+    "lat": 31.2672043,
+    "type": "underground",
+    "depth": 18.4
+   },
+   {
+    "name": "临洮路",
+    "lng": 121.3263461,
+    "lat": 31.265075,
+    "type": "underground",
+    "depth": 16.9
+   },
+   {
+    "name": "嘉怡路",
+    "lng": 121.3407109,
+    "lat": 31.2612441,
+    "type": "underground",
+    "depth": 15.6
+   },
+   {
+    "name": "定边路",
+    "lng": 121.3577351,
+    "lat": 31.2581994,
+    "type": "underground",
+    "depth": 17.8
+   },
+   {
+    "name": "真新新村",
+    "lng": 121.3674601,
+    "lat": 31.2573042,
+    "type": "underground",
+    "depth": 15.9
+   },
+   {
+    "name": "真光路",
+    "lng": 121.3797009,
+    "lat": 31.2550115,
+    "type": "underground",
+    "depth": 17.6
+   },
+   {
+    "name": "铜川路",
+    "lng": 121.3922949,
+    "lat": 31.2525131,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "14",
+     "15"
+    ]
+   },
+   {
+    "name": "真如",
+    "lng": 121.4018964,
+    "lat": 31.2523461,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "11",
+     "14"
+    ]
+   },
+   {
+    "name": "中宁路",
+    "lng": 121.4100514,
+    "lat": 31.2469663,
+    "type": "underground",
+    "depth": 14.8
+   },
+   {
+    "name": "东新路",
+    "lng": 121.4175,
+    "lat": 31.2435,
+    "type": "underground",
+    "depth": 17.3,
+    "note": "坐标为近似估算（OSM缺该站节点）"
+   },
+   {
+    "name": "武宁路",
+    "lng": 121.4265469,
+    "lat": 31.2348102,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "13",
+     "14"
+    ]
+   },
+   {
+    "name": "武定路",
+    "lng": 121.431704,
+    "lat": 31.2288843,
+    "type": "underground",
+    "depth": 19.4,
+    "transfer": [
+     "14"
+    ]
+   },
+   {
+    "name": "静安寺",
+    "lng": 121.4408375,
+    "lat": 31.223767,
+    "type": "underground",
+    "depth": 21,
+    "transfer": [
+     "2",
+     "7",
+     "14"
+    ]
+   },
+   {
+    "name": "一大会址·黄陂南路",
+    "lng": 121.4679399,
+    "lat": 31.2256978,
+    "type": "underground",
+    "depth": 15.0,
+    "transfer": [
+     "1",
+     "14"
+    ]
+   },
+   {
+    "name": "大世界",
+    "lng": 121.4752333,
+    "lat": 31.2285734,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "8",
+     "14"
+    ]
+   },
+   {
+    "name": "豫园",
+    "lng": 121.4842589,
+    "lat": 31.2314139,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "10",
+     "14"
+    ]
+   },
+   {
+    "name": "陆家嘴",
+    "lng": 121.4980003,
+    "lat": 31.2368877,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "2",
+     "14"
+    ]
+   },
+   {
+    "name": "浦东南路",
+    "lng": 121.5082575,
+    "lat": 31.2407372,
+    "type": "underground",
+    "depth": 15.8,
+    "transfer": [
+     "14",
+     "2"
+    ]
+   },
+   {
+    "name": "浦东大道",
+    "lng": 121.514953,
+    "lat": 31.2424962,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "4",
+     "14"
+    ]
+   },
+   {
+    "name": "源深路",
+    "lng": 121.5264859,
+    "lat": 31.2434181,
+    "type": "underground",
+    "depth": 17.1
+   },
+   {
+    "name": "昌邑路",
+    "lng": 121.5357557,
+    "lat": 31.2459545,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "14",
+     "18"
+    ]
+   },
+   {
+    "name": "歇浦路",
+    "lng": 121.547091,
+    "lat": 31.2526345,
+    "type": "underground",
+    "depth": 15.0,
+    "transfer": [
+     "14"
+    ]
+   },
+   {
+    "name": "龙居路",
+    "lng": 121.5546643,
+    "lat": 31.2595165,
+    "type": "underground",
+    "depth": 16.6
+   },
+   {
+    "name": "云山路",
+    "lng": 121.5668522,
+    "lat": 31.2532054,
+    "type": "underground",
+    "depth": 16.7,
+    "transfer": [
+     "6",
+     "14"
+    ]
+   },
+   {
+    "name": "蓝天路",
+    "lng": 121.573952,
+    "lat": 31.2429802,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "9",
+     "14"
+    ]
+   },
+   {
+    "name": "黄杨路",
+    "lng": 121.5863076,
+    "lat": 31.2359273,
+    "type": "underground",
+    "depth": 17.4
+   },
+   {
+    "name": "云顺路",
+    "lng": 121.5964591,
+    "lat": 31.2392441,
+    "type": "underground",
+    "depth": 18.3
+   },
+   {
+    "name": "浦东足球场",
+    "lng": 121.6107349,
+    "lat": 31.2437578,
+    "type": "underground",
+    "depth": 16.8
+   },
+   {
+    "name": "金粤路",
+    "lng": 121.624747,
+    "lat": 31.244267,
+    "type": "underground",
+    "depth": 17.9
+   },
+   {
+    "name": "桂桥路",
+    "lng": 121.6310926,
+    "lat": 31.2525654,
+    "type": "underground",
+    "depth": 13,
+    "transfer": [
+     "14"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "sh-15",
+  "name": "15号线",
+  "color": "#C9B08E",
+  "from": "顾村公园",
+  "to": "紫竹高新区",
+  "lengthKm": 42.3,
+  "stations": [
+   {
+    "name": "顾村公园",
+    "lng": 121.3701367,
+    "lat": 31.3447036,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "7",
+     "15"
+    ]
+   },
+   {
+    "name": "锦秋路",
+    "lng": 121.3774272,
+    "lat": 31.3227374,
+    "type": "underground",
+    "depth": 17.2
+   },
+   {
+    "name": "丰翔路",
+    "lng": 121.3762497,
+    "lat": 31.3097755,
+    "type": "underground",
+    "depth": 18.2
+   },
+   {
+    "name": "南大路",
+    "lng": 121.3756575,
+    "lat": 31.3010443,
+    "type": "underground",
+    "depth": 18.3
+   },
+   {
+    "name": "祁安路",
+    "lng": 121.3808828,
+    "lat": 31.2933102,
+    "type": "underground",
+    "depth": 18.9
+   },
+   {
+    "name": "古浪路",
+    "lng": 121.387354,
+    "lat": 31.2839223,
+    "type": "underground",
+    "depth": 17.1
+   },
+   {
+    "name": "武威东路",
+    "lng": 121.3873299,
+    "lat": 31.2777559,
+    "type": "underground",
+    "depth": 16.5
+   },
+   {
+    "name": "上海西站",
+    "lng": 121.3966477,
+    "lat": 31.2651353,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "11",
+     "15"
+    ]
+   },
+   {
+    "name": "铜川路",
+    "lng": 121.3928023,
+    "lat": 31.2535287,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "14",
+     "15"
+    ]
+   },
+   {
+    "name": "梅岭北路",
+    "lng": 121.3922023,
+    "lat": 31.246366,
+    "type": "underground",
+    "depth": 19.0
+   },
+   {
+    "name": "大渡河路",
+    "lng": 121.3913345,
+    "lat": 31.2352329,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "13",
+     "15"
+    ]
+   },
+   {
+    "name": "长风公园",
+    "lng": 121.3916442,
+    "lat": 31.2272208,
+    "type": "underground",
+    "depth": 17.4
+   },
+   {
+    "name": "娄山关路",
+    "lng": 121.3953379,
+    "lat": 31.2140286,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "2",
+     "15"
+    ]
+   },
+   {
+    "name": "红宝石路",
+    "lng": 121.3934541,
+    "lat": 31.2000279,
+    "type": "underground",
+    "depth": 17.6
+   },
+   {
+    "name": "姚虹路",
+    "lng": 121.4020724,
+    "lat": 31.1932802,
+    "type": "underground",
+    "depth": 16.9
+   },
+   {
+    "name": "吴中路",
+    "lng": 121.4092613,
+    "lat": 31.1866617,
+    "type": "underground",
+    "depth": 17.9
+   },
+   {
+    "name": "桂林路",
+    "lng": 121.4113868,
+    "lat": 31.1765884,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "9",
+     "15"
+    ]
+   },
+   {
+    "name": "桂林公园",
+    "lng": 121.4135685,
+    "lat": 31.1702645,
+    "type": "underground",
+    "depth": 18.8,
+    "transfer": [
+     "12",
+     "15"
+    ]
+   },
+   {
+    "name": "上海南站",
+    "lng": 121.4263811,
+    "lat": 31.1581233,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "1",
+     "3",
+     "15"
+    ]
+   },
+   {
+    "name": "华东理工大学",
+    "lng": 121.4241403,
+    "lat": 31.1456519,
+    "type": "underground",
+    "depth": 18.8
+   },
+   {
+    "name": "罗秀路",
+    "lng": 121.4311036,
+    "lat": 31.1342659,
+    "type": "underground",
+    "depth": 18.7
+   },
+   {
+    "name": "朱梅路",
+    "lng": 121.4333946,
+    "lat": 31.1263324,
+    "type": "underground",
+    "depth": 17.2
+   },
+   {
+    "name": "景洪路",
+    "lng": 121.4357137,
+    "lat": 31.1152436,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "15",
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "虹梅南路",
+    "lng": 121.4277135,
+    "lat": 31.105664,
+    "type": "underground",
+    "depth": 16.6
+   },
+   {
+    "name": "景西路",
+    "lng": 121.4145956,
+    "lat": 31.1016264,
+    "type": "underground",
+    "depth": 18.7
+   },
+   {
+    "name": "曙建路",
+    "lng": 121.4132278,
+    "lat": 31.0921889,
+    "type": "underground",
+    "depth": 18.4
+   },
+   {
+    "name": "双柏路",
+    "lng": 121.4172778,
+    "lat": 31.0847142,
+    "type": "underground",
+    "depth": 19.1
+   },
+   {
+    "name": "元江路",
+    "lng": 121.4274016,
+    "lat": 31.0642713,
+    "type": "underground",
+    "depth": 17.8
+   },
+   {
+    "name": "永德路",
+    "lng": 121.4389091,
+    "lat": 31.0406892,
+    "type": "underground",
+    "depth": 16.0
+   },
+   {
+    "name": "紫竹高新区",
+    "lng": 121.4464271,
+    "lat": 31.0253338,
+    "type": "underground",
+    "depth": 14
+   }
+  ]
+ },
+ {
+  "id": "sh-16",
+  "name": "16号线",
+  "color": "#66C29A",
+  "from": "龙阳路",
+  "to": "滴水湖",
+  "lengthKm": 59.0,
+  "stations": [
+   {
+    "name": "龙阳路",
+    "lng": 121.5533465,
+    "lat": 31.2041501,
+    "type": "ground",
+    "height": 0,
+    "transfer": [
+     "2",
+     "7",
+     "16",
+     "18",
+     "磁浮线"
+    ]
+   },
+   {
+    "name": "华夏中路",
+    "lng": 121.5788744,
+    "lat": 31.1779939,
+    "type": "elevated",
+    "height": 10.6,
+    "transfer": [
+     "13",
+     "16"
+    ]
+   },
+   {
+    "name": "罗山路",
+    "lng": 121.5890893,
+    "lat": 31.1549351,
+    "type": "elevated",
+    "height": 12.1,
+    "transfer": [
+     "11",
+     "16"
+    ]
+   },
+   {
+    "name": "周浦东",
+    "lng": 121.6027989,
+    "lat": 31.1117596,
+    "type": "elevated",
+    "height": 10.4
+   },
+   {
+    "name": "鹤沙航城",
+    "lng": 121.6071626,
+    "lat": 31.079461,
+    "type": "elevated",
+    "height": 11.0
+   },
+   {
+    "name": "航头东",
+    "lng": 121.6134276,
+    "lat": 31.0566685,
+    "type": "elevated",
+    "height": 14.1
+   },
+   {
+    "name": "新场",
+    "lng": 121.6454712,
+    "lat": 31.0479385,
+    "type": "elevated",
+    "height": 11.0
+   },
+   {
+    "name": "野生动物园",
+    "lng": 121.6955999,
+    "lat": 31.0523775,
+    "type": "elevated",
+    "height": 10.5
+   },
+   {
+    "name": "惠南",
+    "lng": 121.7573174,
+    "lat": 31.056003,
+    "type": "elevated",
+    "height": 15.7,
+    "transfer": [
+     "16"
+    ]
+   },
+   {
+    "name": "惠南东",
+    "lng": 121.7942,
+    "lat": 31.0448,
+    "type": "elevated",
+    "height": 13.3,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "书院",
+    "lng": 121.83,
+    "lat": 30.993,
+    "type": "elevated",
+    "height": 14.8
+   },
+   {
+    "name": "临港大道",
+    "lng": 121.9064328,
+    "lat": 30.9261249,
+    "type": "elevated",
+    "height": 11.1
+   },
+   {
+    "name": "滴水湖",
+    "lng": 121.9251715,
+    "lat": 30.9098666,
+    "type": "elevated",
+    "height": 11.4
+   }
+  ]
+ },
+ {
+  "id": "sh-17",
+  "name": "17号线",
+  "color": "#7957A7",
+  "from": "虹桥火车站",
+  "to": "西岑",
+  "lengthKm": 44.4,
+  "stations": [
+   {
+    "name": "虹桥火车站",
+    "lng": 121.313226,
+    "lat": 31.1960852,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "2",
+     "10",
+     "17"
+    ]
+   },
+   {
+    "name": "国家会展中心",
+    "lng": 121.2887136,
+    "lat": 31.1938143,
+    "type": "elevated",
+    "height": 11.4
+   },
+   {
+    "name": "蟠龙路",
+    "lng": 121.2742009,
+    "lat": 31.1884461,
+    "type": "elevated",
+    "height": 10.2
+   },
+   {
+    "name": "徐盈路",
+    "lng": 121.2498205,
+    "lat": 31.18014,
+    "type": "elevated",
+    "height": 8.6
+   },
+   {
+    "name": "徐泾北城",
+    "lng": 121.2372703,
+    "lat": 31.1775186,
+    "type": "elevated",
+    "height": 10.1
+   },
+   {
+    "name": "嘉松中路",
+    "lng": 121.2192107,
+    "lat": 31.1660625,
+    "type": "elevated",
+    "height": 11.1
+   },
+   {
+    "name": "赵巷",
+    "lng": 121.187692,
+    "lat": 31.163113,
+    "type": "elevated",
+    "height": 9.6
+   },
+   {
+    "name": "汇金路",
+    "lng": 121.1466733,
+    "lat": 31.1632236,
+    "type": "elevated",
+    "height": 10.0
+   },
+   {
+    "name": "青浦新城",
+    "lng": 121.1210939,
+    "lat": 31.1608076,
+    "type": "elevated",
+    "height": 9.4
+   },
+   {
+    "name": "漕盈路",
+    "lng": 121.0919505,
+    "lat": 31.1623496,
+    "type": "elevated",
+    "height": 7.9
+   },
+   {
+    "name": "淀山湖大道",
+    "lng": 121.0768138,
+    "lat": 31.1359033,
+    "type": "elevated",
+    "height": 7.3
+   },
+   {
+    "name": "朱家角",
+    "lng": 121.0438824,
+    "lat": 31.1024975,
+    "type": "elevated",
+    "height": 10.7
+   },
+   {
+    "name": "东方绿舟",
+    "lng": 121.0146021,
+    "lat": 31.1005718,
+    "type": "elevated",
+    "height": 6.1
+   },
+   {
+    "name": "西岑",
+    "lng": 120.9593162,
+    "lat": 31.0724552,
+    "type": "elevated",
+    "height": 10.5
+   }
+  ]
+ },
+ {
+  "id": "sh-18",
+  "name": "18号线",
+  "color": "#A78A00",
+  "from": "航头",
+  "to": "康文路",
+  "lengthKm": 42.2,
+  "stations": [
+   {
+    "name": "航头",
+    "lng": 121.594,
+    "lat": 31.0515,
+    "type": "underground",
+    "depth": 18.1,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "鹤涛路",
+    "lng": 121.5818097,
+    "lat": 31.0737525,
+    "type": "underground",
+    "depth": 17.9
+   },
+   {
+    "name": "下沙",
+    "lng": 121.574,
+    "lat": 31.082,
+    "type": "underground",
+    "depth": 14.8,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "沈梅路",
+    "lng": 121.5762106,
+    "lat": 31.093484,
+    "type": "underground",
+    "depth": 15.2
+   },
+   {
+    "name": "繁荣路",
+    "lng": 121.5662611,
+    "lat": 31.1050112,
+    "type": "underground",
+    "depth": 18.5
+   },
+   {
+    "name": "周浦",
+    "lng": 121.5634449,
+    "lat": 31.1161586,
+    "type": "underground",
+    "depth": 12
+   },
+   {
+    "name": "康桥",
+    "lng": 121.5629555,
+    "lat": 31.1358988,
+    "type": "underground",
+    "depth": 19.1
+   },
+   {
+    "name": "御桥",
+    "lng": 121.5672958,
+    "lat": 31.1607877,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "11",
+     "18"
+    ]
+   },
+   {
+    "name": "莲溪路",
+    "lng": 121.5615402,
+    "lat": 31.1719369,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "13",
+     "18"
+    ]
+   },
+   {
+    "name": "北中路",
+    "lng": 121.5571617,
+    "lat": 31.1852491,
+    "type": "underground",
+    "depth": 15.0
+   },
+   {
+    "name": "芳芯路",
+    "lng": 121.5551108,
+    "lat": 31.1931586,
+    "type": "underground",
+    "depth": 16.6
+   },
+   {
+    "name": "龙阳路",
+    "lng": 121.5525624,
+    "lat": 31.2030769,
+    "type": "underground",
+    "depth": 20,
+    "transfer": [
+     "2",
+     "7",
+     "16",
+     "18",
+     "磁浮线"
+    ]
+   },
+   {
+    "name": "迎春路",
+    "lng": 121.546686,
+    "lat": 31.2231994,
+    "type": "underground",
+    "depth": 17.5,
+    "transfer": [
+     "18"
+    ]
+   },
+   {
+    "name": "杨高中路",
+    "lng": 121.5448621,
+    "lat": 31.2284289,
+    "type": "underground",
+    "depth": 17,
+    "transfer": [
+     "9",
+     "18"
+    ]
+   },
+   {
+    "name": "民生路",
+    "lng": 121.5405295,
+    "lat": 31.2370515,
+    "type": "underground",
+    "depth": 14,
+    "transfer": [
+     "6",
+     "18"
+    ]
+   },
+   {
+    "name": "昌邑路",
+    "lng": 121.5359095,
+    "lat": 31.2460509,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "14",
+     "18"
+    ]
+   },
+   {
+    "name": "丹阳路",
+    "lng": 121.5259942,
+    "lat": 31.2568658,
+    "type": "underground",
+    "depth": 18.8
+   },
+   {
+    "name": "平凉路",
+    "lng": 121.5226014,
+    "lat": 31.2610811,
+    "type": "underground",
+    "depth": 17.3
+   },
+   {
+    "name": "江浦公园",
+    "lng": 121.5190688,
+    "lat": 31.267195,
+    "type": "underground",
+    "depth": 16.2,
+    "transfer": [
+     "12",
+     "18"
+    ]
+   },
+   {
+    "name": "江浦路",
+    "lng": 121.5144432,
+    "lat": 31.2760544,
+    "type": "underground",
+    "depth": 14
+   },
+   {
+    "name": "抚顺路",
+    "lng": 121.5113977,
+    "lat": 31.2860717,
+    "type": "underground",
+    "depth": 15.0
+   },
+   {
+    "name": "国权路",
+    "lng": 121.5068954,
+    "lat": 31.2912909,
+    "type": "underground",
+    "depth": 14.8,
+    "transfer": [
+     "10",
+     "18"
+    ]
+   },
+   {
+    "name": "复旦大学",
+    "lng": 121.495319,
+    "lat": 31.2982195,
+    "type": "underground",
+    "depth": 16
+   },
+   {
+    "name": "上海财经大学",
+    "lng": 121.4918496,
+    "lat": 31.3100909,
+    "type": "underground",
+    "depth": 18.2
+   },
+   {
+    "name": "殷高路",
+    "lng": 121.4909208,
+    "lat": 31.3235989,
+    "type": "underground",
+    "depth": 19.4
+   },
+   {
+    "name": "长江南路",
+    "lng": 121.4855684,
+    "lat": 31.3338986,
+    "type": "underground",
+    "depth": 15,
+    "transfer": [
+     "3",
+     "18"
+    ]
+   },
+   {
+    "name": "通南路",
+    "lng": 121.4751859,
+    "lat": 31.3394868,
+    "type": "underground",
+    "depth": 19.4
+   },
+   {
+    "name": "长江西路",
+    "lng": 121.4707209,
+    "lat": 31.3475331,
+    "type": "underground",
+    "depth": 19.1
+   },
+   {
+    "name": "爱辉路",
+    "lng": 121.4446531,
+    "lat": 31.3459359,
+    "type": "underground",
+    "depth": 16.1
+   },
+   {
+    "name": "呼兰路",
+    "lng": 121.4313332,
+    "lat": 31.3415324,
+    "type": "underground",
+    "depth": 17.7,
+    "transfer": [
+     "1",
+     "18"
+    ]
+   },
+   {
+    "name": "康文路",
+    "lng": 121.41615,
+    "lat": 31.3373409,
+    "type": "underground",
+    "depth": 15.4
+   }
+  ]
+ },
+ {
+  "id": "sh-airport",
+  "name": "机场联络线（市域）",
+  "color": "#00A0E9",
+  "from": "虹桥2号航站楼",
+  "to": "浦东1号2号航站楼",
+  "lengthKm": 68.6,
+  "stations": [
+   {
+    "name": "虹桥2号航站楼",
+    "lng": 121.3209362,
+    "lat": 31.1958969,
+    "type": "underground",
+    "depth": 24,
+    "transfer": [
+     "2",
+     "10",
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "中春路",
+    "lng": 121.3333435,
+    "lat": 31.1513157,
+    "type": "underground",
+    "depth": 16,
+    "transfer": [
+     "9",
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "景洪路",
+    "lng": 121.4357137,
+    "lat": 31.1152436,
+    "type": "underground",
+    "depth": 18,
+    "transfer": [
+     "15",
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "三林南",
+    "lng": 121.4820318,
+    "lat": 31.1279848,
+    "type": "underground",
+    "depth": 22,
+    "transfer": [
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "康桥东",
+    "lng": 121.611222,
+    "lat": 31.149121,
+    "type": "underground",
+    "depth": 20,
+    "transfer": [
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "上海国际旅游度假区",
+    "lng": 121.6759116,
+    "lat": 31.1585237,
+    "type": "underground",
+    "depth": 19,
+    "transfer": [
+     "机场联络线"
+    ]
+   },
+   {
+    "name": "浦东1号2号航站楼",
+    "lng": 121.801856,
+    "lat": 31.1524717,
+    "type": "underground",
+    "depth": 15
+   }
+  ]
+ },
+ {
+  "id": "sh-pujiang",
+  "name": "浦江线",
+  "color": "#50A966",
+  "from": "沈杜公路",
+  "to": "汇臻路",
+  "lengthKm": 6.7,
+  "stations": [
+   {
+    "name": "沈杜公路",
+    "lng": 121.5078434,
+    "lat": 31.063449,
+    "type": "elevated",
+    "height": 11.4,
+    "transfer": [
+     "8",
+     "浦江线"
+    ]
+   },
+   {
+    "name": "三鲁公路",
+    "lng": 121.5135,
+    "lat": 31.0555,
+    "type": "elevated",
+    "height": 8.2,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "闵瑞路",
+    "lng": 121.524,
+    "lat": 31.0555,
+    "type": "elevated",
+    "height": 6.3,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "浦航路",
+    "lng": 121.534,
+    "lat": 31.0465,
+    "type": "elevated",
+    "height": 9.1,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "东城一路",
+    "lng": 121.543,
+    "lat": 31.0385,
+    "type": "elevated",
+    "height": 11.7,
+    "note": "坐标为近似估算"
+   },
+   {
+    "name": "汇臻路",
+    "lng": 121.5525,
+    "lat": 31.029,
+    "type": "elevated",
+    "height": 10.6,
+    "note": "坐标为近似估算"
+   }
+  ]
+ },
+ {
+  "id": "sh-maglev",
+  "name": "磁浮线",
+  "color": "#0072BC",
+  "from": "龙阳路",
+  "to": "浦东1号2号航站楼",
+  "lengthKm": 30.5,
+  "stations": [
+   {
+    "name": "龙阳路",
+    "lng": 121.5533465,
+    "lat": 31.2041501,
+    "type": "elevated",
+    "height": 9.4,
+    "transfer": [
+     "2",
+     "7",
+     "16",
+     "18",
+     "磁浮线"
+    ]
+   },
+   {
+    "name": "浦东1号2号航站楼",
+    "lng": 121.801856,
+    "lat": 31.1524717,
+    "type": "elevated",
+    "height": 8.8
+   }
+  ]
+ }
+]

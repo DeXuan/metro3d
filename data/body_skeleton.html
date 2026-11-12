@@ -1,0 +1,63 @@
+<body>
+<canvas id="c"></canvas>
+
+<!-- 顶部：标题 / 城市线路选择 / 图例 -->
+<header id="panel-title" class="panel">
+  <h1><span class="dot"></span>城市地铁 · 地下三维视图</h1>
+  <div class="sel-row">
+    <select id="sel-city" title="选择城市"></select>
+    <select id="sel-line" title="选择线路"></select>
+  </div>
+  <div id="stat-line"></div>
+  <div id="legend"></div>
+</header>
+
+<!-- 控制面板 -->
+<div id="panel-ctrl" class="panel">
+  <h2>视图控制</h2>
+  <div class="ctrl-slider-row">
+    <span>垂直夸张</span>
+    <input type="range" id="vscale" min="30" max="400" step="10" value="200">
+    <span id="vscale-val">200×</span>
+  </div>
+  <div class="btn-row">
+    <button class="btn" id="btn-depth-color">深度着色</button>
+    <button class="btn on" id="btn-labels">站点标注</button>
+    <button class="btn on" id="btn-strata">地层参考面</button>
+    <button class="btn" id="btn-reset">重置视角</button>
+    <button class="btn" id="btn-cruise">▶ 沿线巡航</button>
+  </div>
+</div>
+
+<!-- 站点列表 -->
+<aside id="panel-list" class="panel">
+  <h2 id="list-title">站点 · 深度</h2>
+  <div id="st-list"></div>
+</aside>
+
+<!-- 站点信息卡 -->
+<div id="info-card" class="panel">
+  <div class="ic-head">
+    <span class="ic-idx" id="ic-idx">01</span>
+    <h3 id="ic-name">站名</h3>
+    <button class="ic-close" id="ic-close">✕</button>
+  </div>
+  <div class="ic-chips" id="ic-chips"></div>
+  <div class="ic-depth" id="ic-depth"></div>
+  <div class="ic-note" id="ic-note"></div>
+</div>
+
+<button id="btn-list-toggle">站点</button>
+<button id="btn-ctrl-toggle">⚙ 视图</button>
+
+<div id="hint">拖拽旋转 · 滚轮/双指缩放 · 点击站点查看埋深</div>
+<div id="note">车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div id="load-msg">正在加载 3D 引擎与线路数据…</div>
+  <div id="load-error">
+    3D 初始化失败：请使用支持 WebGL 的现代浏览器打开本页面。<br>
+    渲染引擎已内联，无需联网。
+  </div>
+</div>

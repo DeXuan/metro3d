@@ -1,0 +1,27 @@
+# 生成物 / 大文件
+poster/8k/
+poster/*.png
+!poster/og-cover.jpg
+*.mp4
+*.webm
+video/
+
+# 临时 / 备份
+data/*.pre-*.json
+data/*.bak*
+*_chk*.mjs
+_c.mjs
+_check.mjs
+*.tmp
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db
+node_modules/
+__pycache__/
+*.pyc
+
+# 编辑器
+.vscode/
+.idea/
