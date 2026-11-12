@@ -260,9 +260,10 @@ io.open('index.html','w',encoding='utf-8').write(h[:i0] + 'const METRO_DATA = ' 
 
 代码以 [MIT License](LICENSE) 开源。
 
-第三方组件：
-- **Three.js r160** — MIT License, Copyright © 2010-2023 Three.js Authors（已内联至 `index.html`）
-- **OrbitControls** — MIT License（Three.js 官方示例组件，已内联）
+第三方组件与数据来源详见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)：
+- **Three.js r160** — MIT License（已内联）
+- **OrbitControls** — MIT License（已内联）
+- 地图数据：OpenStreetMap（ODbL）/ 高德地图
 
 地图数据版权归各数据提供方（OpenStreetMap 贡献者 / 高德地图）。本项目仅用于技术演示。
 
