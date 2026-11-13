@@ -55417,20 +55417,79 @@ function buildOneBridge(b, origin, bi){
   const deckY = b.deckH;
   const halfW = b.width / 2;
   const col = new THREE.Color(b.color);
+  const isValley = !!b.valley;
+  const hasWater = b.cat === '跨海' || b.cat === '跨江';
 
-  // ---- 桥面（发光带 + 两侧栏杆线） ----
+  // ---- 水面（跨海/跨江桥下方的大面积半透明水面） ----
+  if (hasWater){
+    const bbox0 = new THREE.Box3().setFromPoints(samples);
+    const wSize = Math.max(bbox0.max.x - bbox0.min.x, bbox0.max.z - bbox0.min.z) * 1.6 + 60;
+    const wD = Math.min(wSize * 0.55, 200);
+    const water = new THREE.Mesh(
+      new THREE.PlaneGeometry(wSize, wD),
+      new THREE.MeshBasicMaterial({ color: 0x14507a, transparent: true, opacity: 0.42, depthWrite: false }));
+    water.rotation.x = -Math.PI / 2;
+    const mid0 = curve.getPointAt(0.5);
+    water.position.set(mid0.x, -1.5, mid0.z);
+    water.renderOrder = 0;
+    grp.add(water);
+    // 水面波纹线（横向淡色线条，营造水面感）
+    const rippleMat = new THREE.LineBasicMaterial({ color: 0x6db8e0, transparent: true, opacity: 0.18 });
+    const mid = curve.getPointAt(0.5);
+    for (let k = -2; k <= 2; k++){
+      if (k === 0) continue;
+      const y = mid0.z + k * wD / 6;
+      const seg = [new THREE.Vector3(mid0.x - wSize/2, -1.4, y), new THREE.Vector3(mid0.x + wSize/2, -1.4, y)];
+      grp.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg), rippleMat));
+    }
+  }
+
+  // ---- 桥墩（非山谷桥，在无塔区段下方设置圆柱桥墩） ----
+  const pierMat = new THREE.MeshStandardMaterial({
+    color: 0xa8b8c8, emissive: 0x2a3a4a, emissiveIntensity: .7, roughness: .75 });
+  if (!isValley && hasWater){
+    const pierStep = Math.max(6, (b.lenKm || 5) * 0.01 * 100);  // 每 0.01×全长放一个
+    const count = Math.min(14, Math.max(3, Math.floor(N / 14)));
+    for (let k = 1; k < count; k++){
+      const u = k / count;
+      // 跳过桥塔附近（塔本身是支撑）
+      if ((b.towers || []).some(t => Math.abs(t - u) < 0.04)) continue;
+      const pt = curve.getPointAt(u);
+      const pierH = deckY + 1.5;
+      const pier = new THREE.Mesh(new THREE.CylinderGeometry(halfW * 0.30, halfW * 0.42, pierH, 8), pierMat);
+      pier.position.set(pt.x, pierH / 2 - 1.2, pt.z);
+      grp.add(pier);
+      // 墩顶承台（短横梁）
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(halfW * 1.3, 0.8, halfW * 0.9), pierMat);
+      cap.position.set(pt.x, deckY - 0.5, pt.z);
+      grp.add(cap);
+    }
+  }
+
+  // ---- 桥面（发光带 + 箱梁侧面 + 栏杆线） ----
   {
+    const deckThickness = 1.1;
     const verts = [], idx = [];
+    // 顶面 + 底面 + 两侧面（箱梁）
     samples.forEach((p, i) => {
       const a = samples[Math.max(0, i - 1)], c = samples[Math.min(N, i + 1)];
       const dir = new THREE.Vector3().subVectors(c, a).normalize();
       const nrm = new THREE.Vector3(-dir.z, 0, dir.x);
-      verts.push(p.clone().setY(deckY).addScaledVector(nrm, -halfW));
-      verts.push(p.clone().setY(deckY).addScaledVector(nrm, halfW));
+      const l = p.clone().setY(deckY).addScaledVector(nrm, -halfW);
+      const r = p.clone().setY(deckY).addScaledVector(nrm, halfW);
+      verts.push(l, r);                                        // 顶面
+      verts.push(l.clone().setY(deckY - deckThickness), r.clone().setY(deckY - deckThickness));  // 底面
     });
-    for (let i = 0; i < samples.length - 1; i++) {
-      const l = i * 2, r = i * 2 + 1;
-      idx.push(l, l + 2, r, r, l + 2, r + 2);
+    for (let i = 0; i < samples.length - 1; i++){
+      const t = i * 4, b = i * 4 + 2;
+      // 顶面
+      idx.push(t, t + 2, t + 1, t + 1, t + 2, t + 3);
+      // 底面
+      idx.push(b, b + 1, b + 2, b + 1, b + 3, b + 2);
+      // 左侧面
+      idx.push(t, b, t + 2, t + 2, b, b + 2);
+      // 右侧面
+      idx.push(t + 1, t + 3, b + 1, b + 1, t + 3, b + 3);
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(verts.flatMap(v => [v.x, v.y, v.z]), 3));
@@ -55448,9 +55507,8 @@ function buildOneBridge(b, origin, bi){
         edge.push(p.clone().setY(deckY + .25).addScaledVector(nrm, side * halfW));
       });
       const seg = edge.flatMap((p, i) => i < edge.length - 1 ? [p, edge[i + 1]] : []);
-      const eg = new THREE.BufferGeometry().setFromPoints(seg);
-      grp.add(new THREE.LineSegments(eg, new THREE.LineBasicMaterial({
-        color: 0xffffff, transparent: true, opacity: .55 })));
+      grp.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg),
+        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .55 })));
     });
   }
 
@@ -55459,30 +55517,50 @@ function buildOneBridge(b, origin, bi){
   const cableMat = new THREE.LineBasicMaterial({
     color: col.clone().lerp(new THREE.Color(0xffffff), .45), transparent: true, opacity: .85 });
 
-  // ---- 桥塔 + 斜拉索 ----
+  // ---- 桥塔（斜拉桥 H 形双柱 + 横梁；悬索桥门形塔） + 斜拉索 ----
   const towerTops = [];
   (b.towers || []).forEach(tRatio => {
     const p = curve.getPointAt(tRatio);
     const th = b.towerH;
-    const tower = new THREE.Mesh(new THREE.BoxGeometry(halfW * 2.2, th, halfW * 1.4), towerMat);
-    tower.position.set(p.x, deckY + th / 2, p.z);
-    grp.add(tower);
+    // H 形双柱
+    [-1, 1].forEach(s => {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(halfW * 0.9, th, halfW * 0.8), towerMat);
+      leg.position.set(p.x, deckY + th / 2, p.z + s * halfW * 0.75);
+      grp.add(leg);
+    });
+    // 上横梁
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(halfW * 0.6, halfW * 0.5, halfW * 0.8), towerMat);
+    beam.position.set(p.x, deckY + th * 0.92, p.z);
+    grp.add(beam);
+    // 下横梁
+    const beam2 = new THREE.Mesh(new THREE.BoxGeometry(halfW * 0.6, halfW * 0.35, halfW * 0.8), towerMat);
+    beam2.position.set(p.x, deckY + th * 0.30, p.z);
+    grp.add(beam2);
     towerTops.push({ p, topY: deckY + th, ratio: tRatio });
 
     if (b.type === 'cable' || b.type === 'truss') {
-      // 斜拉索：塔顶向两侧呈扇形展开
       [-1, 1].forEach(side => {
         for (let k = 1; k <= 9; k++) {
           const u = tRatio + side * k * 0.010;
           if (u <= 0 || u >= 1) continue;
           const anchor = curve.getPointAt(u);
-          const seg = [new THREE.Vector3(p.x, deckY + th, p.z),
-                       new THREE.Vector3(anchor.x, deckY + .4, anchor.z)];
+          const seg = [
+            new THREE.Vector3(p.x, deckY + th, p.z + side * halfW * 0.75),
+            new THREE.Vector3(anchor.x, deckY + .4, anchor.z)];
           const g = new THREE.BufferGeometry().setFromPoints(seg);
           grp.add(new THREE.LineSegments(g, cableMat));
         }
       });
     }
+  });
+
+  // ---- 航空障碍灯（塔顶红色球体） ----
+  towerTops.forEach(tt => {
+    const light = new THREE.Mesh(new THREE.SphereGeometry(halfW * 0.14, 6, 6),
+      new THREE.MeshBasicMaterial({ color: 0xff2222 }));
+    light.position.set(tt.p.x, tt.topY + halfW * 0.14, tt.p.z);
+    light.userData.navLight = true;
+    grp.add(light);
   });
 
   // ---- 悬索：主缆 + 吊索 ----
@@ -55498,14 +55576,12 @@ function buildOneBridge(b, origin, bi){
       const y = t1.topY - sag * Math.sin(Math.PI * t);
       mainPts.push(new THREE.Vector3(x, y, z));
     }
-    // 主缆（两侧各一条，略向桥面两侧偏移）
     [-1, 1].forEach(side => {
       const off = halfW * 0.95;
       const ptsOff = mainPts.map(p => new THREE.Vector3(p.x, p.y, p.z + side * off));
       const seg = ptsOff.flatMap((p, i) => i < ptsOff.length - 1 ? [p, ptsOff[i + 1]] : []);
       grp.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg),
         new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .7 })));
-      // 吊索
       for (let i = 1; i < M; i += 2){
         const cp = mainPts[i];
         const seg2 = [
@@ -55519,34 +55595,59 @@ function buildOneBridge(b, origin, bi){
     });
   }
 
-  // ---- 跨山谷：两侧山体 + 谷底 ----
-  if (b.valley){
-    const valleyMat = new THREE.MeshStandardMaterial({
-      color: 0x1b3a2c, emissive: 0x0a1a12, emissiveIntensity: 1, roughness: .95 });
+  // ---- 跨山谷：多峰山脊 + 谷底蜿蜒河流 ----
+  if (isValley){
     const vd = b.valleyDepth || 50;
-    const mid = curve.getPointAt(0.5);
-    const dirX = samples[0].x < samples[N].x ? 1 : -1;
-    const spanX = Math.abs(samples[0].x - samples[N].x) || 1;
+    const valleyMat = new THREE.MeshStandardMaterial({
+      color: 0x1e4030, emissive: 0x0a2015, emissiveIntensity: 1, roughness: .95 });
+    const ridgeMat = new THREE.MeshStandardMaterial({
+      color: 0x2a5040, emissive: 0x0e2418, emissiveIntensity: 1, roughness: .92 });
+    const spanX = Math.max(Math.abs(samples[0].x - samples[N].x), Math.abs(samples[0].z - samples[N].z)) || 1;
+    const dirH = new THREE.Vector3().subVectors(samples[N], samples[0]).normalize();
+    const dirP = new THREE.Vector3(-dirH.z, 0, dirH.x);
+    // 每侧 6 个错落山峰
     [-1, 1].forEach(side => {
-      const sx = mid.x + side * spanX * 0.55;
-      const hill = new THREE.Mesh(new THREE.ConeGeometry(spanX * 0.42, vd, 5), valleyMat);
-      hill.position.set(sx, vd / 2 - 2, mid.z);
-      grp.add(hill);
+      for (let k = 0; k < 6; k++){
+        const u = 0.5 + side * (0.10 + k * 0.075);
+        const uu = Math.min(1, Math.max(0, u));
+        const bp = curve.getPointAt(uu);
+        const peakH = vd * (0.68 + 0.32 * Math.sin(k * 2.1 + side));
+        const rr = spanX * (0.18 + 0.05 * Math.sin(k * 1.7));
+        const hill = new THREE.Mesh(new THREE.ConeGeometry(rr, peakH, 5), k % 2 ? valleyMat : ridgeMat);
+        hill.position.set(bp.x + dirP.x * side * rr * 0.5, peakH / 2 - 2, bp.z + dirP.z * side * rr * 0.5);
+        grp.add(hill);
+      }
     });
-    // 谷底河流
-    const riverSeg = [new THREE.Vector3(mid.x - spanX * 0.6, 0.2, mid.z),
-                      new THREE.Vector3(mid.x + spanX * 0.6, 0.2, mid.z)];
-    grp.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(riverSeg),
-      new THREE.LineBasicMaterial({ color: 0x5fa8d8, transparent: true, opacity: .7 })));
+    // 谷底蜿蜒河流（带状 mesh）
+    const rivVerts = [], rivIdx = [];
+    const rN = 24, rivW = Math.max(1.5, spanX * 0.03);
+    for (let i = 0; i <= rN; i++){
+      const t = i / rN;
+      const u = 0.08 + t * 0.84;
+      const bp = curve.getPointAt(Math.min(1, Math.max(0, u)));
+      const wOff = Math.sin(t * Math.PI * 4) * spanX * 0.04;
+      rivVerts.push(bp.x + wOff - rivW, 0.15, bp.z - rivW * 0.5);
+      rivVerts.push(bp.x + wOff + rivW, 0.15, bp.z + rivW * 0.5);
+    }
+    for (let i = 0; i < rN; i++){
+      const l = i * 2, r = i * 2 + 1;
+      rivIdx.push(l, l + 2, r, r, l + 2, r + 2);
+    }
+    const rg = new THREE.BufferGeometry();
+    rg.setAttribute('position', new THREE.Float32BufferAttribute(rivVerts, 3));
+    rg.setIndex(rivIdx);
+    const river = new THREE.Mesh(rg, new THREE.MeshBasicMaterial({
+      color: 0x4a90b8, transparent: true, opacity: 0.65, depthWrite: false, side: THREE.DoubleSide }));
+    river.renderOrder = 0;
+    grp.add(river);
   }
 
   // ---- 桥名 + 关键数据标注 ----
   {
     const mid = curve.getPointAt(0.5);
     const labelTop = deckY + (b.towerH || 20) + 10;
-    const lb = makeLabel(b.name, `${b.cat} · ${b.lenKm} km · ${b.type === 'suspension' ? '悬索桥' : b.type === 'cable' ? '斜拉桥' : '钢桁梁桥'}`, b.color);
+    const lb = makeLabel(b.name, `${b.cat} · ${b.lenKm} km · ${b.type === 'suspension' ? '悬索桥' : b.type === 'cable' ? '斜拉桥' : b.type === 'truss' ? '钢桁梁桥' : ''}`, b.color);
     lb.position.set(mid.x, labelTop, mid.z);
-    // 长桥用大标签、短桥用小标签（保持屏幕可读性一致）
     const ls = THREE.MathUtils.clamp(b.lenKm * 0.55 + 8, 10, 30);
     lb.scale.set(ls, ls * 0.32, 1);
     lb.userData.alwaysVisible = true;
@@ -56303,6 +56404,7 @@ function stopCruise(){
 }
 $('btn-cruise').addEventListener('click', () => {
   if (state.cruise){ stopCruise(); return; }
+  if (!world.lines.length) return;   // 桥梁模式无线路可巡航
   if (state.focusIdx < 0){
     state.focusLineId = world.lines[0].id; $('sel-line').value = state.focusLineId;
     rebuild(true);
@@ -56430,6 +56532,15 @@ function syncUrl(){
 
 populateSelectors();
 rebuild();
+// 深链：桥梁专题 ?city=bridges&bridge=N（第 N 座桥，0 起）
+try {
+  const bIdx = +new URLSearchParams(location.search).get('bridge');
+  const brCity = METRO_DATA.cities.find(c => c.id === 'bridges');
+  if (state.cityId === 'bridges' && Number.isInteger(bIdx) && bIdx >= 0 && brCity && bIdx < brCity.bridges.length){
+    $('sel-line').value = 'bridge-' + bIdx;
+    focusBridge(bIdx);
+  }
+} catch(e){}
 setListCollapsed(true);
 // 移动端：顶部详情默认折叠，给 3D 视图让出空间
 if (window.matchMedia('(max-width: 860px)').matches){
