@@ -8,6 +8,7 @@
 > - **Coordinates are public-map grade** (±50–500 m), not survey grade
 > - See [Data Accuracy & Usage Limits](#-data-accuracy--usage-limits)
 
+[![CI](https://github.com/DeXuan/metro3d/actions/workflows/ci.yml/badge.svg)](https://github.com/DeXuan/metro3d/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Cities](https://img.shields.io/badge/cities-53-green)![Lines](https://img.shields.io/badge/lines-374-orange)![Stations](https://img.shields.io/badge/stations-8164-blue)]()
 [![Single File](https://img.shields.io/badge/build-single%20HTML-blue)]()

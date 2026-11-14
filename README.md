@@ -12,6 +12,7 @@
 > - 数据非实时更新，可能与当前实际线网不符
 > - 详见 [数据精度与使用限制](#-数据精度与使用限制)
 
+[![CI](https://github.com/DeXuan/metro3d/actions/workflows/ci.yml/badge.svg)](https://github.com/DeXuan/metro3d/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Single File](https://img.shields.io/badge/build-single%20HTML-blue)]()
 [![Cities](https://img.shields.io/badge/cities-53-green)]()
