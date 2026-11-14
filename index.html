@@ -58089,8 +58089,9 @@ function buildWorld(doFit = true){
     grouped.add(buildBuildings(origin, lines));
     const lms = buildCityLandmarks(city, origin);
     if (lms) grouped.add(lms);
+    worldLandmarkGroup = lms;
 
-    world = { city, lines, origin, root, grouped, center: new THREE.Vector3(cx,0,cz),
+    world = { city, lines, origin, root, grouped, landmarkGroup: worldLandmarkGroup, center: new THREE.Vector3(cx,0,cz),
       size: Math.max(sx,sz),
       lineSize: (() => {
         // 仅按线路站点计算尺度（河流/建筑群不参与取景，否则小城市相机过远）
@@ -58797,6 +58798,7 @@ $('btn-cruise').addEventListener('click', () => {
 /* ---------------- 列车模拟（发车间隔合成班次） ---------------- */
 const trains = [];
 let trainsMesh = null;
+let worldLandmarkGroup = null;
 const trainDummy = new THREE.Group();  // Group 继承 Object3D（白名单内）
 
 function buildTrains(root, lgs){
@@ -58859,6 +58861,39 @@ function updateTrains(dt){
   trainsMesh.visible = true;
 }
 
+/* ---------------- 自适应画质降级 ---------------- */
+let __perfLastT = 0, __fpsEma = 60, __bootT = 0, __quality = 0;
+function perfToast(msg){
+  let t = document.getElementById('perf-toast');
+  if (!t){
+    t = document.createElement('div'); t.id = 'perf-toast';
+    t.style.cssText = 'position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:90;background:rgba(8,18,34,.92);border:1px solid rgba(110,190,255,.25);border-radius:10px;padding:8px 14px;font-size:12px;color:#dceaf7;opacity:0;transition:opacity .4s;pointer-events:none';
+    document.body.appendChild(t);
+  }
+  t.textContent = '⚙ ' + msg;
+  requestAnimationFrame(() => { t.style.opacity = '1'; });
+  clearTimeout(perfToast._t);
+  perfToast._t = setTimeout(() => { t.style.opacity = '0'; }, 4000);
+}
+function checkPerf(){
+  const now = performance.now();
+  if (!__bootT){ __bootT = now; return; }
+  const dt = (now - __perfLastT || 16) / 1000;
+  __perfLastT = now;
+  if (document.hidden || dt > 0.1) return;   // 后台节流/大间隔帧不采样
+  __fpsEma = __fpsEma * 0.95 + (1 / Math.max(dt, 0.001)) * 0.05;
+  if (now - __bootT < 6000 || __quality >= 2) return;
+  if (__quality === 0 && __fpsEma < 26){
+    __quality = 1;
+    if (world && world.landmarkGroup) world.landmarkGroup.visible = false;
+    perfToast('已自动隐藏地标建筑以保持流畅');
+  } else if (__quality === 1 && __fpsEma < 16){
+    __quality = 2;
+    renderer.setPixelRatio(1);
+    perfToast('已自动降低渲染精度以保持流畅');
+  }
+}
+
 /* ---------------- 渲染循环 ---------------- */
 const clock = new THREE.Clock();
 let introT = -1;
@@ -58866,6 +58901,7 @@ let __lastRaf = 0;
 function renderFrame(dtOverride){
   const dt = Math.min(dtOverride ?? clock.getDelta(), 0.05);
   updateTrains(dt);
+  checkPerf();
 
   // 标签 LOD：聚焦时显示聚焦线全部标签；总览时按密度分级
   //  - 小线网（总站数≤60，如洛阳 34 站）：全部显示
