@@ -58876,8 +58876,9 @@ function buildTrains(root, lgs){
       trains.push({
         lineIdx: li, curve: lg.group.userData.curve, len,
         loop: !!(lg.line && lg.line.loop),
-        u: (j + (li % 3) * 0.21) / cnt,
+        u: j / cnt,                        // 同线均匀分布：同向车距恒定，永不追尾
         dir: j % 2 ? -1 : 1,
+        off: j % 2 ? -2.4 : 2.4,           // 上下行沿法线分离（双线隧道），对向相遇不重叠
         spd: 1 / (45 + (len % 20)),
         color: new THREE.Color(lg.line.color || '#4FC2E8'),
       });
@@ -58900,18 +58901,21 @@ function updateTrains(dt){
     const t = trains[i];
     t.u += t.dir * dt * t.spd;
     if (t.loop){ if (t.u >= 1) t.u -= 1; if (t.u < 0) t.u += 1; }
-    else if (t.u >= 1 || t.u <= 0){ t.u = THREE.MathUtils.clamp(t.u, 0, 1); t.dir *= -1; }
+    else if (t.u >= 1 || t.u <= 0){ t.u = THREE.MathUtils.clamp(t.u, 0, 1); t.dir *= -1; t.off *= -1; }   // 端点折返换轨：方向与轨道侧同步翻转
     const hidden = (state.focusIdx >= 0 && t.lineIdx !== state.focusIdx) ||
                     (state.timeline != null && lineGroups[t.lineIdx] && !lineGroups[t.lineIdx].group.visible);
     if (hidden){ trainDummy.scale.setScalar(0); trainDummy.position.set(0, -9999, 0); }
     else {
       const u = THREE.MathUtils.clamp(t.u, 0, 1);
       const p = t.curve.getPointAt(u);
-      const u2 = THREE.MathUtils.clamp(u + 0.003 * t.dir, 0, 1);
-      const ahead = t.curve.getPointAt(u2);
+      const tan = t.curve.getTangentAt(u);
+      // 上下行横向分离：沿曲线水平法线偏移（不受垂直夸张影响）
+      const nx = -tan.z, nz = tan.x;
+      const nl = Math.hypot(nx, nz) || 1;
+      const px = p.x + nx / nl * t.off, pz = p.z + nz / nl * t.off;
       trainDummy.scale.setScalar(1);
-      trainDummy.position.copy(p);
-      if (p.distanceToSquared(ahead) > 1e-6) trainDummy.lookAt(ahead);
+      trainDummy.position.set(px, p.y, pz);
+      trainDummy.lookAt(px + tan.x, p.y + tan.y, pz + tan.z);
     }
     trainDummy.updateMatrix();
     trainsMesh.setMatrixAt(i, trainDummy.matrix);
