@@ -259,6 +259,7 @@ metro3d/
 **站点字段**
 - `type`: `underground`（地下，用 `depth` 米）/ `elevated`（高架，用 `height` 米）/ `ground`（地面）
 - `transfer`: 换乘线路短名数组（可选，如 `["2","8"]`）
+- `depthSource`: 埋深实测资料的 URL 或文字说明（可选；填写后信息卡显示 ✓ 已验证徽章）
 - `note`: 备注（可选）
 
 **地标 type**：`tv_tower` / `twist` / `taper` / `opener` / `pagoda` / `pavilion` / `castle` / `gate` / `corn` / `ancient` / `wheel` / `tower`

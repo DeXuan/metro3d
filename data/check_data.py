@@ -31,6 +31,9 @@ for c in d['cities']:
                 issues.append(f"{c['name']}/{s['name']}: 深度异常 {s.get('depth')}")
             if s['type'] == 'elevated' and not (3 <= (s.get('height') or 0) <= 40):
                 issues.append(f"{c['name']}/{s['name']}: 高度异常 {s.get('height')}")
+            ds = s.get('depthSource')
+            if ds is not None and not (isinstance(ds, str) and ds.strip()):
+                issues.append(f"{c['name']}/{s['name']}: depthSource 需为非空字符串（URL 或文字说明）")
 
 print('数据自检：城市 %d / 线路 %d / 站点 %d' % (
     len(d['cities']),

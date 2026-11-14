@@ -58621,7 +58621,15 @@ function showInfoCard(line, i){
     $('ic-depth').innerHTML = `站台埋深 <b>−${st.depth}</b> m
       <div class="ic-bar"><i style="width:${pct}%;background:#${depthColor(st._elev).getHexString()}"></i></div>${extra}`;
   }
-  $('ic-note').textContent = st.note || (st.transfer ? '换乘站' : '');
+  const noteEl = $('ic-note');
+  if (st.depthSource){
+    const isUrl = /^https?:\/\//.test(st.depthSource);
+    noteEl.innerHTML = (st.note ? esc(st.note) + '<br>' : '') +
+      (isUrl ? `✓ 埋深有实测引用：<a href="${esc(st.depthSource)}" target="_blank" rel="noopener" style="color:var(--accent)">资料链接</a>`
+             : `✓ 埋深依据：${esc(st.depthSource)}`);
+  } else {
+    noteEl.textContent = st.note || (st.transfer ? '换乘站' : '');
+  }
   $('info-card').classList.add('show');
 }
 
