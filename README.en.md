@@ -44,7 +44,7 @@ Single self-contained file: Three.js r160 + OrbitControls + all data inlined. **
 | Cities | **53** (51 mainland + Taipei / Taoyuan / Kaohsiung / Macau / Hong Kong) |
 | Lines | **374** (all with opening-year metadata) |
 | Stations | **8,164** (2,237 transfer entries, 27.4%) |
-| Rivers | 36 cities |
+| Rivers | 45 cities |
 | Landmarks | 65 (29 cities) |
 | River-crossing markers | 39 (11 cities) |
 | File size | 2.3 MB (≈490 KB gzipped) |
