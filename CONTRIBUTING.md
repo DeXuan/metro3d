@@ -151,29 +151,11 @@ git push origin fix/beijing-line-order
 | 换乘 | 短名格式（`"2"` 而非 `"2号线"`），不含自身线路 |
 | 线路名 | 同城不可重名；避免括号（用 `·` 或直接省略） |
 
-自检脚本（提交前跑一遍）：
+自检脚本（提交前跑一遍，CI 也会跑）：
 
 ```bash
-python - <<'PY'
-import json, re, collections, math
-d = json.load(open('data/metro_all.json', encoding='utf-8'))
-def dm(a,b):
-    return math.hypot((a['lng']-b['lng'])*111320*math.cos(math.radians((a['lat']+b['lat'])/2)),
-                      (a['lat']-b['lat'])*11054/100)
-issues = []
-for c in d['cities']:
-    names = [l['name'] for l in c.get('lines', [])]
-    if len(names) != len(set(names)): issues.append(f"{c['name']}: 线路重名")
-    for l in c.get('lines', []):
-        sn = [s['name'] for s in l['stations']]
-        if len(sn) != len(set(sn)): issues.append(f"{c['name']}/{l['name']}: 站名重复")
-        for s in l['stations']:
-            if not (73 < s['lng'] < 136 and 3 < s['lat'] < 54): issues.append(f"{c['name']}/{s['name']}: 坐标越界")
-            if s['type']=='underground' and not (5 <= (s.get('depth') or 0) <= 45): issues.append(f"{c['name']}/{s['name']}: 深度异常")
-            if s['type']=='elevated' and not (3 <= (s.get('height') or 0) <= 40): issues.append(f"{c['name']}/{s['name']}: 高度异常")
-print('问题数:', len(issues))
-for i in issues[:20]: print(' -', i)
-PY
+python data/build.py --check   # 内联数据一致性 + JS 语法
+python data/check_data.py      # 数据质量（站名/坐标/深度/年份）
 ```
 
 ---
