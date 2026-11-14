@@ -337,6 +337,21 @@
   #search-drop .sr span{ color:var(--text-dim); font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   #search-drop .sr .ct{ margin-left:auto; flex:none; color:var(--text-dim); font-size:10.5px; }
   #search-drop .empty{ padding:8px 10px; font-size:11.5px; color:var(--text-dim); }
+
+  /* ---------- 纵断面面板 ---------- */
+  #profile-panel{
+    left:50%; bottom:52px; transform:translateX(-50%);
+    width:min(760px, calc(100vw - 300px)); display:none; padding:9px 12px 10px;
+  }
+  #profile-panel.show{ display:block; }
+  #profile-panel .pf-head{ display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  #profile-panel .pf-head b{ font-size:12px; }
+  #profile-panel .pf-head .pf-sub{ font-size:10.5px; color:var(--text-dim); flex:1; }
+  #profile-panel .pf-close{ background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:13px; padding:0 2px; }
+  #profile-canvas{ display:block; width:100%; cursor:crosshair; }
+  @media (max-width: 860px){
+    #profile-panel{ width:calc(100vw - 28px); bottom:46px; }
+  }
 </style>
 </head>
 <body>
@@ -383,6 +398,7 @@
     <button class="btn on" id="btn-strata">地层参考面</button>
     <button class="btn on" id="btn-trains">🚆 列车</button>
     <button class="btn" id="btn-timeline">⏱ 年代</button>
+    <button class="btn" id="btn-profile">📈 剖面</button>
     <button class="btn" id="btn-reset">重置视角</button>
     <button class="btn" id="btn-cruise">▶ 沿线巡航</button>
   </div>
@@ -404,6 +420,11 @@
   <div class="ic-chips" id="ic-chips"></div>
   <div class="ic-depth" id="ic-depth"></div>
   <div class="ic-note" id="ic-note"></div>
+</div>
+
+<div id="profile-panel" class="panel">
+  <div class="pf-head"><b id="pf-title">线路纵断面</b><span class="pf-sub">横轴：站序（示意） · 纵轴：高程（米） · 点击站点定位</span><button class="pf-close" id="pf-close">✕</button></div>
+  <canvas id="profile-canvas" height="150"></canvas>
 </div>
 
 <div id="share-panel" class="panel">
@@ -58205,6 +58226,7 @@ function buildWorld(doFit = true){
   world.root = root;
   world.strataGroup = strataGroup;
   buildTrains(root, lineGroups);
+  updateProfile();
   if (doFit) fitAll();
   buildUIList();
   updateStats();
@@ -58868,6 +58890,92 @@ function updateTrains(dt){
   trainsMesh.instanceMatrix.needsUpdate = true;
   trainsMesh.visible = true;
 }
+
+/* ---------------- 线路纵断面（2D 剖面联动） ---------------- */
+let profileUserHide = false;
+function updateProfile(){
+  const panel = $('profile-panel');
+  if (!world || world.city.kind === 'bridges' || state.focusIdx < 0 || profileUserHide){
+    panel.classList.remove('show'); return;
+  }
+  const line = world.lines[state.focusIdx];
+  if (!line){ panel.classList.remove('show'); return; }
+  panel.classList.add('show');
+  $('pf-title').textContent = line.name + ' · 纵断面';
+  drawProfile(line);
+}
+function drawProfile(line){
+  const cv = $('profile-canvas');
+  const W = cv.parentElement.clientWidth - 24, H = 150;
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  cv.width = W * dpr; cv.height = H * dpr;
+  cv.style.height = H + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  const sts = line.stations, n = sts.length;
+  const padL = 30, padR = 16, padT = 12, padB = 26;
+  let minE = 0, maxE = 0;
+  sts.forEach(s => { const e = stElev(s); minE = Math.min(minE, e); maxE = Math.max(maxE, e); });
+  minE = Math.min(minE, -4) - 2; maxE = Math.max(maxE, 4) + 2;
+  const X = i => padL + (W - padL - padR) * (n === 1 ? .5 : i / (n - 1));
+  const Y = e => padT + (H - padT - padB) * (1 - (e - minE) / (maxE - minE));
+  // 水面段（跨河区间）
+  const crs = (world.city.river && world.city.river.crossings || []);
+  crs.forEach(cr => {
+    if (cr.line !== line.name) return;
+    const i1 = sts.findIndex(s => s.name === cr.from), i2 = sts.findIndex(s => s.name === cr.to);
+    if (i1 < 0 || i2 < 0) return;
+    const x1 = Math.min(X(i1), X(i2)), x2 = Math.max(X(i1), X(i2));
+    ctx.fillStyle = 'rgba(60,130,190,.28)';
+    ctx.fillRect(x1, Y(-1.5), x2 - x1, Y(-9) - Y(-1.5));
+    ctx.fillStyle = '#8fd4ff'; ctx.font = '9px sans-serif';
+    ctx.fillText('≈ 水面', x1 + 2, Y(-1.5) + 9);
+  });
+  // 地面参考线
+  ctx.strokeStyle = 'rgba(150,180,210,.45)'; ctx.setLineDash([4, 3]); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(W - padR, Y(0)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'var(--text-dim)'; ctx.fillStyle = 'rgba(143,176,201,.9)'; ctx.font = '9px sans-serif';
+  ctx.fillText('地面 0m', padL - 26, Y(0) + 3);
+  // 折线（发光）
+  const col = line.color || '#4FC2E8';
+  ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.shadowColor = col; ctx.shadowBlur = 6;
+  ctx.beginPath();
+  sts.forEach((s, i) => { const px = X(i), py = Y(stElev(s)); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+  ctx.stroke(); ctx.shadowBlur = 0;
+  // 站点 + 标签抽样
+  const skip = Math.max(1, Math.ceil(n / 18));
+  ctx.fillStyle = col;
+  sts.forEach((s, i) => { ctx.beginPath(); ctx.arc(X(i), Y(stElev(s)), 2.4, 0, 7); ctx.fill(); });
+  ctx.font = '9px sans-serif';
+  sts.forEach((s, i) => {
+    if (i % skip && i !== n - 1) return;
+    ctx.fillStyle = 'rgba(143,176,201,.95)';
+    const nm = s.name.length > 6 ? s.name.slice(0, 5) + '…' : s.name;
+    ctx.fillText(nm, X(i) - 12, H - padB + 12);
+  });
+  // 最深站标注
+  let di = 0; sts.forEach((s, i) => { if (stElev(s) < stElev(sts[di])) di = i; });
+  if (stElev(sts[di]) < -8){
+    ctx.fillStyle = '#ff9a6a'; ctx.font = '10px sans-serif';
+    ctx.fillText('最深 −' + sts[di].depth + 'm', X(di) - 24, Y(stElev(sts[di])) - 6);
+  }
+  // 点击命中站
+  cv.onclick = ev => {
+    const r = cv.getBoundingClientRect();
+    const mx = ev.clientX - r.left;
+    let bi = 0, bd = 1e9;
+    sts.forEach((s, i) => { const d = Math.abs(X(i) - mx); if (d < bd){ bd = d; bi = i; } });
+    focusStation(line, bi);
+  };
+}
+$('pf-close').addEventListener('click', () => { profileUserHide = true; updateProfile(); });
+$('btn-profile').addEventListener('click', e => {
+  profileUserHide = !profileUserHide;
+  e.currentTarget.classList.toggle('on', !profileUserHide);
+  updateProfile();
+});
 
 /* ---------------- 自适应画质降级 ---------------- */
 let __perfLastT = 0, __fpsEma = 60, __bootT = 0, __quality = 0;
