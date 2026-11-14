@@ -58841,6 +58841,7 @@ canvas.addEventListener('wheel', () => { controls.autoRotate = false; stopCruise
 
 $('sel-city').addEventListener('change', e => {
   const c = METRO_DATA.cities.find(x => x.id === e.target.value);
+  if (!c) return;   // 无效值防御（URL 篡改/数据异常时静默忽略）
   state.cityId = c.id; state.focusLineId = '__all__';
   document.getElementById('info-card').classList.remove('show');
   populateSelectors(); rebuild();
