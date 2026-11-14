@@ -523,7 +523,7 @@
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点查看埋深 · / 搜索 · R 复位 · T 列车 · Esc 关闭面板</div>
-<div id="note">车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -59575,6 +59575,14 @@ function syncUrl(){
 
 populateSelectors();
 rebuild();
+// 数据快照标注（动态统计）
+{
+  const cs = METRO_DATA.cities.filter(c => c.kind !== 'bridges');
+  const ln = cs.reduce((s, c) => s + (c.lines || []).length, 0);
+  const st = cs.reduce((s, c) => s + (c.lines || []).reduce((x, l) => x + l.stations.length, 0), 0);
+  const snap = document.getElementById('data-snapshot');
+  if (snap) snap.textContent = `数据快照 2026-11 · ${cs.length} 城 / ${ln} 线 / ${st} 站`;
+}
 // 深链：桥梁专题 ?city=bridges&bridge=N（第 N 座桥，0 起）
 try {
   const yq = +new URLSearchParams(location.search).get('year');
