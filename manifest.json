@@ -1,0 +1,13 @@
+{
+  "name": "中国城市地铁与超级桥梁 · 三维立体视图",
+  "short_name": "地铁3D",
+  "description": "中国 53 城地铁与高铁的三维立体可视化：真实经纬度 + 埋深起伏 + 列车模拟 + 邙山古墓群",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#050a13",
+  "theme_color": "#050a13",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -15,6 +15,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="theme-color" content="#050a13">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="中国 53 城轨道交通三维地下线网 + 超级桥梁 11 座：真实经纬度投影、官方线路色、埋深起伏、越江隧道高亮，支持城市与线路切换。数据仅供演示，禁止用于工程/测绘/导航。">
 <meta name="theme-color" content="#060c16">
@@ -59834,7 +59837,11 @@ addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 
-setTimeout(() => { $('hint').style.opacity = '0'; }, 9000);
+setTimeout(() => { if ('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+$('hint').style.opacity = '0'; }, 9000);
 
 animate();
 setInterval(() => { if (performance.now() - __lastRaf > 300) renderFrame(); }, 120);
