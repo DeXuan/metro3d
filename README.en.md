@@ -22,6 +22,7 @@
 - **Network growth timeline** — drag the year slider (1969→2026) to replay how each city's network grew
 - **River crossings marked** — gold pulsing rings at tunnel locations with max-depth labels
 - **Rivers & landmarks** — major rivers drawn with scaled labels; 65 landmark buildings in 12 styles
+- **HSR network** — 24 national trunk corridors clipped per city: 50 cities covered with silver-white tracks and fast white trains (2020s timetable not included); HSR stations marked as golden cubes with metro-transfer links
 - **11 mega bridges** — HZMB, Shenzhen-Zhongshan, Sutong, Beipanjiang… with water surface, piers, box girders, towers, aviation lights, and valley terrain
 - **Depth coloring** — network-wide gradient by station depth
 - **Sharing** — deep links (`?city=shanghai&line=sh-9`, `?city=bridges&bridge=0`, `&year=1993`), QR code generated locally, 8K poster mode (`?poster=1`)
