@@ -59412,7 +59412,7 @@ function applyTheme(theme){
   document.documentElement.setAttribute('data-theme', theme);
   try { localStorage.setItem('metro3d-theme', theme); } catch(e){}
   const b = $('btn-theme');
-  if (b) b.textContent = theme === 'light' ? '🌙 深色' : '☀ 浅色';
+  if (b) b.textContent = theme === 'light' ? UI_TEXT[LANG].btnThemeL : UI_TEXT[LANG].btnThemeD;
 }
 (() => {
   let theme = null;
@@ -59634,6 +59634,46 @@ function syncUrl(){
     if (u.search !== location.search) history.replaceState(null, '', u.toString());
   } catch(e){}
 }
+
+/* ---------------- UI 语言（按浏览器自动，轻量覆盖首屏静态文案） ---------------- */
+const UI_TEXT = [
+  { title: '城市地铁 · 地下三维视图',
+    search: '🔍 搜索站点 / 线路 / 大桥',
+    hint: '拖拽旋转 · 滚轮缩放 · 点击站点查看埋深 · / 搜索 · R 复位 · T 列车 · Esc 关闭面板',
+    btnDepth: '深度着色', btnLabels: '站点标注', btnStrata: '地层参考面', btnReset: '重置视角',
+    btnCruise: '▶ 沿线巡航', btnTrains: '🚆 列车', btnTimeline: '⏱ 年代', btnProfile: '📈 剖面',
+    btnCompare: '⚖ 对比', btnThemeL: '🌙 深色', btnThemeD: '☀ 浅色',
+    loading: '正在加载 3D 引擎与线路数据…',
+    note: '车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap',
+    themeLight: '浅色', themeDark: '深色' },
+  { title: 'China Metro & Mega Bridges · 3D View',
+    search: '🔍 Search stations / lines / bridges',
+    hint: 'Drag rotate · Wheel zoom · Click station for depth · / search · R reset · T trains · Esc close',
+    btnDepth: 'Depth color', btnLabels: 'Labels', btnStrata: 'Strata', btnReset: 'Reset view',
+    btnCruise: '▶ Cruise', btnTrains: '🚆 Trains', btnTimeline: '⏱ Timeline', btnProfile: '📈 Profile',
+    btnCompare: '⚖ Compare', btnThemeL: '🌙 Dark', btnThemeD: '☀ Light',
+    loading: 'Loading 3D engine & network data…',
+    note: 'Depths are indicative values from public sources · Coordinates from OpenStreetMap',
+    themeLight: 'Light', themeDark: 'Dark' },
+];
+const LANG = (navigator.language || 'zh').toLowerCase().startsWith('zh') ? 0 : 1;
+function applyLang(){
+  if (LANG === 0) return;
+  const T = UI_TEXT[LANG];
+  const h1 = document.querySelector('#panel-title h1');
+  if (h1) h1.childNodes.forEach(n => { if (n.nodeType === 3 && n.textContent.trim()) n.textContent = ' ' + T.title + ' '; });
+  const sp = document.getElementById('st-search'); if (sp) sp.placeholder = T.search;
+  const hi = document.getElementById('hint'); if (hi) hi.textContent = T.hint;
+  const no = document.getElementById('note'); if (no) no.textContent = T.note;
+  const lm = document.getElementById('load-msg'); if (lm) lm.textContent = T.loading;
+  const map = { 'btn-depth': T.btnDepth, 'btn-labels': T.btnLabels, 'btn-strata': T.btnStrata,
+    'btn-reset': T.btnReset, 'btn-cruise': T.btnCruise, 'btn-trains': T.btnTrains,
+    'btn-timeline': T.btnTimeline, 'btn-profile': T.btnProfile, 'btn-compare': T.btnCompare };
+  Object.entries(map).forEach(([id, txt]) => { const el = document.getElementById(id); if (el) el.textContent = txt; });
+  const th = document.getElementById('btn-theme');
+  if (th) th.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? T.btnThemeL : T.btnThemeD;
+}
+applyLang();
 
 populateSelectors();
 rebuild();

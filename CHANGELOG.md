@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.3.0] — 2026-11-14
+
+### 新功能
+
+- **UI 浅色/深色主题**：CSS 变量体系重构，"☀ 浅色"一键切换；localStorage 记忆 + `prefers-color-scheme` 自动；3D 画布保持暗色主体
+- **UI 双语**：按浏览器语言自动切换首屏界面（标题/搜索/按钮/提示），动态数据内容保持中文
+- **文档**：README 补 `terrain` / `railways` / `tombs` 可选字段完整 schema；DEPLOY 补自托管 umami 统计指引
+
 ## [1.2.2] — 2026-11-14
 
 ### 新功能
