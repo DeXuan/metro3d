@@ -88,3 +88,18 @@ location = /index.html {
 | 中文乱码 | 确保 HTTP 响应头 `Content-Type: text/html; charset=utf-8` |
 | 加载慢 | 开启 gzip/brotli（体积可降至 ~490KB） |
 | 移动端卡顿 | 降低「垂直夸张」或关闭「站点标注」 |
+
+
+## 可选：隐私友好访问统计
+
+本项目默认**零追踪**。如需了解访问量，推荐自托管 [umami](https://umami.is/)（开源、无 Cookie、GDPR 友好）：
+
+1. 在服务器上以 Docker 运行 umami，接入任意数据库
+2. 在 umami 后台创建网站，获得 `website-id`
+3. 在 `index.html` 的 `</head>` 前加入：
+
+```html
+<script async defer data-website-id="你的ID" src="https://统计域名/umami.js"></script>
+```
+
+> 注意：这会引入一个外部请求，与"零外部依赖"卖点有取舍。建议仅在自建域名版本启用，GitHub Pages 版保持纯净。
