@@ -372,7 +372,7 @@
 
   /* ---------- 罗盘 ---------- */
   #compass{
-    position:fixed; z-index:12; right:14px; top:270px;
+    position:fixed; z-index:12; right:262px; top:14px;
     width:54px; height:54px; border-radius:50%;
     background:rgba(8,18,34,.72); border:1px solid var(--panel-border);
     cursor:pointer; user-select:none;
@@ -59128,6 +59128,7 @@ function drawCmp(){
 function openCmp(on){
   cmpShown = on;
   $('cmp-panel').classList.toggle('show', on);
+  placeCompass();
   if (on){
     const cities = METRO_DATA.cities.filter(c => c.kind !== 'bridges');
     const opts = cities.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
@@ -59228,9 +59229,11 @@ function drawProfile(line){
 }
 $('pf-close').addEventListener('click', () => { profileUserHide = true; updateProfile(); });
 function placeCompass(){
-  const pc = document.getElementById('panel-ctrl');
   const cp = document.getElementById('compass');
-  if (pc && cp) cp.style.top = Math.round(pc.getBoundingClientRect().bottom + 12) + 'px';
+  if (!cp) return;
+  const cmpOpen = document.getElementById('cmp-panel').classList.contains('show');
+  cp.style.right = (262 + (cmpOpen ? 340 : 0)) + 'px';   // 对比面板打开时右移避让
+  cp.style.top = '14px';
 }
 placeCompass();
 addEventListener('resize', placeCompass);
