@@ -312,6 +312,31 @@
     #btn-title-toggle{ display:flex; }
     #share-panel{ left:14px; right:14px; top:auto; bottom:76px; width:auto; }
   }
+
+  /* ---------- 站点搜索 ---------- */
+  .search-row{ margin-top:8px; position:relative; }
+  .search-row input{
+    width:100%; background:rgba(20,40,66,.9); color:var(--text);
+    border:1px solid var(--panel-border); border-radius:8px; padding:6px 9px; font-size:12px; outline:none;
+  }
+  .search-row input:focus{ border-color:var(--accent); }
+  .search-row input::placeholder{ color:var(--text-dim); }
+  #search-drop{
+    position:absolute; top:100%; left:0; right:0; margin-top:4px; z-index:60;
+    background:rgba(10,22,40,.97); border:1px solid var(--panel-border); border-radius:10px;
+    max-height:260px; overflow:auto; display:none;
+  }
+  #search-drop .sr{
+    display:flex; align-items:center; gap:7px; padding:6px 9px; cursor:pointer; font-size:12px;
+    border-bottom:1px solid rgba(110,190,255,.08);
+  }
+  #search-drop .sr:last-child{ border-bottom:none; }
+  #search-drop .sr:hover, #search-drop .sr.act{ background:rgba(79,194,232,.16); }
+  #search-drop .sr i{ width:8px; height:8px; border-radius:2px; flex:none; }
+  #search-drop .sr b{ flex:none; font-weight:600; }
+  #search-drop .sr span{ color:var(--text-dim); font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #search-drop .sr .ct{ margin-left:auto; flex:none; color:var(--text-dim); font-size:10.5px; }
+  #search-drop .empty{ padding:8px 10px; font-size:11.5px; color:var(--text-dim); }
 </style>
 </head>
 <body>
@@ -328,6 +353,10 @@
   <div class="sel-row">
     <select id="sel-city" title="选择城市"></select>
     <select id="sel-line" title="选择线路"></select>
+  </div>
+  <div class="search-row">
+    <input id="st-search" type="text" placeholder="🔍 搜索站点 / 线路 / 大桥" autocomplete="off" spellcheck="false">
+    <div id="search-drop"></div>
   </div>
   <div id="stat-line"></div>
   <div id="legend"></div>
@@ -56541,6 +56570,106 @@ try {
     focusBridge(bIdx);
   }
 } catch(e){}
+/* ---------------- 站点搜索 ---------------- */
+const STATION_INDEX = [];
+(function buildSearchIndex(){
+  METRO_DATA.cities.forEach(c => {
+    if (c.kind === 'bridges'){
+      (c.bridges || []).forEach((b, i) => STATION_INDEX.push({
+        type: 'bridge', name: b.name, cityId: c.id, cityName: c.name,
+        i, sub: `${b.cat} · ${b.lenKm} km`, color: b.color }));
+      return;
+    }
+    const seen = new Set();   // 同城同名站（换乘）只收录一次
+    (c.lines || []).forEach((l, li) => {
+      l.stations.forEach((s, si) => {
+        if (seen.has(s.name)) return; seen.add(s.name);
+        const dep = s.type === 'elevated' ? `+${s.height}m` : s.type === 'ground' ? '地面' : `${s.depth}m`;
+        STATION_INDEX.push({ type: 'st', name: s.name, cityId: c.id, cityName: c.name,
+          li, si, sub: `${l.name} · ${dep}`, color: l.color });
+      });
+    });
+  });
+})();
+
+function searchStations(q){
+  q = q.trim().toLowerCase();
+  if (!q) return [];
+  const scored = [];
+  for (const e of STATION_INDEX){
+    const n = e.name.toLowerCase();
+    let sc = -1;
+    if (n === q) sc = 0;
+    else if (n.startsWith(q)) sc = 1;
+    else if (n.includes(q)) sc = 2;
+    else if ((e.sub || '').toLowerCase().includes(q)) sc = 3;
+    if (sc >= 0) scored.push({ e, sc });
+  }
+  scored.sort((a, b) => a.sc - b.sc || a.e.name.length - b.e.name.length);
+  return scored.slice(0, 12).map(x => x.e);
+}
+
+let searchCur = [], searchAct = -1, searchTimer = null;
+function searchDo(q){
+  const drop = $('search-drop');
+  searchCur = searchStations(q);
+  searchAct = -1;
+  if (!searchCur.length){
+    drop.innerHTML = q.trim() ? '<div class="empty">未找到匹配站点</div>' : '';
+    drop.style.display = q.trim() ? 'block' : 'none';
+    return;
+  }
+  drop.innerHTML = searchCur.map((e, i) =>
+    `<div class="sr" data-i="${i}"><i style="background:${e.color}"></i><b>${esc(e.name)}</b><span>${esc(e.sub || '')}</span><span class="ct">${esc(e.cityName)}</span></div>`).join('');
+  drop.style.display = 'block';
+  [...drop.querySelectorAll('.sr')].forEach(el => el.addEventListener('mousedown', ev => {
+    ev.preventDefault();
+    searchGo(searchCur[+el.dataset.i]);
+  }));
+}
+function searchGo(e){
+  $('search-drop').style.display = 'none';
+  $('st-search').value = ''; $('st-search').blur();
+  if (e.type === 'bridge'){
+    state.cityId = 'bridges';
+    populateSelectors();
+    $('sel-city').value = 'bridges';
+    $('sel-line').value = 'bridge-' + e.i;
+    rebuild();
+    focusBridge(e.i);
+    return;
+  }
+  if (state.cityId !== e.cityId){
+    state.cityId = e.cityId;
+    populateSelectors();
+    rebuild();
+  }
+  const line = METRO_DATA.cities.find(x => x.id === e.cityId).lines[e.li];
+  if (line) focusStation(line, e.si);
+}
+$('st-search').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  const q = e.target.value;
+  searchTimer = setTimeout(() => searchDo(q), 120);
+});
+$('st-search').addEventListener('keydown', e => {
+  const rows = [...$('search-drop').querySelectorAll('.sr')];
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    if (!rows.length) return;
+    e.preventDefault();
+    searchAct = e.key === 'ArrowDown' ? Math.min(rows.length - 1, searchAct + 1) : Math.max(0, searchAct - 1);
+    rows.forEach((r, i) => r.classList.toggle('act', i === searchAct));
+    rows[searchAct].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter'){
+    if (rows.length) searchGo(searchCur[Math.max(0, searchAct)]);
+  } else if (e.key === 'Escape'){
+    $('search-drop').style.display = 'none';
+    e.target.blur();
+  }
+});
+document.addEventListener('pointerdown', e => {
+  if (!e.target.closest('.search-row')) $('search-drop').style.display = 'none';
+});
 setListCollapsed(true);
 // 移动端：顶部详情默认折叠，给 3D 视图让出空间
 if (window.matchMedia('(max-width: 860px)').matches){
