@@ -369,6 +369,34 @@
   @media (max-width: 860px){
     #cmp-panel{ right:14px; width:calc(100vw - 28px); top:56px; }
   }
+
+  /* ---------- 罗盘 ---------- */
+  #compass{
+    position:fixed; z-index:12; right:14px; bottom:16px;
+    width:54px; height:54px; border-radius:50%;
+    background:rgba(8,18,34,.72); border:1px solid var(--panel-border);
+    cursor:pointer; user-select:none;
+    box-shadow:0 2px 12px rgba(0,0,0,.35);
+  }
+  #compass-rose{
+    position:absolute; inset:0;
+    transition:none; will-change:transform;
+  }
+  #compass-rose .dir{
+    position:absolute; left:50%; top:50%; font-size:9.5px; line-height:1;
+    font-weight:600; color:var(--text-dim);
+  }
+  #compass-rose .dir.n{ color:#ff6a5e; }
+  #compass-needle{
+    position:absolute; left:50%; top:50%; width:0; height:0;
+    border-left:3.5px solid transparent; border-right:3.5px solid transparent;
+    border-bottom:15px solid #ff6a5e;
+    transform:translate(-50%,-100%);
+  }
+  #compass .deg{
+    position:absolute; left:50%; bottom:3px; transform:translateX(-50%);
+    font-size:8px; color:var(--text-dim); white-space:nowrap;
+  }
 </style>
 </head>
 <body>
@@ -470,6 +498,17 @@
 <button id="btn-list-float" title="展开站点列表"><span class="ic">☰</span><b id="float-count">0</b></button>
 <button id="btn-list-toggle">站点</button>
 <button id="btn-ctrl-toggle">⚙ 视图</button>
+
+<div id="compass" title="罗盘：N=正北 · 点击回正北">
+  <div id="compass-rose">
+    <span class="dir n" style="transform:translate(-50%,-260%)">N</span>
+    <span class="dir" style="transform:translate(-130%,-50%)">W</span>
+    <span class="dir" style="transform:translate(30%,-50%)">E</span>
+    <span class="dir" style="transform:translate(-50%,160%)">S</span>
+    <div id="compass-needle"></div>
+  </div>
+  <span class="deg" id="compass-deg">0°</span>
+</div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点查看埋深 · / 搜索 · R 复位 · T 列车 · Esc 关闭面板</div>
 <div id="note">车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
@@ -59188,6 +59227,15 @@ function drawProfile(line){
   };
 }
 $('pf-close').addEventListener('click', () => { profileUserHide = true; updateProfile(); });
+document.getElementById('compass').addEventListener('click', () => {
+  const phi = controls.getPolarAngle(), r = camera.position.distanceTo(controls.target);
+  camera.position.set(
+    controls.target.x + r * Math.sin(phi) * 0,
+    controls.target.y + r * Math.cos(phi),
+    controls.target.z + r * Math.sin(phi));
+  controls.update();
+  state.__camTouched = true; syncUrl();
+});
 $('btn-profile').addEventListener('click', e => {
   profileUserHide = !profileUserHide;
   e.currentTarget.classList.toggle('on', !profileUserHide);
@@ -59247,12 +59295,27 @@ document.addEventListener('keydown', e => {
 
 /* ---------------- 渲染循环 ---------------- */
 const clock = new THREE.Clock();
+const compassRose = document.getElementById('compass-rose');
+const compassDeg = document.getElementById('compass-deg');
+let __lastTheta = 99;
 let introT = -1;
 let __lastRaf = 0;
 function renderFrame(dtOverride){
   const dt = Math.min(dtOverride ?? clock.getDelta(), 0.05);
   updateTrains(dt);
   checkPerf();
+  // 罗盘：N 标记随相机方位角旋转（正北 = 场景 -Z = 纬度增大方向）
+  if (compassRose && controls){
+    const th = controls.getAzimuthalAngle();
+    if (Math.abs(th - __lastTheta) > 0.005){
+      __lastTheta = th;
+      compassRose.style.transform = 'rotate(' + (-th) + 'rad)';
+      if (compassDeg){
+        const d = Math.round((-th * 180 / Math.PI) % 360);
+        compassDeg.textContent = (d < 0 ? d + 360 : d) + '°';
+      }
+    }
+  }
 
   // 标签 LOD：聚焦时显示聚焦线全部标签；总览时按密度分级
   //  - 小线网（总站数≤60，如洛阳 34 站）：全部显示
