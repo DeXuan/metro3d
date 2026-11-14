@@ -57348,6 +57348,7 @@ const state = {
   trains: true,                 // 列车模拟
   timeline: null,               // 线网生长时间轴（null=当前全网）
   __camTouched: false,          // 用户是否手动转过相机（决定是否写深链 cam 参数）
+  schedule: true,               // 列车运行时刻制（按当地时间首末班/高峰）
   flyTo: null,
   cruise: null,
   intro: null,
@@ -59090,17 +59091,32 @@ function buildTrains(root, lgs){
   root.add(trainsMesh);
 }
 
+function serviceFactor(){
+  // 合成首末班：5:30–23:00 运营；7–9 / 17–19 高峰全列，平峰 60%，夜间停运
+  const now = new Date();
+  const hm = now.getHours() + now.getMinutes() / 60;
+  const peak = (hm >= 7 && hm < 9) || (hm >= 17 && hm < 19);
+  if (hm < 5.5 || hm >= 23) return 0;
+  return peak ? 1 : 0.6;
+}
 function updateTrains(dt){
   if (!state.trains || !trainsMesh) return;
+  const factor = state.schedule ? serviceFactor() : 1;
+  let visibleCap = Math.round(trains.length * factor);   // 按 index 截取（列车按线路成组插入）
+  if (factor === 0 && !updateTrains._nightToasted){
+    updateTrains._nightToasted = true;
+    perfToast('当前为夜间时段（23:00–5:30），列车已停运');
+  }
   for (let i = 0; i < trains.length; i++){
     const t = trains[i];
     t.u += t.dir * dt * t.spd;
     if (t.loop){ if (t.u >= 1) t.u -= 1; if (t.u < 0) t.u += 1; }
     else if (t.u >= 1 || t.u <= 0){ t.u = THREE.MathUtils.clamp(t.u, 0, 1); t.dir *= -1; t.off *= -1; }   // 端点折返换轨：方向与轨道侧同步翻转
-    const hidden = (t.kind === 'hsr')
+    const hidden = i >= visibleCap ||
+      ((t.kind === 'hsr')
       ? !!t.grp && !t.grp.visible
       : (state.focusIdx >= 0 && t.lineIdx !== state.focusIdx) ||
-        (state.timeline != null && lineGroups[t.lineIdx] && !lineGroups[t.lineIdx].group.visible);
+        (state.timeline != null && lineGroups[t.lineIdx] && !lineGroups[t.lineIdx].group.visible));
     if (hidden){ trainDummy.scale.setScalar(0); trainDummy.position.set(0, -9999, 0); }
     else {
       const u = THREE.MathUtils.clamp(t.u, 0, 1);
