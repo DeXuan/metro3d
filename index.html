@@ -352,6 +352,23 @@
   @media (max-width: 860px){
     #profile-panel{ width:calc(100vw - 28px); bottom:46px; }
   }
+
+  /* ---------- 城市对比面板 ---------- */
+  #cmp-panel{
+    top:14px; right:264px; width:320px; display:none; padding:11px 13px; max-height:calc(100vh - 28px); overflow:auto;
+  }
+  #cmp-panel.show{ display:block; }
+  #cmp-panel h2{ font-size:12.5px; color:var(--text-dim); font-weight:600; letter-spacing:1px; margin-bottom:8px; display:flex; justify-content:space-between; }
+  #cmp-panel h2 button{ background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:13px; }
+  #cmp-panel .cmp-sel{ display:flex; gap:6px; margin-bottom:8px; }
+  #cmp-panel .cmp-sel select{
+    flex:1; min-width:0; background:rgba(20,40,66,.9); color:var(--text);
+    border:1px solid var(--panel-border); border-radius:8px; padding:5px 6px; font-size:12px; outline:none;
+  }
+  #cmp-canvas{ display:block; width:100%; }
+  @media (max-width: 860px){
+    #cmp-panel{ right:14px; width:calc(100vw - 28px); top:56px; }
+  }
 </style>
 </head>
 <body>
@@ -399,9 +416,19 @@
     <button class="btn on" id="btn-trains">🚆 列车</button>
     <button class="btn" id="btn-timeline">⏱ 年代</button>
     <button class="btn" id="btn-profile">📈 剖面</button>
+    <button class="btn" id="btn-compare">⚖ 对比</button>
     <button class="btn" id="btn-reset">重置视角</button>
     <button class="btn" id="btn-cruise">▶ 沿线巡航</button>
   </div>
+</div>
+
+<div id="cmp-panel" class="panel">
+  <h2>城市对比<button id="cmp-close">✕</button></h2>
+  <div class="cmp-sel">
+    <select id="cmp-a"></select>
+    <select id="cmp-b"></select>
+  </div>
+  <canvas id="cmp-canvas"></canvas>
 </div>
 
 <!-- 站点列表 -->
@@ -58890,6 +58917,86 @@ function updateTrains(dt){
   trainsMesh.instanceMatrix.needsUpdate = true;
   trainsMesh.visible = true;
 }
+
+/* ---------------- 城市对比（2D 图表） ---------------- */
+let cmpShown = false;
+const CMP_COLORS = ['#4FC2E8', '#FF9A6A'];
+function cityStats(c){
+  const lines = (c.lines || []);
+  let stations = 0, km = 0, deep = 0, deepName = '', dsum = 0, dn = 0;
+  lines.forEach(l => {
+    stations += l.stations.length;
+    km += l.lengthKm || 0;
+    l.stations.forEach(s => {
+      if (s.type === 'underground' && s.depth){ dsum += s.depth; dn++; if (s.depth > deep){ deep = s.depth; deepName = s.name; } }
+    });
+  });
+  return { name: c.name, lines: lines.length, stations, km: Math.round(km), deep, deepName,
+           avg: dn ? (dsum / dn).toFixed(1) : 0 };
+}
+function drawCmp(){
+  const cv = $('cmp-canvas');
+  const W = cv.parentElement.clientWidth - 26, H = 268;
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  cv.width = W * dpr; cv.height = H * dpr;
+  cv.style.height = H + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  const ca = METRO_DATA.cities.find(x => x.id === $('cmp-a').value);
+  const cb = METRO_DATA.cities.find(x => x.id === $('cmp-b').value);
+  if (!ca || !cb || ca.kind === 'bridges' || cb.kind === 'bridges') return;
+  const sa = cityStats(ca), sb = cityStats(cb);
+  const rows = [
+    ['线路数', sa.lines, sb.lines, ''],
+    ['站点数', sa.stations, sb.stations, ''],
+    ['里程 km', sa.km, sb.km, ''],
+    ['最深站 m', sa.deep, sb.deep, `最深：${sa.deepName} / ${sb.deepName}`],
+    ['平均埋深 m', +sa.avg, +sb.avg, ''],
+  ];
+  const labelW = 74, barW = W - labelW - 10;
+  let y = 6;
+  ctx.font = '10.5px sans-serif';
+  rows.forEach(([lab, va, vb, note]) => {
+    const mx = Math.max(va, vb) || 1;
+    ctx.fillStyle = 'rgba(143,176,201,.95)';
+    ctx.fillText(lab, 0, y + 9);
+    [ [va, 0], [vb, 1] ].forEach(([v, k]) => {
+      ctx.fillStyle = CMP_COLORS[k];
+      const w = Math.max(2, barW * v / mx);
+      ctx.fillRect(labelW, y + k * 8, w, 6);
+      ctx.fillText(String(v), labelW + w + 5, y + k * 8 + 7);
+    });
+    if (note){ ctx.fillStyle = 'rgba(143,176,201,.6)'; ctx.fillText(note, 0, y + 26); y += 9; }
+    y += 22;
+  });
+  // 图例
+  ctx.fillStyle = CMP_COLORS[0]; ctx.fillRect(0, H - 16, 8, 8);
+  ctx.fillStyle = 'rgba(220,234,247,.9)'; ctx.fillText(sa.name, 12, H - 8);
+  ctx.fillStyle = CMP_COLORS[1]; ctx.fillRect(96, H - 16, 8, 8);
+  ctx.fillStyle = 'rgba(220,234,247,.9)'; ctx.fillText(sb.name, 108, H - 8);
+}
+function openCmp(on){
+  cmpShown = on;
+  $('cmp-panel').classList.toggle('show', on);
+  if (on){
+    const cities = METRO_DATA.cities.filter(c => c.kind !== 'bridges');
+    const opts = cities.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    ['cmp-a', 'cmp-b'].forEach((id, k) => {
+      const sel = $(id);
+      sel.innerHTML = opts;
+      sel.value = k === 0 ? (state.cityId !== 'bridges' ? state.cityId : cities[0].id) : cities[1].id;
+      sel.onchange = drawCmp;
+    });
+    drawCmp();
+  }
+}
+$('cmp-close').addEventListener('click', () => { openCmp(false); $('btn-compare').classList.remove('on'); });
+$('btn-compare').addEventListener('click', e => {
+  const on = !cmpShown;
+  e.currentTarget.classList.toggle('on', on);
+  openCmp(on);
+});
 
 /* ---------------- 线路纵断面（2D 剖面联动） ---------------- */
 let profileUserHide = false;
