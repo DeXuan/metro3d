@@ -1,5 +1,5 @@
 /* metro3d Service Worker：预缓存入口，运行时缓存同源 GET */
-const CACHE = 'metro3d-v1';
+const CACHE = 'metro3d-v2';
 const PRECACHE = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {

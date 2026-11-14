@@ -66,6 +66,10 @@
     --body-bg: #e8edf3;
     --toast-bg: rgba(var(--panel-rgb), 0.96);
   }
+  :root[data-theme="light"] .chip.u{ color:#0a8a5c; border-color:rgba(10,138,92,.45); }
+  :root[data-theme="light"] .chip.e{ color:#a56d00; border-color:rgba(165,109,0,.45); }
+  :root[data-theme="light"] .chip.t{ color:#2a62c0; border-color:rgba(42,98,192,.45); }
+  :root[data-theme="light"] .lg-row, :root[data-theme="light"] #stat-line{ color:var(--text-dim); }
   *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body{ width:100%; height:100%; overflow:hidden; }
   body{
@@ -112,7 +116,7 @@
   .btn-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
   .btn{
     flex:1; min-width:calc(50% - 6px);
-    background:rgba(20,40,66,.75); color:var(--text-dim);
+    background:rgba(var(--input-rgb), .75); color:var(--text-dim);
     border:1px solid var(--panel-border); border-radius:8px;
     padding:6px 4px; font-size:11.5px; cursor:pointer;
     transition:all .18s; white-space:nowrap;
@@ -212,7 +216,7 @@
   /* ---------- 多线路图例 ---------- */
   .lg-grid{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
   .lg-chip-btn{
-    display:flex; align-items:center; gap:5px; background:rgba(20,40,66,.6);
+    display:flex; align-items:center; gap:5px; background:rgba(var(--input-rgb), .6);
     border:1px solid var(--panel-border); border-radius:12px; padding:3px 8px;
     color:var(--text-dim); font-size:10.5px; cursor:pointer; transition:all .15s;
   }
@@ -223,7 +227,7 @@
   /* ---------- 站点列表分组 ---------- */
   .grp-head{
     display:flex; align-items:center; gap:8px; width:100%; margin-top:4px;
-    background:rgba(20,40,66,.45); border:0; border-radius:8px; padding:7px 8px;
+    background:rgba(var(--input-rgb), .45); border:0; border-radius:8px; padding:7px 8px;
     color:var(--text); font-size:12px; cursor:pointer; font-family:inherit; text-align:left;
   }
   .grp-head:hover{ background:rgba(79,194,232,.12); }
@@ -236,7 +240,7 @@
   /* ---------- 多线路图例 ---------- */
   .lg-grid{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
   .lg-chip-btn{
-    display:flex; align-items:center; gap:5px; background:rgba(20,40,66,.6);
+    display:flex; align-items:center; gap:5px; background:rgba(var(--input-rgb), .6);
     border:1px solid var(--panel-border); border-radius:12px; padding:3px 8px;
     color:var(--text-dim); font-size:10.5px; cursor:pointer; transition:all .15s;
   }
@@ -247,7 +251,7 @@
   /* ---------- 站点列表分组 ---------- */
   .grp-head{
     display:flex; align-items:center; gap:8px; width:100%; margin-top:4px;
-    background:rgba(20,40,66,.45); border:0; border-radius:8px; padding:7px 8px;
+    background:rgba(var(--input-rgb), .45); border:0; border-radius:8px; padding:7px 8px;
     color:var(--text); font-size:12px; cursor:pointer; font-family:inherit; text-align:left;
   }
   .grp-head:hover{ background:rgba(79,194,232,.12); }
@@ -288,7 +292,7 @@
   #panel-title h1{ position:relative; }
   .h1-tools{ margin-left:auto; display:flex; gap:4px; }
   .h1-btn{
-    background:rgba(20,40,66,.7); border:1px solid var(--panel-border); color:var(--text-dim);
+    background:rgba(var(--input-rgb), .7); border:1px solid var(--panel-border); color:var(--text-dim);
     border-radius:7px; width:26px; height:24px; font-size:12px; cursor:pointer; line-height:1;
     display:flex; align-items:center; justify-content:center; transition:all .15s; padding:0;
   }
@@ -317,7 +321,7 @@
   .sh-qr img{ width:150px; height:150px; border-radius:10px; background:#0a1626; border:1px solid var(--panel-border); }
   .sh-btns{ display:flex; gap:6px; margin-top:10px; }
   .sh-btns button{
-    flex:1; background:rgba(20,40,66,.75); border:1px solid var(--panel-border); border-radius:7px;
+    flex:1; background:rgba(var(--input-rgb), .75); border:1px solid var(--panel-border); border-radius:7px;
     color:var(--text); font-size:11px; padding:7px 2px; cursor:pointer; transition:all .15s;
   }
   .sh-btns button:hover{ border-color:rgba(79,194,232,.55); color:var(--accent); }
@@ -57624,6 +57628,7 @@ function buildBuildings(origin, lines){
   const geo = new THREE.BoxGeometry(1,1,1); geo.translate(0,.5,0);
   const mat = new THREE.MeshStandardMaterial({ color: 0x243f5e, roughness: .9, metalness: .05,
     emissive: 0x0d1e36, emissiveIntensity: 0.8 });
+  mat.userData.themeRole = 'buildings';
   const mesh = new THREE.InstancedMesh(geo, mat, items.length);
   const M = new THREE.Matrix4();
   items.forEach(([lng,lat,hM,fM],i) => {
@@ -58210,6 +58215,7 @@ function buildWorld(doFit = true){
 
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(sx+140, sz+140),
       new THREE.MeshBasicMaterial({ color: 0x0d1c30, transparent: true, opacity: .5, side: THREE.DoubleSide, depthWrite: false }));
+    ground.material.userData.themeRole = 'ground';
     ground.rotation.x = -Math.PI/2; ground.position.set(cx,0,cz); ground.renderOrder = 2;
     grouped.add(ground);
 
@@ -58343,6 +58349,7 @@ function buildWorld(doFit = true){
   world.strataGroup = strataGroup;
   buildCityRailways(city, origin, root);
   buildCityTombs(city, origin, root);
+  applySceneTheme(__sceneTheme);
   buildTrains(root, lineGroups);
   updateProfile();
   if (doFit) fitAll();
@@ -58999,7 +59006,7 @@ function buildCityRailways(city, origin, root){
       new THREE.TubeGeometry(curve, Math.max(120, Math.min(400, pts.length * 4)), building ? 0.42 : 0.5, 6, false),
       building
         ? new THREE.MeshBasicMaterial({ color: 0x9aa8b8, transparent: true, opacity: .38 })
-        : new THREE.MeshStandardMaterial({ color: 0xdfe6ee, emissive: 0x8a97a8, emissiveIntensity: .55, roughness: .35, metalness: .5 }));
+        : (() => { const m = new THREE.MeshStandardMaterial({ color: 0xdfe6ee, emissive: 0x8a97a8, emissiveIntensity: .55, roughness: .35, metalness: .5 }); m.userData.themeRole = 'rail'; return m; })());
     grp.add(tube);
     (rw.stations || []).forEach(st => {
       const p = project(st.lng, st.lat, origin);
@@ -59034,6 +59041,30 @@ function buildCityRailways(city, origin, root){
     root.add(grp);
     world.railwayGroups.push({ grp, curve, year: rw.year || 1900, railway: rw });
   });
+}
+
+/* ---------------- 场景主题（浅色/深色调色板，随 UI 主题联动） ---------------- */
+const SCENE_THEME = {
+  dark:  { clear: 0x060c16, ground: 0x0d1c30, rail: 0xdfe6ee, railEm: 0x8a97a8,
+           buildings: 0x243f5e, buildingsEm: 0x0d1e36, hsrTrain: 0xf4f6f8 },
+  light: { clear: 0xdfe8f0, ground: 0xcdd8e4, rail: 0x3d5266, railEm: 0x22303e,
+           buildings: 0x9db2c8, buildingsEm: 0x1a2a3a, hsrTrain: 0x33445a },
+};
+let __sceneTheme = 'dark';
+function applySceneTheme(theme){
+  __sceneTheme = theme;
+  const P = SCENE_THEME[theme] || SCENE_THEME.dark;
+  renderer.setClearColor(P.clear);
+  scene.traverse(o => {
+    const role = o.material && o.material.userData && o.material.userData.themeRole;
+    if (role === 'ground') o.material.color.set(P.ground);
+    else if (role === 'rail'){ o.material.color.set(P.rail); if (o.material.emissive) o.material.emissive.set(P.railEm); }
+    else if (role === 'buildings'){ o.material.color.set(P.buildings); o.material.emissive.set(P.buildingsEm); }
+  });
+  trains.forEach((t, i) => {
+    if (t.kind === 'hsr'){ t.color.set(P.hsrTrain); if (trainsMesh) trainsMesh.setColorAt(i, t.color); }
+  });
+  if (trainsMesh && trainsMesh.instanceColor) trainsMesh.instanceColor.needsUpdate = true;
 }
 
 /* ---------------- 城市地形（山体群，如洛阳邙山） ---------------- */
@@ -59410,16 +59441,11 @@ $('pf-close').addEventListener('click', () => { profileUserHide = true; updatePr
 /* ---------------- 主题切换（UI 浅色/深色，3D 画布保持暗色主体） ---------------- */
 function applyTheme(theme){
   document.documentElement.setAttribute('data-theme', theme);
+  applySceneTheme(theme);
   try { localStorage.setItem('metro3d-theme', theme); } catch(e){}
   const b = $('btn-theme');
   if (b) b.textContent = theme === 'light' ? UI_TEXT[LANG].btnThemeL : UI_TEXT[LANG].btnThemeD;
 }
-(() => {
-  let theme = null;
-  try { theme = localStorage.getItem('metro3d-theme'); } catch(e){}
-  if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
-  if (theme === 'light') applyTheme('light');
-})();
 $('btn-theme').addEventListener('click', () => {
   applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
 });
@@ -59674,6 +59700,12 @@ function applyLang(){
   if (th) th.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? T.btnThemeL : T.btnThemeD;
 }
 applyLang();
+(() => {
+  let theme = null;
+  try { theme = localStorage.getItem('metro3d-theme'); } catch(e){}
+  if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
+  if (theme === 'light') applyTheme('light');
+})();
 
 populateSelectors();
 rebuild();
