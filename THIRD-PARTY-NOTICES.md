@@ -42,3 +42,10 @@ https://www.openstreetmap.org/copyright
 - 各城市地铁线路名称、标识归各自运营方所有
 - 手工构建的台北/桃园/高雄/澳门数据基于公开资料
 - 埋深数据为工程合理性示意值，非实测数据
+
+## qrcode-generator
+
+- **来源**：<https://github.com/kazuhikoarase/qrcode-generator>（`js/qrcode.js`，已内联）
+- **许可**：MIT License · Copyright (c) 2009 Kazuhiko Arase
+- **用途**：分享面板二维码本地生成（取代外部 API，保持零外部请求）
+- **说明**："QR Code" 为 DENSO WAVE INCORPORATED 注册商标（见库文件头部声明）
