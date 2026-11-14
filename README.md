@@ -19,6 +19,11 @@
 [![Lines](https://img.shields.io/badge/lines-374-orange)]()
 
 <p align="center">
+  <img src="docs/screenshots/hero.gif" width="88%" alt="项目动览"><br>
+  <sub>动览：地铁线网 · 超级桥梁 · 全国高铁 · 邙山古墓群 · 跨山谷桥 · 米字枢纽</sub>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/overview-shanghai.jpg" width="88%" alt="上海全网总览"><br>
   <sub>上海 · 24 条线路 / 536 站全网三维总览</sub>
 </p>
