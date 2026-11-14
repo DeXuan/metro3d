@@ -372,7 +372,7 @@
 
   /* ---------- 罗盘 ---------- */
   #compass{
-    position:fixed; z-index:12; right:14px; bottom:16px;
+    position:fixed; z-index:12; right:14px; top:270px;
     width:54px; height:54px; border-radius:50%;
     background:rgba(8,18,34,.72); border:1px solid var(--panel-border);
     cursor:pointer; user-select:none;
@@ -59227,6 +59227,13 @@ function drawProfile(line){
   };
 }
 $('pf-close').addEventListener('click', () => { profileUserHide = true; updateProfile(); });
+function placeCompass(){
+  const pc = document.getElementById('panel-ctrl');
+  const cp = document.getElementById('compass');
+  if (pc && cp) cp.style.top = Math.round(pc.getBoundingClientRect().bottom + 12) + 'px';
+}
+placeCompass();
+addEventListener('resize', placeCompass);
 document.getElementById('compass').addEventListener('click', () => {
   const phi = controls.getPolarAngle(), r = camera.position.distanceTo(controls.target);
   camera.position.set(
