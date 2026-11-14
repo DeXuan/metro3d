@@ -57444,29 +57444,46 @@ function project(lng, lat, origin){
 }
 
 /* ---------- 文字标注 ---------- */
+function shadeColor(css, f){
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(css).trim());
+  if (!m) return css;
+  let hx = m[1];
+  if (hx.length === 3) hx = hx.split('').map(c => c + c).join('');
+  const n = parseInt(hx, 16);
+  return `rgb(${Math.round(((n >> 16) & 255) * f)},${Math.round(((n >> 8) & 255) * f)},${Math.round((n & 255) * f)})`;
+}
+
+function paintLabelSurface(ctx, W, H, main, sub, subColor, light){
+  ctx.clearRect(0, 0, W, H);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = '600 30px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.lineWidth = 5; ctx.strokeStyle = light ? 'rgba(255,255,255,.95)' : 'rgba(3,8,16,.85)';
+  ctx.strokeText(main, W / 2, 30);
+  ctx.fillStyle = light ? '#16283c' : '#f0f7ff';
+  ctx.fillText(main, W / 2, 30);
+  if (sub){
+    ctx.font = '500 22px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.lineWidth = 4; ctx.strokeStyle = light ? 'rgba(255,255,255,.95)' : 'rgba(3,8,16,.85)';
+    ctx.strokeText(sub, W / 2, 66);
+    ctx.fillStyle = light ? shadeColor(subColor, 0.55) : subColor;
+    ctx.fillText(sub, W / 2, 66);
+  }
+}
+
 function makeLabel(main, sub, subColor){
   const dpr = 2, W = 300, H = 96;
   const cv = document.createElement('canvas');
   cv.width = W*dpr; cv.height = H*dpr;
   const ctx = cv.getContext('2d');
   ctx.scale(dpr, dpr);
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.font = '600 30px "PingFang SC","Microsoft YaHei",sans-serif';
-  ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(3,8,16,.85)';
-  ctx.strokeText(main, W/2, 30);
-  ctx.fillStyle = '#f0f7ff'; ctx.fillText(main, W/2, 30);
-  if (sub){
-    ctx.font = '500 22px "PingFang SC","Microsoft YaHei",sans-serif';
-    ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(3,8,16,.85)';
-    ctx.strokeText(sub, W/2, 66);
-    ctx.fillStyle = subColor; ctx.fillText(sub, W/2, 66);
-  }
+  paintLabelSurface(ctx, W, H, main, sub, subColor, __sceneTheme === 'light');
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.SRGBColorSpace;
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({
     map: tex, transparent: true, depthTest: false, depthWrite: false }));
   sp.renderOrder = 900;   // 标签始终渲染在最上层，避免被建筑/管线遮挡
   sp.scale.set(16.5, 5.3, 1);
+  sp.userData.labelText = { main, sub, subColor };
   return sp;
 }
 
@@ -57480,9 +57497,10 @@ function makeRiverChar(ch, pxSize){
   ctx.scale(dpr, dpr);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.font = '600 96px "PingFang SC","Microsoft YaHei",sans-serif';
-  ctx.lineWidth = 9; ctx.strokeStyle = 'rgba(3,12,24,.88)';
+  const light = __sceneTheme === 'light';
+  ctx.lineWidth = 9; ctx.strokeStyle = light ? 'rgba(255,255,255,.95)' : 'rgba(3,12,24,.88)';
   ctx.strokeText(ch, S / 2, S / 2 + 4);
-  ctx.fillStyle = '#d3ecff';
+  ctx.fillStyle = light ? '#1a4a7a' : '#d3ecff';
   ctx.fillText(ch, S / 2, S / 2 + 4);
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -57493,6 +57511,7 @@ function makeRiverChar(ch, pxSize){
   sp.userData.alwaysVisible = true;
   sp.userData.riverChar = true;
   sp.userData.riverPx = pxSize;
+  sp.userData.riverCh = ch;
   riverChars.push(sp);
   sp.scale.set(pxSize * 0.8, pxSize * 0.8, 1);
   return sp;
@@ -59065,6 +59084,31 @@ function applySceneTheme(theme){
     if (t.kind === 'hsr'){ t.color.set(P.hsrTrain); if (trainsMesh) trainsMesh.setColorAt(i, t.color); }
   });
   if (trainsMesh && trainsMesh.instanceColor) trainsMesh.instanceColor.needsUpdate = true;
+  // 文字标签按主题重绘（CanvasTexture 深底白字 ↔ 浅底深字）
+  const light = theme === 'light';
+  allLabels.forEach(lb => {
+    const lt = lb.userData && lb.userData.labelText;
+    if (!lt || lb.userData.paintedTheme === theme) return;
+    lb.userData.paintedTheme = theme;
+    const ctx = lb.material.map.image.getContext('2d');
+    paintLabelSurface(ctx, 300, 96, lt.main, lt.sub, lt.subColor, light);
+    lb.material.map.needsUpdate = true;
+  });
+  riverChars.forEach(rc => {
+    if (rc.userData.paintedTheme === theme) return;
+    rc.userData.paintedTheme = theme;
+    const ctx = rc.material.map.image.getContext('2d');
+    const dpr = 2, S = 128;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, S, S);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = '600 96px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.lineWidth = 9; ctx.strokeStyle = light ? 'rgba(255,255,255,.95)' : 'rgba(3,12,24,.88)';
+    ctx.strokeText(rc.userData.riverCh, S / 2, S / 2 + 4);
+    ctx.fillStyle = light ? '#1a4a7a' : '#d3ecff';
+    ctx.fillText(rc.userData.riverCh, S / 2, S / 2 + 4);
+    rc.material.map.needsUpdate = true;
+  });
 }
 
 /* ---------------- 城市地形（山体群，如洛阳邙山） ---------------- */
