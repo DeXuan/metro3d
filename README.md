@@ -323,5 +323,6 @@ io.open('index.html','w',encoding='utf-8').write(h[:i0] + 'const METRO_DATA = ' 
 
 ## 🔗 相关
 
-- 在线演示：<https://xn--888-vw3e05fxyzc07e.cn:9006/web/metro3d/>
+- 在线演示（国内直连）：<https://xn--888-vw3e05fxyzc07e.cn:9006/web/metro3d/>
+- 在线演示（GitHub Pages 镜像）：<https://dexuan.github.io/metro3d/>
 - 姊妹项目：[上海轨道交通隧道纵断面工程图](https://xn--888-vw3e05fxyzc07e.cn:9006/web/metro-3d/)
