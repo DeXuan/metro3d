@@ -59268,11 +59268,11 @@ function makePlaneMesh(){
 let __airportPlanes = [];
 function updateAirportPlanes(dt){
   for (const p of __airportPlanes){
-    p.angle += dt * p.speed;
+    p.angle -= dt * p.speed;   // 俯视逆时针盘旋
     const x = p.cx + Math.cos(p.angle) * p.R;
     const z = p.cz + Math.sin(p.angle) * p.R;
-    const nx = p.cx + Math.cos(p.angle + 0.12) * p.R;
-    const nz = p.cz + Math.sin(p.angle + 0.12) * p.R;
+    const nx = p.cx + Math.cos(p.angle - 0.12) * p.R;
+    const nz = p.cz + Math.sin(p.angle - 0.12) * p.R;
     p.grp.position.set(x, p.alt, z);
     p.grp.lookAt(nx, p.alt, nz);
     p.grp.rotateY(Math.PI);   // 模型机头 +Z → 对齐飞行方向
