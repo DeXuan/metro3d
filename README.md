@@ -65,7 +65,7 @@
 | 深度着色 | 全网管线按埋深渐变（青→蓝→紫→橙） |
 | 沿线巡航 | 沿线路地下轨迹自动飞行 |
 | 站点面板 | 桌面端可折叠（默认收起，不遮挡视图），移动端底部抽屉 |
-| 深链分享 | `?city=shanghai&line=sh-9`、`?city=bridges&bridge=0` 直达；内置二维码 + 微博/微信/小红书分享 |
+| 深链分享 | `?city=shanghai&line=sh-9`、`?city=bridges&bridge=0`、`&theme=night`、`&layers=tombs,railways` 完整场景状态直达；内置二维码 + 微博/微信/小红书分享 |
 | 海报模式 | `?poster=1&city=...&view=core&lng=...&lat=...` 出图（支持 8K 原生渲染） |
 | 罗盘 | 右下角方位环实时指北，点击回正北 |
 | 键盘快捷键 | `/` 搜索 · `R` 复位视角 · `T` 列车开关 · `Esc` 逐层关闭面板 |

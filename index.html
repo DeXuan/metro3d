@@ -60278,6 +60278,15 @@ function animate(){
       const v = cam.split(',').map(Number);
       if (v.length === 6 && v.every(x => Number.isFinite(x))){ window.__initCam = v; state.__camTouched = true; }
     }
+    const th = qp.get('theme');
+    if (th === 'night' || th === 'light') state.__initTheme = th;
+    const ly = qp.get('layers');
+    if (ly !== null){
+      const on = ly.split(',').filter(Boolean);
+      ['landmarks', 'terrain', 'tombs', 'lakes', 'railways'].forEach(k => {
+        state.layers[k] = on.includes(k);
+      });
+    }
   } catch(e){}
 })();
 
@@ -60291,6 +60300,14 @@ function syncUrl(){
       const p = camera.position, t = controls.target;
       u.searchParams.set('cam', [p.x, p.y, p.z, t.x, t.y, t.z].map(v => Math.round(v * 10) / 10).join(','));
     } else u.searchParams.delete('cam');
+    // 主题 / 图层（非默认才写入，保持 URL 简洁）
+    if (state.night) u.searchParams.set('theme', 'night');
+    else if (document.documentElement.getAttribute('data-theme') === 'light') u.searchParams.set('theme', 'light');
+    else u.searchParams.delete('theme');
+    const L = state.layers, Ld = { landmarks: true, terrain: true, tombs: true, lakes: true, railways: true };
+    if (Object.keys(Ld).some(k => !!L[k] !== Ld[k])){
+      u.searchParams.set('layers', Object.keys(Ld).filter(k => L[k]).join(','));
+    } else u.searchParams.delete('layers');
     if (u.search !== location.search) history.replaceState(null, '', u.toString());
   } catch(e){}
 }
@@ -60339,6 +60356,19 @@ applyLang();
   try { theme = localStorage.getItem('metro3d-theme'); } catch(e){}
   if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
   if (theme === 'light') applyTheme('light');
+  // 深链主题优先：&theme=night（夜景）/ &theme=light（浅色 UI）
+  if (state.__initTheme === 'night'){
+    state.night = true;
+    applyTheme('dark');
+    applySceneTheme('night');
+    const b = $('btn-night'); if (b) b.classList.add('on');
+  } else if (state.__initTheme === 'light'){
+    applyTheme('light');
+  }
+  // 图层 checkbox 与深链状态同步
+  document.querySelectorAll('#layer-panel input[data-layer]').forEach(cb => {
+    cb.checked = !!state.layers[cb.dataset.layer];
+  });
 })();
 
 populateSelectors();
