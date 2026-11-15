@@ -25,7 +25,8 @@
 - **HSR network** — 24 national trunk corridors clipped per city: 50 cities covered with silver-white tracks and fast white trains (2020s timetable not included); HSR stations marked as golden cubes with metro-transfer links
 - **11 mega bridges** — HZMB, Shenzhen-Zhongshan, Sutong, Beipanjiang… with water surface, piers, box girders, towers, aviation lights, and valley terrain
 - **Depth coloring** — network-wide gradient by station depth
-- **Sharing** — deep links (`?city=shanghai&line=sh-9`, `?city=bridges&bridge=0`, `&year=1993`), QR code generated locally, 8K poster mode (`?poster=1`)
+- **Sharing** — 7-dimension deep links (`city` / `line` / `bridge` / `year` / `cam` / `theme` / `layers`), QR code generated locally, 8K poster mode (`?poster=1`)
+- **Extras** — screensaver mode (auto-rotate + city tour, `&ss=1`), winter snowfall in 4 northern cities, per-train info card, airport airliners circling overhead, river flow animation along real stream directions
 
 ## 🚀 Quick Start
 
