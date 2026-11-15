@@ -514,6 +514,8 @@ window.addEventListener('error', e => {
     <button class="btn" id="btn-profile">📈 剖面</button>
     <button class="btn" id="btn-compare">⚖ 对比</button>
     <button class="btn" id="btn-layers">🗂 图层</button>
+    <button class="btn" id="btn-screenshot">📷 截图</button>
+    <button class="btn" id="btn-fullscreen">⛶ 全屏</button>
     <button class="btn" id="btn-theme">☀ 浅色</button>
     <button class="btn" id="btn-night">🌃 夜景</button>
     <button class="btn" id="btn-reset">重置视角</button>
@@ -589,7 +591,7 @@ window.addEventListener('error', e => {
   <span class="deg" id="compass-deg">0°</span>
 </div>
 
-<div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点查看埋深 · / 搜索 · R 复位 · T 列车 · Esc 关闭面板</div>
+<div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点查看埋深 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
 <div id="note"><span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
@@ -58644,7 +58646,17 @@ function populateSelectors(){
     const cnt = c.lines ? `${c.lines.length}线/${c.lines.reduce((a,l)=>a+l.stations.length,0)}站` : `${(c.bridges||[]).length}桥`;
     return `<option value="${esc(c.id)}">${esc(c.name)}（${cnt}）</option>`;
   };
+  let recentHtml = '';
+  try {
+    const rc = JSON.parse(localStorage.getItem('metro3d-recent') || '[]')
+      .filter(id => id !== state.cityId && cities.some(c => c.id === id)).slice(0, 3);
+    if (rc.length){
+      recentHtml = `<optgroup label="🕘 最近访问">` +
+        rc.map(id => fmt(cities.find(c => c.id === id))).join('') + `</optgroup>`;
+    }
+  } catch(err){}
   selCity.innerHTML =
+    recentHtml +
     `<optgroup label="主要线网（≥10 线）">${big.map(fmt).join('')}</optgroup>` +
     (small.length ? `<optgroup label="其他城市">${small.map(fmt).join('')}</optgroup>` : '') +
     (bri.length ? `<optgroup label="专题">${bri.map(fmt).join('')}</optgroup>` : '');
@@ -58900,6 +58912,11 @@ canvas.addEventListener('wheel', () => { controls.autoRotate = false; stopCruise
 $('sel-city').addEventListener('change', e => {
   const c = METRO_DATA.cities.find(x => x.id === e.target.value);
   if (!c) return;   // 无效值防御（URL 篡改/数据异常时静默忽略）
+  try {
+    let rc = JSON.parse(localStorage.getItem('metro3d-recent') || '[]');
+    rc = [c.id, ...rc.filter(x => x !== c.id)].slice(0, 3);
+    localStorage.setItem('metro3d-recent', JSON.stringify(rc));
+  } catch(err){}
   state.cityId = c.id; state.focusLineId = '__all__';
   document.getElementById('info-card').classList.remove('show');
   populateSelectors(); rebuild();
@@ -59165,6 +59182,23 @@ function applyLayers(){
   pg.lakes.visible = !!state.layers.lakes;
   pg.railways.visible = !!state.layers.railways;
 }
+$('btn-screenshot').addEventListener('click', () => {
+  renderer.render(scene, camera);          // 同帧渲染保证缓冲区有效
+  canvas.toBlob(blob => {
+    if (!blob) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'metro3d-' + state.cityId + '-' + new Date().toISOString().slice(0, 10) + '.png';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+    perfToast('截图已保存到下载目录');
+  }, 'image/png');
+});
+$('btn-fullscreen').addEventListener('click', () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(() => {});
+});
+
 $('btn-layers').addEventListener('click', e => {
   const p = $('layer-panel');
   const on = !p.classList.contains('show');
@@ -59928,7 +59962,7 @@ const UI_TEXT = [
     themeLight: '浅色', themeDark: '深色' },
   { title: 'China Metro & Mega Bridges · 3D View',
     search: '🔍 Search stations / lines / bridges',
-    hint: 'Drag rotate · Wheel zoom · Click station for depth · / search · R reset · T trains · Esc close',
+    hint: 'Drag rotate · Wheel zoom · Click station for depth · / search · R reset · T trains · screenshot · fullscreen · Esc close',
     btnDepth: 'Depth color', btnLabels: 'Labels', btnStrata: 'Strata', btnReset: 'Reset view',
     btnCruise: '▶ Cruise', btnTrains: '🚆 Trains', btnTimeline: '⏱ Timeline', btnProfile: '📈 Profile',
     btnCompare: '⚖ Compare', btnThemeL: '🌙 Dark', btnThemeD: '☀ Light',
