@@ -48,11 +48,24 @@ def check(blob):
             ok = False
     return ok
 
+def sync_version():
+    """从 CHANGELOG 最新版本号同步页脚版本徽章（发版流程自动，不再手改）"""
+    cl = io.open(os.path.join(ROOT, 'CHANGELOG.md'), encoding='utf-8').read()
+    m = re.search(r'^## \[(\d+\.\d+\.\d+)\]', cl, re.M)
+    if not m: return
+    ver = m.group(1)
+    h = io.open(HTML, encoding='utf-8').read()
+    h2 = re.sub(r'(id="app-ver"[^>]*>)[^<]*(</b>)', r'\g<1>v' + ver + r'\g<2>', h)
+    if h2 != h:
+        io.open(HTML, 'w', encoding='utf-8').write(h2)
+        print('[build] 版本徽章同步为 v' + ver)
+
 if __name__ == '__main__':
     blob = load_blob()
     if '--check' in sys.argv:
         sys.exit(0 if check(blob) else 1)
     inline(blob)
+    sync_version()
     ok = check(blob)
     print('[build] 数据已内联 (%d KB)；语法校验: %s' % (len(blob) // 1024, '通过' if ok else '失败'))
     sys.exit(0 if ok else 1)
