@@ -574,6 +574,12 @@ window.addEventListener('error', e => {
   <label class="lp-row"><input type="checkbox" data-layer="tombs" checked> 🪦 墓葬群</label>
   <label class="lp-row"><input type="checkbox" data-layer="lakes" checked> 💧 湖泊水域</label>
   <label class="lp-row"><input type="checkbox" data-layer="railways" checked> 🚄 高铁·机场枢纽</label>
+  <div class="lp-row" style="padding-top:8px;border-top:1px solid rgba(var(--border-rgb),.15);margin-top:4px">
+    <span style="flex:none">朝代</span>
+    <select id="lp-era" style="flex:1;min-width:0;background:rgba(var(--input-rgb),.9);color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:3px 4px;font-size:11px;outline:none">
+      <option value="">全部</option>
+    </select>
+  </div>
 </div>
 
 <div id="share-panel" class="panel">
@@ -57431,6 +57437,7 @@ const state = {
   __camTouched: false,          // 用户是否手动转过相机（决定是否写深链 cam 参数）
   night: false,                 // 昼夜模式（夜景）
   layers: { landmarks: true, terrain: true, tombs: true, lakes: true, railways: true },
+  eraFilter: null,              // 朝代筛选（null=全部；'东汉'/'北魏'…）
                                  // 图层显隐开关
   schedule: true,               // 列车运行时刻制（按当地时间首末班/高峰）
   flyTo: null,
@@ -57616,6 +57623,23 @@ function buildRiver(origin, city){
     water.renderOrder = 1;
     grp.add(water);
 
+    // 流向流光（沿河道滑动的半透明亮条，示意水流方向）
+    if (pts.length > 2){
+      const flowN = Math.min(24, Math.max(3, Math.round(pts.length / 3)));
+      const flowMat = new THREE.MeshBasicMaterial({ color: cfg.centerColor || 0x8fd8ff,
+        transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide });
+      for (let k = 0; k < flowN; k++){
+        const flow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), flowMat.clone());
+        flow.rotation.x = -Math.PI / 2;
+        flow.renderOrder = 2;
+        flow.userData = { t: k / flowN, speed: 0.055 + (k % 3) * 0.012, curvePts: pts,
+                          widthAt: wAt };
+        flow.userData.mat = flowMat;
+        grp.add(flow);
+        riverFlows.push(flow);
+      }
+    }
+
     // 2) 岸线描边（两侧轮廓）
     [-1, 1].forEach(side => {
       const edge = [];
@@ -57716,6 +57740,7 @@ let lineGroups = [];                     // 每条线路一个 Group
 let allMarkers = [], allLabels = [];
 let globalLabelInfo = [];                // 与 allLabels 一一对应 {lineIdx, stIdx}
 const riverChars = [];                   // 河流逐字标注（随距离缩放）
+const riverFlows = [];                  // 河道流光（沿流向移动的亮条）
 let lineStMeta = {};                     // lineId -> { mesh, meta[], transferMesh }
 
 function lineObjKey(l){ return l.branchOf ? l.branchOf + '|' + l.id : l.id; }
@@ -58273,7 +58298,7 @@ function buildWorld(doFit = true){
   if (world) world.railwayGroups = null;
   // 常驻环境容器跨城市复用：必须清空，否则上一城市的水系/地面残留到下一城市
   while (grouped.children.length) grouped.remove(grouped.children[0]);
-  allMarkers = []; allLabels = []; globalLabelInfo = []; lineStMeta = {}; riverChars.length = 0;
+  allMarkers = []; allLabels = []; globalLabelInfo = []; lineStMeta = {}; riverChars.length = 0; riverFlows.length = 0;
   state._labelOwners = new Set();
 
   const city = METRO_DATA.cities.find(c => c.id === state.cityId);
@@ -59095,6 +59120,22 @@ function buildCityLakes(city, origin, container){
   });
 }
 
+/* ---------------- 朝代着色（古墓群按时代分色） ---------------- */
+const ERA_STYLES = [
+  { key: '东汉', test: /东汉|汉/, color: 0xc89a4a, label: '东汉' },     // 赤金
+  { key: '曹魏', test: /曹魏|魏文帝|三国/, color: 0x9a6ad8, label: '曹魏' }, // 紫
+  { key: '西晋', test: /西晋|晋武/, color: 0x6a8ad8, label: '西晋' },     // 靛蓝
+  { key: '北魏', test: /北魏/, color: 0xd8606a, label: '北魏' },          // 朱红
+  { key: '唐',   test: /唐/, color: 0x4aa8d8, label: '唐' },              // 天青
+  { key: '民国', test: /民国/, color: 0x5aa87a, label: '民国' },          // 松绿
+  { key: '明清', test: /明|清/, color: 0x8a8a96, label: '明清' },          // 青灰
+];
+function eraStyle(era){
+  const s = String(era || '');
+  for (const st of ERA_STYLES) if (st.test.test(s)) return st;
+  return ERA_STYLES[ERA_STYLES.length - 1];
+}
+
 /* ---------------- 邙山古墓群（帝王将相·名人墓葬点） ---------------- */
 function buildCityTombs(city, origin, container){
   world.tombMeshes = [];
@@ -59105,9 +59146,10 @@ function buildCityTombs(city, origin, container){
     const isEmperor = t.role === '帝王';
     const dW = Math.max(1.4, t.moundD * 0.03);   // 封土直径（视觉最小 1.4u）
     const hH = Math.max(0.5, t.moundH * 0.08);   // 封土高（与山体 8× 夸张一致）
+    const era = eraStyle(t.era);
     const mound = new THREE.Mesh(
       new THREE.SphereGeometry(dW / 2, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-      new THREE.MeshStandardMaterial({ color: isEmperor ? 0xa88a5a : 0x8f7448, roughness: 1, flatShading: true }));
+      new THREE.MeshStandardMaterial({ color: era.color, roughness: 1, flatShading: true }));
     mound.position.set(p.x, 0, p.z);
     mound.scale.y = hH / (dW / 2);
     mound.userData.tombIdx = idx;
@@ -59119,7 +59161,7 @@ function buildCityTombs(city, origin, container){
     stele.position.set(p.x, 0.4, p.z + dW / 2 + 0.3);
     grp.add(stele);
     // 标签：帝王常显，名人近景显
-    const lb = makeLabel(t.name.split(' · ')[0], t.era.split(' · ')[0], isEmperor ? '#d8b878' : '#a8b8a8');
+    const lb = makeLabel(t.name.split(' · ')[0], era.label + ' · ' + t.era.split(' · ')[1], '#' + era.color.toString(16).padStart(6, '0'));
     lb.position.set(p.x, hH + 4.5, p.z);
     lb.scale.set(isEmperor ? 16 : 12, isEmperor ? 5.2 : 4, 1);
     lb.userData.alwaysVisible = isEmperor;
@@ -59237,6 +59279,14 @@ function applyLayers(){
   pg.landmarks.visible = !!state.layers.landmarks;
   pg.terrain.visible = !!state.layers.terrain;
   pg.tombs.visible = !!state.layers.tombs;
+  // 朝代筛选：按墓冢标签朝代过滤（visible 逐个设置）
+  if (world && world.tombMeshes){
+    world.tombMeshes.forEach((m, i) => {
+      const it = world.tombItems[i];
+      const match = !state.eraFilter || eraStyle(it.era).label === state.eraFilter;
+      m.parent.visible = !!match;
+    });
+  }
   pg.lakes.visible = !!state.layers.lakes;
   pg.railways.visible = !!state.layers.railways;
 }
@@ -59268,6 +59318,16 @@ $('lp-close').addEventListener('click', () => {
   $('layer-panel').classList.remove('show');
   $('btn-layers').classList.remove('on');
 });
+(function fillEraOptions(){
+  const sel = $('lp-era');
+  if (!sel) return;
+  ERA_STYLES.forEach(st => {
+    const o = document.createElement('option');
+    o.value = st.label; o.textContent = st.label;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', () => { state.eraFilter = sel.value || null; applyLayers(); });
+})();
 [...document.querySelectorAll('#layer-panel input[data-layer]')].forEach(cb => {
   cb.addEventListener('change', () => {
     state.layers[cb.dataset.layer] = cb.checked;
@@ -59466,6 +59526,28 @@ function serviceFactor(){
   if (hm < 5.5 || hm >= 23) return 0;
   return peak ? 1 : 0.6;
 }
+function updateRiverFlows(dt){
+  if (!riverFlows.length) return;
+  for (const f of riverFlows){
+    const d = f.userData;
+    d.t += dt * d.speed;
+    if (d.t > 1) d.t -= 1;
+    const pts = d.curvePts;
+    const fi = d.t * (pts.length - 1);
+    const i0 = Math.floor(fi), i1 = Math.min(pts.length - 1, i0 + 1);
+    const fr = fi - i0;
+    const x = pts[i0].x + (pts[i1].x - pts[i0].x) * fr;
+    const z = pts[i0].z + (pts[i1].z - pts[i0].z) * fr;
+    const w = Math.max(0.4, d.widthAt(d.t) * 1.25);
+    // 朝向沿河道切线
+    const dx = pts[i1].x - pts[i0].x, dz = pts[i1].z - pts[i0].z;
+    f.position.set(x, 0.35, z);
+    f.rotation.z = -Math.atan2(dz, dx);
+    f.scale.set(w * 1.6, w * 0.32, 1);
+    f.material.opacity = 0.32 * Math.sin(Math.PI * d.t);
+  }
+}
+
 function updateTrains(dt){
   if (!state.trains || !trainsMesh) return;
   const factor = state.schedule ? serviceFactor() : 1;
@@ -59942,6 +60024,7 @@ let __lastRaf = 0;
 function renderFrame(dtOverride){
   const dt = Math.min(dtOverride ?? clock.getDelta(), 0.05);
   updateTrains(dt);
+  updateRiverFlows(dt);
   checkPerf();
   // 罗盘：N 标记随相机方位角旋转（正北 = 场景 -Z = 纬度增大方向）
   if (compassRose && controls){
