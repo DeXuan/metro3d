@@ -58295,6 +58295,7 @@ function focusBridge(idx){
 
 function buildWorld(doFit = true){
   if (world){ scene.remove(world.root); disposeObj(world.root); }
+  __airportPlanes = [];
   trainsMesh = null; trains.length = 0;
   if (world){ world.tombMeshes = null; world.tombItems = null; }
   if (world) world.railwayGroups = null;
@@ -59184,7 +59185,7 @@ function buildCityTombs(city, origin, container){
 /* ---------------- 交通枢纽（机场，金色菱形 + 与地铁站连线） ---------------- */
 function buildCityAirports(city, origin, container){
   if (!city.airports || !city.airports.length) return;
-  city.airports.forEach(ap => {
+  city.airports.forEach((ap, idx0) => {
     const p = project(ap.lng, ap.lat, origin);
     const grp = new THREE.Group();
     // 金色菱形（旋转 45° 的方块 + 跑道标记）
@@ -59217,8 +59218,64 @@ function buildCityAirports(city, origin, container){
         [new THREE.Vector3(p.x, 1, p.z), new THREE.Vector3(sp.x, 1, sp.z)]),
         new THREE.LineBasicMaterial({ color: 0xE8B44A, transparent: true, opacity: .5 })));
     }
+    // 大飞机标志：绕机场盘旋（白色机身金色鼻锥，翼展 7.2 ≈ 翼展 720m 视觉）
+    const plane = makePlaneMesh();
+    plane.position.set(p.x, 13, p.z);
+    container.add(plane);
+    __airportPlanes.push({ grp: plane, cx: p.x, cz: p.z, alt: 13,
+      angle: Math.random() * Math.PI * 2, R: 11 + (idx0 % 3) * 2.5, speed: 0.32 + (idx0 % 2) * 0.08 });
     container.add(grp);
   });
+}
+
+/* ---------------- 机场飞机（盘旋的大飞机标志） ---------------- */
+function makePlaneMesh(){
+  const grp = new THREE.Group();
+  const body = new THREE.MeshStandardMaterial({ color: 0xf2f6fa, emissive: 0x8a97a8,
+    emissiveIntensity: .55, roughness: .35, metalness: .35 });
+  const gold = new THREE.MeshStandardMaterial({ color: 0xE8B44A, emissive: 0x6a4a10,
+    emissiveIntensity: .75, roughness: .4 });
+  // 机身（沿 +Z，机头在 +Z 端）
+  const fus = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 3.0, 3, 8), body);
+  fus.rotation.x = Math.PI / 2;
+  fus.position.z = 0.4;
+  grp.add(fus);
+  // 金色机头
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.34, 8, 8), gold);
+  nose.position.z = 2.15;
+  grp.add(nose);
+  // 主翼（后掠）
+  const wing = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.14, 1.5), body);
+  wing.position.set(0, -0.1, -0.2);
+  grp.add(wing);
+  // 尾翼（垂直 + 水平）
+  const vt = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 0.9), gold);
+  vt.position.set(0, 0.55, -1.9);
+  grp.add(vt);
+  const ht = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.1, 0.65), body);
+  ht.position.set(0, 0.12, -1.9);
+  grp.add(ht);
+  // 两台翼下引擎
+  [-1, 1].forEach(s => {
+    const eng = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.7, 3, 6), gold);
+    eng.rotation.x = Math.PI / 2;
+    eng.position.set(s * 2.1, -0.28, 0.35);
+    grp.add(eng);
+  });
+  return grp;
+}
+let __airportPlanes = [];
+function updateAirportPlanes(dt){
+  for (const p of __airportPlanes){
+    p.angle += dt * p.speed;
+    const x = p.cx + Math.cos(p.angle) * p.R;
+    const z = p.cz + Math.sin(p.angle) * p.R;
+    const nx = p.cx + Math.cos(p.angle + 0.12) * p.R;
+    const nz = p.cz + Math.sin(p.angle + 0.12) * p.R;
+    p.grp.position.set(x, p.alt, z);
+    p.grp.lookAt(nx, p.alt, nz);
+    p.grp.rotateY(Math.PI);   // 模型机头 +Z → 对齐飞行方向
+  }
 }
 
 /* ---------------- 城市铁路（高铁轨迹，与地铁视觉区分） ---------------- */
@@ -60104,6 +60161,7 @@ function renderFrame(dtOverride){
   updateTrains(dt);
   updateRiverFlows(dt);
   updateSnow(dt);
+  updateAirportPlanes(dt);
   if (state.screensaver && performance.now() - (state._ssLast || 0) >= 22000){
     state._ssLast = performance.now();
     ssNext();
