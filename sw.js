@@ -1,5 +1,5 @@
 /* metro3d Service Worker：预缓存入口，运行时缓存同源 GET */
-const CACHE = 'metro3d-v2';
+const CACHE = 'metro3d-v3';
 const PRECACHE = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -12,11 +12,25 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== self.location.origin) return;
+  const url = new URL(e.request.url);
+  const isPage = e.request.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('index.html');
+  if (isPage){
+    // 页面 HTML：network-first——在线永远拿最新版本，离线才回退缓存
+    e.respondWith(
+      fetch(e.request).then(resp => {
+        const copy = resp.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+        return resp;
+      }).catch(() => caches.match(e.request).then(hit => hit || caches.match('./index.html')))
+    );
+    return;
+  }
+  // 其余静态资源：cache-first
   e.respondWith(
     caches.match(e.request).then(hit => hit || fetch(e.request).then(resp => {
       const copy = resp.clone();
       caches.open(CACHE).then(c => c.put(e.request, copy));
       return resp;
-    }).catch(() => caches.match('./index.html')))
+    }))
   );
 });
