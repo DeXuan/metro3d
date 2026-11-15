@@ -23,11 +23,12 @@ DISSOLVE = 4             # 交叉溶解帧数
 
 SHOTS = [
     ('overview-shanghai.jpg', '53 城地铁线网 · 真实经纬度投影'),
+    ('night-shanghai.png',    '夜景模式 · 万家灯火 · 列车不息'),
     ('hzmb-water.png',        '超级桥梁 · 港珠澳大桥'),
     ('wuhan-hsr-cross.png',   '全国高铁网络 · 银白干线'),
-    ('luoyang-panorama.png',  '洛阳 · 邙山古墓群 / 城市地形'),
+    ('luoyang-panorama.png',  '洛阳 · 邙山古墓群 / 朝代着色'),
+    ('zhengzhou-hub.png',     '郑州 · 米字枢纽 + 机场'),
     ('beipanjiang-valley.png','跨山谷桥 · 北盘江大桥'),
-    ('zhengzhou-hub.png',     '郑州 · 米字高铁枢纽'),
 ]
 
 def cover(im, w, h):
