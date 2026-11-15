@@ -374,6 +374,7 @@
   #profile-panel .pf-head b{ font-size:12px; }
   #profile-panel .pf-head .pf-sub{ font-size:10.5px; color:var(--text-dim); flex:1; }
   #profile-panel .pf-close{ background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:13px; padding:0 2px; }
+  #profile-panel .pf-close.on{ color:var(--accent); }
   #profile-canvas{ display:block; width:100%; cursor:crosshair; }
   @media (max-width: 860px){
     #profile-panel{ width:calc(100vw - 28px); bottom:46px; }
@@ -589,7 +590,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="profile-panel" class="panel">
-  <div class="pf-head"><b id="pf-title">线路纵断面</b><span class="pf-sub">横轴：站序（示意） · 纵轴：高程（米） · 点击站点定位</span><button class="pf-close" id="pf-close">✕</button></div>
+  <div class="pf-head"><b id="pf-title">线路纵断面</b><span class="pf-sub">横轴：站序 · 纵轴：高程 · 点击定位 · 📌 钉住当前线对比埋深</span><button class="pf-close" id="pf-pin" title="钉住当前线路剖面，切换另一条线对比埋深">📌</button><button class="pf-close" id="pf-close">✕</button></div>
   <canvas id="profile-canvas" height="150"></canvas>
 </div>
 
@@ -59885,6 +59886,7 @@ $('btn-compare').addEventListener('click', e => {
 let profileUserHide = false;
 function updateProfile(){
   const panel = $('profile-panel');
+  if (pinnedProfile){ panel.classList.add('show'); drawProfile(world && state.focusIdx >= 0 ? world.lines[state.focusIdx] : pinnedProfile.line); return; }
   if (!world || world.city.kind === 'bridges' || state.focusIdx < 0 || profileUserHide){
     panel.classList.remove('show'); return;
   }
@@ -59894,6 +59896,8 @@ function updateProfile(){
   $('pf-title').textContent = line.name + ' · 纵断面';
   drawProfile(line);
 }
+let pinnedProfile = null;   // 📌 钉住的对比线路（跨城市可对比埋深）
+
 function drawProfile(line){
   const cv = $('profile-canvas');
   const W = cv.parentElement.clientWidth - 24, H = 150;
@@ -59903,13 +59907,52 @@ function drawProfile(line){
   const ctx = cv.getContext('2d');
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
+  const P = pinnedProfile;
+  const both = P && P.line !== line;
+  $('pf-title').textContent = line.name + ' · 纵断面' + (both ? `（📌 对比 ${P.label}）` : '');
+  // 合并高程范围（两层共用坐标系，高程才有对比意义）
+  let minE = 0, maxE = 0;
+  const range = ln => ln.stations.forEach(s => { const e = stElev(s); minE = Math.min(minE, e); maxE = Math.max(maxE, e); });
+  range(line); if (both) range(P.line);
+  minE = Math.min(minE, -4) - 2; maxE = Math.max(maxE, 4) + 2;
+  if (both) drawProfileInto(ctx, W, H, minE, maxE, P.line, P.color, true);
+  drawProfileInto(ctx, W, H, minE, maxE, line, line.color || '#4FC2E8', false);
+  // 点击命中当前线的站点
+  cv.onclick = ev => {
+    const r = cv.getBoundingClientRect();
+    const mx = ev.clientX - r.left;
+    let bi = 0, bd = 1e9;
+    line.stations.forEach((s, i) => { const d = Math.abs(X(i) - mx); if (d < bd){ bd = d; bi = i; } });
+    focusStation(line, bi);
+  };
+}
+
+function drawProfileInto(ctx, W, H, minE, maxE, line, col, dim){
+  const alpha = dim ? 0.38 : 1;
   const sts = line.stations, n = sts.length;
   const padL = 30, padR = 16, padT = 12, padB = 26;
-  let minE = 0, maxE = 0;
-  sts.forEach(s => { const e = stElev(s); minE = Math.min(minE, e); maxE = Math.max(maxE, e); });
-  minE = Math.min(minE, -4) - 2; maxE = Math.max(maxE, 4) + 2;
   const X = i => padL + (W - padL - padR) * (n === 1 ? .5 : i / (n - 1));
   const Y = e => padT + (H - padT - padB) * (1 - (e - minE) / (maxE - minE));
+  // 折线（发光；对比层降透明）
+  ctx.strokeStyle = col; ctx.lineWidth = dim ? 1.6 : 2;
+  ctx.globalAlpha = alpha; ctx.shadowColor = col; ctx.shadowBlur = dim ? 3 : 6;
+  ctx.beginPath();
+  sts.forEach((s, i) => { const px = X(i), py = Y(stElev(s)); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+  ctx.stroke(); ctx.shadowBlur = 0;
+  // 站点
+  ctx.fillStyle = col;
+  sts.forEach((s, i) => { ctx.beginPath(); ctx.arc(X(i), Y(stElev(s)), 2.4, 0, 7); ctx.fill(); });
+  ctx.globalAlpha = 1;
+  // 线名标注（对比层在末端标线名，避免混淆）
+  ctx.font = '10px sans-serif'; ctx.fillStyle = col;
+  ctx.fillText((dim ? '📌 ' : '') + line.name, W - padR - 66, dim ? padT + 10 : padT + 24);
+  if (dim) return;   // 对比层到此为止：水面/站名/最深标注只画当前线
+  // 地面参考线
+  ctx.strokeStyle = 'rgba(150,180,210,.45)'; ctx.setLineDash([4, 3]); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(W - padR, Y(0)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(143,176,201,.9)'; ctx.font = '9px sans-serif';
+  ctx.fillText('地面 0m', padL - 26, Y(0) + 3);
   // 水面段（跨河区间）
   const crs = (world.city.river && world.city.river.crossings || []);
   crs.forEach(cr => {
@@ -59922,22 +59965,8 @@ function drawProfile(line){
     ctx.fillStyle = '#8fd4ff'; ctx.font = '9px sans-serif';
     ctx.fillText('≈ 水面', x1 + 2, Y(-1.5) + 9);
   });
-  // 地面参考线
-  ctx.strokeStyle = 'rgba(150,180,210,.45)'; ctx.setLineDash([4, 3]); ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(W - padR, Y(0)); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = 'var(--text-dim)'; ctx.fillStyle = 'rgba(143,176,201,.9)'; ctx.font = '9px sans-serif';
-  ctx.fillText('地面 0m', padL - 26, Y(0) + 3);
-  // 折线（发光）
-  const col = line.color || '#4FC2E8';
-  ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.shadowColor = col; ctx.shadowBlur = 6;
-  ctx.beginPath();
-  sts.forEach((s, i) => { const px = X(i), py = Y(stElev(s)); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
-  ctx.stroke(); ctx.shadowBlur = 0;
-  // 站点 + 标签抽样
+  // 站名抽样
   const skip = Math.max(1, Math.ceil(n / 18));
-  ctx.fillStyle = col;
-  sts.forEach((s, i) => { ctx.beginPath(); ctx.arc(X(i), Y(stElev(s)), 2.4, 0, 7); ctx.fill(); });
   ctx.font = '9px sans-serif';
   sts.forEach((s, i) => {
     if (i % skip && i !== n - 1) return;
@@ -59951,14 +59980,6 @@ function drawProfile(line){
     ctx.fillStyle = '#ff9a6a'; ctx.font = '10px sans-serif';
     ctx.fillText('最深 −' + sts[di].depth + 'm', X(di) - 24, Y(stElev(sts[di])) - 6);
   }
-  // 点击命中站
-  cv.onclick = ev => {
-    const r = cv.getBoundingClientRect();
-    const mx = ev.clientX - r.left;
-    let bi = 0, bd = 1e9;
-    sts.forEach((s, i) => { const d = Math.abs(X(i) - mx); if (d < bd){ bd = d; bi = i; } });
-    focusStation(line, bi);
-  };
 }
 /* ---------------- 车次信息卡 ---------------- */
 let __trainEls = null;
@@ -60128,6 +60149,14 @@ function showTombCard(t){
   drawTombArt(card.querySelector('#tomb-canvas'), t);
   card.classList.add('show');
 }
+$('pf-pin').addEventListener('click', e => {
+  if (pinnedProfile){ pinnedProfile = null; e.currentTarget.classList.remove('on'); updateProfile(); return; }
+  if (!world || world.city.kind === 'bridges' || state.focusIdx < 0) return;
+  const line = world.lines[state.focusIdx];
+  pinnedProfile = { line, label: line.name + ' · ' + world.city.name, color: line.color || '#4FC2E8' };
+  e.currentTarget.classList.add('on');
+  updateProfile();
+});
 $('pf-close').addEventListener('click', () => { profileUserHide = true; updateProfile(); });
 
 /* ---------------- 主题切换（UI 浅色/深色，3D 画布保持暗色主体） ---------------- */
