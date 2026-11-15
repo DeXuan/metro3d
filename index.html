@@ -59239,28 +59239,28 @@ function makePlaneMesh(){
   // 机身（沿 +Z，机头在 +Z 端）
   const fus = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 3.0, 3, 8), body);
   fus.rotation.x = Math.PI / 2;
-  fus.position.z = 0.4;
+  fus.position.z = -0.4;
   grp.add(fus);
   // 金色机头
   const nose = new THREE.Mesh(new THREE.SphereGeometry(0.34, 8, 8), gold);
-  nose.position.z = 2.15;
+  nose.position.z = -2.15;
   grp.add(nose);
   // 主翼（后掠）
   const wing = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.14, 1.5), body);
-  wing.position.set(0, -0.1, -0.2);
+  wing.position.set(0, -0.1, 0.2);
   grp.add(wing);
   // 尾翼（垂直 + 水平）
   const vt = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 0.9), gold);
-  vt.position.set(0, 0.55, -1.9);
+  vt.position.set(0, 0.55, 1.9);
   grp.add(vt);
   const ht = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.1, 0.65), body);
-  ht.position.set(0, 0.12, -1.9);
+  ht.position.set(0, 0.12, 1.9);
   grp.add(ht);
   // 两台翼下引擎
   [-1, 1].forEach(s => {
     const eng = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.7, 3, 6), gold);
     eng.rotation.x = Math.PI / 2;
-    eng.position.set(s * 2.1, -0.28, 0.35);
+    eng.position.set(s * 2.1, -0.28, -0.35);
     grp.add(eng);
   });
   return grp;
