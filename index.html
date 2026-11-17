@@ -424,6 +424,14 @@
     position:absolute; left:50%; bottom:3px; transform:translateX(-50%);
     font-size:8px; color:var(--text-dim); white-space:nowrap;
   }
+  /* 罗盘移动端重定位（v1.7.0）：窄屏压住标题 → 移到左下角缩小。
+     必须位于基础规则之后（同优先级靠后生效）。 */
+  @media (max-width: 860px){
+    #compass{
+      right:auto; top:auto; left:14px; bottom:14px;
+      width:46px; height:46px;
+    }
+  }
 
   /* ---------- 车次信息卡 ---------- */
   #train-card{
@@ -683,7 +691,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v1.6.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v1.7.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -57477,6 +57485,9 @@ window.__diag = () => ({
   planes: (typeof __airportPlanes !== 'undefined' && __airportPlanes) ? __airportPlanes.map(p => +(p.angle || 0).toFixed(4)) : [],
   snow: !!(typeof snowField !== 'undefined' && snowField && snowField.visible),
   flows: (typeof riverFlows !== 'undefined' && riverFlows) ? riverFlows.length : 0,
+  renders: (typeof __renderCount !== 'undefined') ? __renderCount : -1,   // 实际渲染次数
+  idleN: (typeof __idleN !== 'undefined') ? __idleN : -1,                 // 空闲帧数
+  paused: (typeof __appPaused !== 'undefined') ? __appPaused : null,      // 可见性暂停态
 });
 
 /* =====================================================================
@@ -60407,9 +60418,24 @@ $('btn-theme').addEventListener('click', () => {
 function placeCompass(){
   const cp = document.getElementById('compass');
   if (!cp) return;
+  /* v1.7.0：窄屏罗盘移到左下角 46px——原 right:262px/top:14px 内联定位
+     会压住移动端标题（内联样式优先级高于 CSS 媒体查询，必须在 JS 侧修） */
+  if (window.matchMedia('(max-width: 860px)').matches){
+    cp.style.right = 'auto';
+    cp.style.top = 'auto';
+    cp.style.left = '14px';
+    cp.style.bottom = '14px';
+    cp.style.width = '46px';
+    cp.style.height = '46px';
+    return;
+  }
   const cmpOpen = document.getElementById('cmp-panel').classList.contains('show');
   cp.style.right = (262 + (cmpOpen ? 340 : 0)) + 'px';   // 对比面板打开时右移避让
   cp.style.top = '14px';
+  cp.style.left = 'auto';
+  cp.style.bottom = 'auto';
+  cp.style.width = '54px';
+  cp.style.height = '54px';
 }
 placeCompass();
 addEventListener('resize', placeCompass);
@@ -60448,7 +60474,7 @@ function checkPerf(){
   if (!__bootT){ __bootT = now; return; }
   const dt = (now - __perfLastT || 16) / 1000;
   __perfLastT = now;
-  if (document.hidden || dt > 0.1) return;   // 后台节流/大间隔帧不采样
+  if (document.hidden || dt > 0.1 || __idleN > 120) return;   // 后台节流/大间隔帧/空闲降帧时不采样（防误降画质）
   __fpsEma = __fpsEma * 0.95 + (1 / Math.max(dt, 0.001)) * 0.05;
   if (now - __bootT < 6000 || __quality >= 2) return;
   if (__quality === 0 && __fpsEma < 26){
@@ -60487,7 +60513,23 @@ const compassDeg = document.getElementById('compass-deg');
 let __lastTheta = 99;
 let introT = -1;
 let __lastRaf = 0;
+/* —— 空闲自适应降帧（v1.7.0 功耗优化）——
+   无持续动画且无交互时逐级降帧（约2s→20fps、5s→12fps、10s→6fps）；
+   任何交互/动画立即恢复全速。OrbitControls 未开阻尼，相机静止时跳帧视觉无损。 */
+let __idleN = 0;            // 连续“无动画且无交互”帧数
+let __appPaused = false;    // 页面不可见时暂停整个渲染循环
+let __renderCount = 0;      // 实际执行的 renderer.render 次数（__diag 暴露，供自动化验收）
+function __hasContinuousAnim(){
+  /* 仅“相机级”动画保持全速：吸引旋转/开场镜头/巡航/列车/屏保。
+     装饰性动画（河道流光/飞机盘旋/飘雪/汉字标注缩放）允许随空闲降帧慢放——
+     空闲=用户 10s+ 未交互，省电优先；任何交互立即恢复全速。 */
+  return !!state.screensaver
+    || introT >= 0
+    || !!(state.flyTo || state.cruise)
+    || controls.autoRotate === true;
+}
 function renderFrame(dtOverride){
+  if (__appPaused) return;
   const dt = Math.min(dtOverride ?? clock.getDelta(), 0.05);
   updateTrains(dt);
   updateRiverFlows(dt);
@@ -60587,13 +60629,66 @@ function renderFrame(dtOverride){
     });
   }
   if (introT < 0 && !state.flyTo && !state.cruise) controls.update();
+  __renderCount++;
   renderer.render(scene, camera);
 }
 function animate(){
   requestAnimationFrame(animate);
   __lastRaf = performance.now();
+  if (__appPaused) return;
+  const hasAnim = __hasContinuousAnim();
+  if (hasAnim){
+    __idleN = 0;
+  } else {
+    __idleN++;
+    // 空闲降帧（含列车慢放）：2s→约30fps、8s→约20fps、15s→约10fps；交互立即恢复全速
+    const skip = __idleN > 900 ? 5 : __idleN > 480 ? 2 : __idleN > 120 ? 1 : 0;
+    if (skip && (__idleN % (skip + 1)) !== 0) return;
+  }
   renderFrame();
 }
+document.addEventListener('visibilitychange', () => {
+  __appPaused = document.hidden;
+  if (!__appPaused){
+    clock.getDelta();          // 丢弃隐藏期间累积的大间隔，防止单帧 dt 突跳
+    renderFrame();
+  }
+}, { passive: true });
+/* 任何指针/滚轮/点击交互立即恢复全速渲染 */
+document.addEventListener('pointermove', () => { __idleN = 0; }, { passive: true, capture: true });
+document.addEventListener('pointerdown', () => { __idleN = 0; }, { passive: true, capture: true });
+document.addEventListener('wheel', () => { __idleN = 0; }, { passive: true, capture: true });
+document.addEventListener('click', () => { __idleN = 0; }, { passive: true, capture: true });
+
+/* —— WebGL 上下文丢失恢复（v1.7.0 稳定性）：GPU 重置不再静默黑屏 —— */
+(function setupContextRecovery(){
+  const cv = document.getElementById('c');
+  if (!cv) return;
+  let ov = null;
+  const ensureOv = () => {
+    if (ov) return ov;
+    ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;display:none;flex-direction:column;gap:12px;'
+      + 'align-items:center;justify-content:center;background:rgba(8,12,18,.88);color:#e8eef5;'
+      + 'font-family:inherit;backdrop-filter:blur(6px);text-align:center;padding:20px';
+    ov.innerHTML = '<div style="font-size:17px;font-weight:600">⚠️ 图形上下文已丢失</div>'
+      + '<div style="font-size:12.5px;color:#9fb0c3;line-height:1.7">GPU 驱动重置或显存不足导致 3D 渲染中断<br>多数情况下刷新页面即可恢复</div>'
+      + '<button id="ctx-reload" style="margin-top:6px;padding:10px 26px;border-radius:999px;'
+      + 'border:1px solid rgba(79,194,232,.55);background:rgba(79,194,232,.16);color:#7cc7ee;'
+      + 'font-size:13.5px;cursor:pointer">刷新页面恢复</button>';
+    document.body.appendChild(ov);
+    ov.querySelector('#ctx-reload').addEventListener('click', () => location.reload());
+    return ov;
+  };
+  cv.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    const o = ensureOv(); o.style.display = 'flex';
+  }, false);
+  cv.addEventListener('webglcontextrestored', () => {
+    if (ov) ov.style.display = 'none';
+    try { clock.getDelta(); renderFrame(); } catch (_) {}
+  }, false);
+})();
 
 /* ---------------- 启动 ---------------- */
 /* ---------------- 深链：?city=shanghai&line=sh-9 ---------------- */
@@ -61011,7 +61106,7 @@ setTimeout(() => { if ('serviceWorker' in navigator && location.protocol.startsW
 $('hint').style.opacity = '0'; }, 9000);
 
 animate();
-setInterval(() => { if (performance.now() - __lastRaf > 300) renderFrame(); }, 120);
+setInterval(() => { if (document.hidden || __appPaused || performance.now() - __lastRaf > 300) return; renderFrame(); }, 120);
 document.getElementById('loading').classList.add('hide');
 
 document.getElementById('loading').classList.add('hide');
