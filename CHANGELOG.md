@@ -2,6 +2,18 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.8.0] — 2026-11-18
+
+### 新功能
+
+- **🎬 一键录制 WebM**：工具区新增「录制」按钮——canvas.captureStream(30) + MediaRecorder（vp9→vp8→webm 逐级回退），本地合成、不上传；停止后自动下载 `metro3d-城市-时间戳.webm`。行为依据：demo 演示视频累计 39 次下载，用户明确有「把场景带回去」的需求
+- **录制期间强制全速渲染**：`__hasContinuousAnim` 纳入录制态——空闲降帧若生效会把视频录成慢放（关键边界，实测覆盖）
+- **误关页保护**：录制中 `beforeunload` 拦截提醒；不支持 MediaRecorder 的浏览器 toast 优雅降级
+
+### 工程
+
+- `__diag()` 扩展 `rec` 字段供自动化验收；CHANGELOG/版本徽章同步 v1.8.0
+
 ## [1.7.0] — 2026-11-18
 
 ### 性能（功耗）

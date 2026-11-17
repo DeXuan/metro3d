@@ -583,6 +583,7 @@ window.addEventListener('error', e => {
     <button class="btn" id="btn-compare">⚖ 对比</button>
     <button class="btn" id="btn-layers">🗂 图层</button>
     <button class="btn" id="btn-screenshot">📷 截图</button>
+    <button class="btn" id="btn-rec">🎬 录制</button>
     <button class="btn" id="btn-glb">⬇ GLB</button>
     <button class="btn" id="btn-fullscreen">⛶ 全屏</button>
     <button class="btn" id="btn-ss">🔌 屏保</button>
@@ -691,7 +692,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v1.7.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v1.8.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -57488,6 +57489,7 @@ window.__diag = () => ({
   renders: (typeof __renderCount !== 'undefined') ? __renderCount : -1,   // 实际渲染次数
   idleN: (typeof __idleN !== 'undefined') ? __idleN : -1,                 // 空闲帧数
   paused: (typeof __appPaused !== 'undefined') ? __appPaused : null,      // 可见性暂停态
+  rec: (typeof __recState !== 'undefined') ? !!__recState : false,        // 录制中
 });
 
 /* =====================================================================
@@ -59663,6 +59665,57 @@ $('btn-screenshot').addEventListener('click', () => {
     perfToast('截图已保存到下载目录');
   }, 'image/png');
 });
+
+/* —— 录制导出（v1.8.0）：canvas.captureStream + MediaRecorder 本地合成 WebM ——
+   零外链、不上传；录制期间强制全速渲染（__hasContinuousAnim 含 __recState），
+   避免空闲降帧把视频录成慢放。行为依据：demo 演示视频累计 39 次下载。 */
+let __recState = null;   // { recorder, chunks, stream } 或 null
+function __recFinish(){
+  if (!__recState) return;
+  __recState = null;
+  $('btn-rec').classList.remove('on');
+  $('btn-rec').textContent = '🎬 录制';
+}
+$('btn-rec').addEventListener('click', () => {
+  if (__recState){ try { __recState.recorder.stop(); } catch(e){} __recFinish(); return; }
+  const cv = document.getElementById('c');
+  if (!cv.captureStream || typeof MediaRecorder === 'undefined'){
+    perfToast('当前浏览器不支持视频录制'); return;
+  }
+  const mime = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
+    .find(m => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m));
+  if (!mime){ perfToast('当前浏览器不支持 WebM 编码'); return; }
+  try {
+    const stream = cv.captureStream(30);
+    const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8000000 });
+    const chunks = [];
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => {
+      __recFinish();
+      stream.getTracks().forEach(t => t.stop());
+      if (!chunks.length){ perfToast('未录到任何画面'); return; }
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'metro3d-' + state.cityId + '-' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.webm';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      perfToast('🎬 录制已保存到下载目录（WebM）');
+    };
+    rec.onerror = () => { __recFinish(); perfToast('录制出错，已停止'); };
+    rec.start(500);
+    __recState = { recorder: rec, chunks, stream };
+    $('btn-rec').classList.add('on');
+    $('btn-rec').textContent = '⏹ 停止';
+    perfToast('🔴 录制中——工具区再次点击「停止」保存');
+  } catch(e){
+    perfToast('录制启动失败：' + (e && e.message ? e.message.slice(0, 40) : '未知错误'));
+  }
+});
+addEventListener('beforeunload', e => {
+  if (__recState){ e.preventDefault(); e.returnValue = ''; }   // 录制中误关页面前提醒
+});
 $('btn-ss').addEventListener('click', e => {
   if (state.screensaver) exitScreensaver();
   else startScreensaver();
@@ -60522,11 +60575,13 @@ let __renderCount = 0;      // 实际执行的 renderer.render 次数（__diag �
 function __hasContinuousAnim(){
   /* 仅“相机级”动画保持全速：吸引旋转/开场镜头/巡航/列车/屏保。
      装饰性动画（河道流光/飞机盘旋/飘雪/汉字标注缩放）允许随空闲降帧慢放——
-     空闲=用户 10s+ 未交互，省电优先；任何交互立即恢复全速。 */
+     空闲=用户 10s+ 未交互，省电优先；任何交互立即恢复全速。
+     录制中强制全速：否则空闲降帧会把视频录成慢放。 */
   return !!state.screensaver
     || introT >= 0
     || !!(state.flyTo || state.cruise)
-    || controls.autoRotate === true;
+    || controls.autoRotate === true
+    || !!__recState;
 }
 function renderFrame(dtOverride){
   if (__appPaused) return;
