@@ -644,7 +644,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="anno-card" class="panel">
-  <div class="ac-head"><b>📍 我的标注</b><span class="ac-mode" id="ac-mode">点击模式</span><button id="anno-close">✕</button></div>
+  <div class="ac-head"><b>📍 我的标注</b><span class="ac-mode" id="ac-mode">点击模式</span><button id="anno-close" aria-label="关闭标注编辑器">✕</button></div>
   <input type="text" id="anno-name" placeholder="标注名称（保存当前点击位置）">
   <div class="ac-row">
     <button class="btn" id="anno-save">💾 保存</button>
@@ -59561,7 +59561,6 @@ $('btn-annotate').addEventListener('click', e => {
   setAnnoMode(!annoMode);
 });
 $('anno-close').addEventListener('click', () => setAnnoMode(false));
-$('anno-cancel') && document.getElementById('anno-cancel') === null;
 function reverseProject(x, z){
   const o = world.origin;
   return { lng: o.lng + x / (111320 * Math.cos(o.lat * Math.PI/180) * H_SCALE),
