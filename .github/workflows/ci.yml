@@ -23,3 +23,5 @@ jobs:
         run: python data/build.py --check
       - name: 数据质量自检
         run: python data/check_data.py
+      - name: 结构与资源体检（重复 id / 孤儿引用 / meta / PWA / 版本徽章 / 无障碍）
+        run: python data/check_html.py

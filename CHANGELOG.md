@@ -2,6 +2,23 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.5.3] — 2026-11-17
+
+### 无障碍
+
+- **prefers-reduced-motion 支持**：系统开启减少动态时，自动关闭开场镜头动画、视角自转、机场飞机盘旋、河流流光与季节飘雪；`&rm=1` / `&rm=0` 深链参数可强制覆盖。状态级验证通过（静止态飞机角度 3 秒零变化、流光 0 条；运动态全部恢复）
+- **图标按钮 aria-label**：6 个纯图标按钮（各面板关闭、站点列表切换）+ 2 个动态模板按钮补齐无障碍标签
+
+### PWA
+
+- **maskable 图标**：新增 `icons/icon-maskable-512.png`（78% 安全区），manifest 增补 `purpose: maskable`——Android 主屏幕图标不再被裁切；SW 预缓存同步（缓存 v4）
+
+### 工程
+
+- **结构体检入 CI**：新增 `data/check_html.py`（重复 id / JS 孤儿引用 / CSS 变量 / 必需 meta / PWA 资源 / 版本徽章同步 / 无障碍共 7 类），CI 三检并行
+- **数据自检扩展**：`check_data.py` 覆盖 airports / railways（含在建线年份）/ tombs / terrain / lakes / climate 全部扩展字段
+- 仅读诊断钩子 `window.__diag()` 供自动化验收
+
 ## [1.5.2] — 2026-11-15
 
 - **发版流程修复**：`build.py` 自动从 CHANGELOG 读取最新版本号并同步页脚版本徽章——发版不再需要手改徽章（本次检查发现 v1.5.1 徽章仍为 v1.5.0 的遗漏，已治本）

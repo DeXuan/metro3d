@@ -35,6 +35,41 @@ for c in d['cities']:
             if ds is not None and not (isinstance(ds, str) and ds.strip()):
                 issues.append(f"{c['name']}/{s['name']}: depthSource 需为非空字符串（URL 或文字说明）")
 
+    # ---- 扩展字段：airports / railways / tombs / terrain / lakes ----
+    for air in c.get('airports', []):
+        if not (73 < air.get('lng', 0) < 136 and 3 < air.get('lat', 0) < 54):
+            issues.append(f"{c['name']}/{air.get('name')}: 机场坐标越界")
+        if not air.get('iata') or not air.get('note'):
+            issues.append(f"{c['name']}/{air.get('name')}: 机场缺 iata/note")
+    for r in c.get('railways', []):
+        if not r.get('name') or len(r.get('points') or []) < 2:
+            issues.append(f"{c['name']}: 铁路走廊缺 name/points")
+            continue
+        for x, y in r['points']:
+            if not (73 < x < 136 and 3 < y < 54):
+                issues.append(f"{c['name']}/{r['name']}: 走廊点越界"); break
+        if r.get('year') and not (1900 <= r['year'] <= 2040):
+            issues.append(f"{c['name']}/{r['name']}: year 异常 {r['year']}")
+        if r.get('status') == 'building' and not r.get('year'):
+            issues.append(f"{c['name']}/{r['name']}: 在建线路需标注预计开通年份")
+    t = c.get('tombs')
+    if t:
+        for it in t.get('items', []):
+            if not (73 < it.get('lng', 0) < 136 and 3 < it.get('lat', 0) < 54):
+                issues.append(f"{c['name']}/{it.get('name')}: 墓葬坐标越界")
+            if not it.get('era') or not it.get('intro'):
+                issues.append(f"{c['name']}/{it.get('name')}: 墓葬缺 era/intro")
+            if it.get('role') not in ('帝王', '名人'):
+                issues.append(f"{c['name']}/{it.get('name')}: 墓葬 role 异常")
+    for tr in [c['terrain']] if c.get('terrain') else []:
+        for pk in tr.get('peaks') or []:
+            if len(pk) != 4: issues.append(f"{c['name']}/{tr.get('name')}: peaks 字段数异常")
+    for lk in c.get('lakes', []):
+        if len(lk.get('points') or []) < 3:
+            issues.append(f"{c['name']}/{lk.get('name')}: 湖泊点数不足")
+    if c.get('climate') not in (None, 'snow'):
+        issues.append(f"{c['name']}: climate 取值异常 {c.get('climate')}")
+
 print('数据自检：城市 %d / 线路 %d / 站点 %d' % (
     len(d['cities']),
     sum(len(c.get('lines', [])) for c in d['cities']),

@@ -563,7 +563,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="cmp-panel" class="panel">
-  <h2>城市对比<button id="cmp-close">✕</button></h2>
+  <h2>城市对比<button id="cmp-close" aria-label="关闭城市对比">✕</button></h2>
   <div class="cmp-sel">
     <select id="cmp-a"></select>
     <select id="cmp-b"></select>
@@ -582,7 +582,7 @@ window.addEventListener('error', e => {
   <div class="ic-head">
     <span class="ic-idx" id="ic-idx">01</span>
     <h3 id="ic-name">站名</h3>
-    <button class="ic-close" id="ic-close">✕</button>
+    <button class="ic-close" id="ic-close" aria-label="关闭站点信息">✕</button>
   </div>
   <div class="ic-chips" id="ic-chips"></div>
   <div class="ic-depth" id="ic-depth"></div>
@@ -590,12 +590,12 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="profile-panel" class="panel">
-  <div class="pf-head"><b id="pf-title">线路纵断面</b><span class="pf-sub">横轴：站序 · 纵轴：高程 · 点击定位 · 📌 钉住当前线对比埋深</span><button class="pf-close" id="pf-pin" title="钉住当前线路剖面，切换另一条线对比埋深">📌</button><button class="pf-close" id="pf-close">✕</button></div>
+  <div class="pf-head"><b id="pf-title">线路纵断面</b><span class="pf-sub">横轴：站序 · 纵轴：高程 · 点击定位 · 📌 钉住当前线对比埋深</span><button class="pf-close" id="pf-pin" title="钉住当前线路剖面，切换另一条线对比埋深">📌</button><button class="pf-close" id="pf-close" aria-label="关闭纵断面">✕</button></div>
   <canvas id="profile-canvas" height="150"></canvas>
 </div>
 
 <div id="layer-panel" class="panel">
-  <div class="lp-head"><b>图层</b><button id="lp-close">✕</button></div>
+  <div class="lp-head"><b>图层</b><button id="lp-close" aria-label="关闭图层面板">✕</button></div>
   <label class="lp-row"><input type="checkbox" data-layer="landmarks" checked> 🏙 地标建筑</label>
   <label class="lp-row"><input type="checkbox" data-layer="terrain" checked> ⛰ 山体地形</label>
   <label class="lp-row"><input type="checkbox" data-layer="tombs" checked> 🪦 墓葬群</label>
@@ -619,7 +619,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="share-panel" class="panel">
-  <div class="sh-head"><b>分享当前视图</b><button id="sh-close">✕</button></div>
+  <div class="sh-head"><b>分享当前视图</b><button id="sh-close" aria-label="关闭分享面板">✕</button></div>
   <div class="sh-link"><input id="sh-url" readonly><button id="sh-copy">复制链接</button></div>
   <div class="sh-qr"><img id="sh-qr-img" alt="扫码打开" referrerpolicy="no-referrer"></div>
   <div class="sh-btns">
@@ -631,7 +631,7 @@ window.addEventListener('error', e => {
 </div>
 
 <button id="btn-list-float" title="展开站点列表"><span class="ic">☰</span><b id="float-count">0</b></button>
-<button id="btn-list-toggle">站点</button>
+<button id="btn-list-toggle" aria-label="展开或收起站点列表">站点</button>
 <button id="btn-ctrl-toggle">⚙ 视图</button>
 
 <div id="compass" title="罗盘：N=正北 · 点击回正北">
@@ -646,7 +646,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v1.5.1</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v1.5.2</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -57427,7 +57427,22 @@ return OrbitControls;
 })();
 </script>
 
-<script type="module">/* =====================================================================
+<script type="module">
+/* ---------------- 减少动态效果（无障碍 + 深链 &rm=1 可强制） ---------------- */
+const __rmParam = new URLSearchParams(location.search).get('rm');
+const __reduceMotion = __rmParam === '1' ? true : __rmParam === '0' ? false :
+  !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+document.documentElement.dataset.reduceMotion = __reduceMotion ? '1' : '0';
+// 只读诊断钩子（自动化验收用，不参与渲染逻辑）
+window.__diag = () => ({
+  reduce: __reduceMotion,
+  autoRotate: !!(typeof controls !== 'undefined' && controls && controls.autoRotate),
+  planes: (typeof __airportPlanes !== 'undefined' && __airportPlanes) ? __airportPlanes.map(p => +(p.angle || 0).toFixed(4)) : [],
+  snow: !!(typeof snowField !== 'undefined' && snowField && snowField.visible),
+  flows: (typeof riverFlows !== 'undefined' && riverFlows) ? riverFlows.length : 0,
+});
+
+/* =====================================================================
  * 城市地铁地下三维视图 · 多线路版
  * 渲染层完全由 METRO_DATA 驱动：城市 → 线路(含支线) → 站点
  * 扩展：向 cities[].lines 添加线路对象即可，渲染逻辑无需改动
@@ -57522,7 +57537,7 @@ const controls = new window.OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
 controls.maxPolarAngle = Math.PI * 0.52;
-controls.autoRotate = true;
+controls.autoRotate = !__reduceMotion;
 controls.autoRotateSpeed = -0.35;
 
 scene.add(new THREE.AmbientLight(0x88aacc, 1.0));
@@ -57664,7 +57679,7 @@ function buildRiver(origin, city){
 
     // 流向流光（沿河道滑动的半透明亮条，示意水流方向；海湾/港/海峡不设流向）
     const isBay = /(湾|港)$/.test(cfg.name || '') || cfg.name === '鹭江';
-    if (pts.length > 2 && !isBay){
+    if (pts.length > 2 && !isBay && !__reduceMotion){
       const flowN = Math.min(24, Math.max(3, Math.round(pts.length / 3)));
       const flowMat = new THREE.MeshBasicMaterial({ color: cfg.centerColor || 0x8fd8ff,
         transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide });
@@ -58504,7 +58519,7 @@ function buildWorld(doFit = true){
   world.strataGroup = strataGroup;
   {
     const sf = ensureSnow();
-    sf.visible = city.climate === 'snow';
+    sf.visible = city.climate === 'snow' && !__reduceMotion;
   }
   buildCityRailways(city, origin, poiGroups.railways);
   buildCityAirports(city, origin, poiGroups.railways);
@@ -59305,7 +59320,8 @@ function makePlaneMesh(){
 let __airportPlanes = [];
 function updateAirportPlanes(dt){
   for (const p of __airportPlanes){
-    p.angle -= dt * p.speed;   // 俯视逆时针盘旋
+    if (__reduceMotion) continue;   // 减少动态：飞机悬停不动
+  p.angle -= dt * p.speed;   // 俯视逆时针盘旋
     const x = p.cx + Math.cos(p.angle) * p.R;
     const z = p.cz + Math.sin(p.angle) * p.R;
     const nx = p.cx + Math.cos(p.angle - 0.12) * p.R;
@@ -59654,7 +59670,7 @@ function startScreensaver(){
   state.screensaver = true;
   const btn = $('btn-ss');
   if (btn) btn.classList.add('on');
-  controls.autoRotate = true;
+  controls.autoRotate = !__reduceMotion;
   controls.autoRotateSpeed = -0.45;
   perfToast('屏保模式 · 触摸任意处退出');
   state._ssLast = performance.now();
@@ -59991,7 +60007,7 @@ function ensureTrainCard(){
     <div class="tc-head">
       <span class="tc-badge" id="tcn-line">—</span>
       <b id="tcn-name" style="font-size:12.5px">车次</b>
-      <button class="tc-close" id="tcn-close">✕</button>
+      <button class="tc-close" id="tcn-close" aria-label="关闭车次信息">✕</button>
     </div>
     <div class="tc-row"><span>方向</span><b id="tcn-dir">—</b></div>
     <div class="tc-row"><span>当前区间</span><b id="tcn-seg">—</b></div>
@@ -60054,7 +60070,7 @@ function ensureTombCard(){
     <div class="ic-head">
       <span class="ic-idx" id="tc-era">—</span>
       <h3 id="tc-name">墓葬</h3>
-      <button class="tc-close" id="tc-close">✕</button>
+      <button class="tc-close" id="tc-close" aria-label="关闭墓葬详情">✕</button>
     </div>
     <div class="ic-chips" id="tc-chips"></div>
     <canvas id="tomb-canvas" height="120"></canvas>
@@ -60764,6 +60780,7 @@ let introFrom, introTo;
     controls.target.set(tx, ty, tz);
     controls.update();
   } else {
+    if (!__reduceMotion){
     const dir = new THREE.Vector3(0.15, 0.55, 0.95).normalize();
     introTo = camera.position.clone();
     introFrom = world.center.clone().addScaledVector(dir, world.size * 2.2);
@@ -60771,6 +60788,7 @@ let introFrom, introTo;
     camera.position.copy(introFrom);
     controls.enabled = false;
     introT = 0;
+    }
   }
 }
 
