@@ -534,6 +534,32 @@
   html body #v2-home-fab, html body #v2-share-fab { display:none !important; }
   /* 补丁层引用但本页未定义的变量（有 var() 回退，定义以消除 CI 警告） */
   :root{ --bg-2:#0d1520; --font:inherit; }
+
+  /* —— 深度之最（v1.9.1）：全国深埋站排行榜（实时计算自 8180 站数据）—— */
+  #deeptop-panel{ top:14px; right:264px; width:300px; display:none; padding:11px 13px;
+    max-height:calc(100vh - 28px); overflow:auto; }
+  #deeptop-panel.show{ display:block; }
+  #deeptop-panel .dt-row{ display:flex; align-items:center; gap:9px; padding:7px 8px;
+    border-radius:9px; cursor:pointer; }
+  #deeptop-panel .dt-row:hover, #deeptop-panel .dt-row:focus-visible{ background:rgba(79,194,232,.12); outline:none; }
+  #deeptop-panel .dt-rank{ width:26px; text-align:center; font-weight:700; font-size:12px;
+    color:var(--text-dim); flex:none; }
+  #deeptop-panel .dt-rank.top{ color:var(--accent); }
+  #deeptop-panel .dt-main{ flex:1; min-width:0; }
+  #deeptop-panel .dt-name{ font-size:12.5px; font-weight:600; color:var(--text);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #deeptop-panel .dt-name .dt-src{ color:#30d158; }
+  #deeptop-panel .dt-city{ font-size:10.5px; color:var(--text-dim); margin-top:1px; }
+  #deeptop-panel .dt-bar{ height:3px; border-radius:2px; background:rgba(var(--border-rgb), .25);
+    margin-top:4px; overflow:hidden; }
+  #deeptop-panel .dt-bar i{ display:block; height:100%; background:rgba(79,194,232,.6); }
+  #deeptop-panel .dt-depth{ flex:none; font-weight:700; color:var(--accent); font-size:12px; }
+  #deeptop-panel .dt-note{ font-size:10.5px; color:var(--text-dim); margin:10px 2px 2px; line-height:1.6; }
+  @media (max-width: 860px){
+    #deeptop-panel{ top:auto; bottom:0; left:0; right:0; width:auto; max-height:52vh;
+      border-radius:16px 16px 0 0; padding-bottom:max(14px, env(safe-area-inset-bottom)); }
+    #deeptop-panel .pf-sub{ display:none; }
+  }
 </style>
 
 <!--v2themelayer-->
@@ -1063,6 +1089,7 @@ window.addEventListener('error', e => {
     <button class="btn" id="btn-layers">🗂 图层</button>
     <button class="btn" id="btn-screenshot">📷 截图</button>
     <button class="btn" id="btn-rec">🎬 录制</button>
+    <button class="btn" id="btn-deeptop">🏆 深度之最</button>
     <button class="btn" id="btn-glb">⬇ GLB</button>
     <button class="btn" id="btn-fullscreen">⛶ 全屏</button>
     <button class="btn" id="btn-ss">🔌 屏保</button>
@@ -1104,6 +1131,12 @@ window.addEventListener('error', e => {
 <div id="profile-panel" class="panel">
   <div class="pf-head"><b id="pf-title">线路纵断面</b><span class="pf-sub">横轴：站序 · 纵轴：高程 · 点击定位 · 📌 钉住当前线对比埋深</span><button class="pf-close" id="pf-pin" title="钉住当前线路剖面，切换另一条线对比埋深">📌</button><button class="pf-close" id="pf-close" aria-label="关闭纵断面">✕</button></div>
   <canvas id="profile-canvas" height="150"></canvas>
+</div>
+
+<div id="deeptop-panel" class="panel">
+  <div class="pf-head"><b>🏆 深度之最 · 全国深埋站</b><span class="pf-sub">按站台埋深排序 · 点击飞行定位</span><button class="pf-close" id="dt-close" aria-label="关闭深度之最">✕</button></div>
+  <div id="deeptop-list"></div>
+  <p class="dt-note">埋深为公开资料实测值或算法示意值；带 ✓ 的条目标注了公开资料来源。榜首京张高铁八达岭长城站 102 米为世界最深高铁站实测纪录。</p>
 </div>
 
 <div id="layer-panel" class="panel">
@@ -1171,7 +1204,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v1.9.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v1.9.1</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -60120,6 +60153,56 @@ $('btn-rec').addEventListener('click', () => {
 addEventListener('beforeunload', e => {
   if (__recState){ e.preventDefault(); e.returnValue = ''; }   // 录制中误关页面前提醒
 });
+
+/* —— 深度之最（v1.9.1）：全国深埋站排行榜——实时计算自全部城市数据，零额外资源 —— */
+let __deeptopRows = null;
+function __deeptopOpen(){
+  if (!__deeptopRows){
+    const rows = [];
+    METRO_DATA.cities.forEach(c => {
+      if (c.kind === 'bridges') return;
+      (c.lines || []).forEach((l, li) => {
+        (l.stations || []).forEach((s, si) => {
+          if (s.type !== 'underground' || !(s.depth >= 10)) return;
+          rows.push({ name: s.name, cityId: c.id, cityName: c.name, lineName: l.name,
+            li, si, depth: s.depth, src: (s.depthSource || '').trim() });
+        });
+      });
+    });
+    rows.sort((a, b) => b.depth - a.depth);
+    // 同城同名站（跨线换乘）只保留最深一条，避免重复上榜
+    const seen = new Set();
+    __deeptopRows = rows.filter(r => {
+      const k = r.cityId + '|' + r.name;
+      if (seen.has(k)) return false;
+      seen.add(k); return true;
+    }).slice(0, 20);
+  }
+  const list = $('deeptop-list');
+  if (!list.dataset.built){
+    const maxD = __deeptopRows[0] ? __deeptopRows[0].depth : 1;
+    list.innerHTML = __deeptopRows.map((r, i) =>
+      `<div class="dt-row" data-i="${i}" role="button" tabindex="0">
+        <span class="dt-rank${i < 3 ? ' top' : ''}">${i + 1}</span>
+        <div class="dt-main">
+          <div class="dt-name">${esc(r.name)}${r.src ? ' <span class="dt-src">✓</span>' : ''}</div>
+          <div class="dt-city">${esc(r.cityName)} · ${esc(r.lineName)}</div>
+          <div class="dt-bar"><i style="width:${Math.max(3, Math.round(r.depth / maxD * 100))}%"></i></div>
+        </div>
+        <span class="dt-depth">-${r.depth} m</span>
+      </div>`).join('');
+    [...list.querySelectorAll('.dt-row')].forEach(el => el.addEventListener('click', () => {
+      const r = __deeptopRows[+el.dataset.i];
+      $('deeptop-panel').classList.remove('show');
+      searchGo({ type: 'st', name: r.name, cityId: r.cityId, li: r.li, si: r.si, color: '' });
+    }));
+    list.dataset.built = '1';
+  }
+  $('deeptop-panel').classList.add('show');
+  $('panel-ctrl').classList.remove('show');
+}
+$('btn-deeptop').addEventListener('click', __deeptopOpen);
+$('dt-close').addEventListener('click', () => $('deeptop-panel').classList.remove('show'));
 $('btn-ss').addEventListener('click', e => {
   if (state.screensaver) exitScreensaver();
   else startScreensaver();
@@ -60958,6 +61041,7 @@ document.addEventListener('keydown', e => {
     const sh = $('share-panel');
     if (sh.classList.contains('show')){ sh.classList.remove('show'); return; }
     if ($('cmp-panel').classList.contains('show')){ openCmp(false); $('btn-compare').classList.remove('on'); return; }
+    if ($('deeptop-panel').classList.contains('show')){ $('deeptop-panel').classList.remove('show'); return; }
     if ($('profile-panel').classList.contains('show')){ $('pf-close').click(); return; }
     $('info-card').classList.remove('show');
   }
