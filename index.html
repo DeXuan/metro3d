@@ -524,6 +524,18 @@
   #tomb-card .tc-intro{ font-size:11.5px; line-height:1.75; color:var(--text); }
   #tomb-card .tc-note{ font-size:9.5px; color:var(--text-dim); margin-top:6px; }
   #tomb-card .tc-close{ background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:13px; }
+
+  /* ⚠️ 协同规则（v1.8.1，勿移除）：隐藏门户注入的 4 个 FAB——
+     本应用自带完整主题/分享/导航控件，门户 FAB 在 390px 视口与
+     「⚙ 视图 / 站点」浮钮四重重叠（真实缺陷，截图存证）。
+     补丁层用 display:inline-flex!important 且注入在文档末尾，
+     故此处用更高优先级选择器（html body 前缀）对抗。 */
+  @media (max-width: 900px){
+    html body #v2-style-fab, html body #v2-theme-fab,
+    html body #v2-home-fab, html body #v2-share-fab { display:none !important; }
+  }
+  /* 补丁层引用但本页未定义的变量（有 var() 回退，定义以消除 CI 警告） */
+  :root{ --bg-2:#0d1520; --font:inherit; }
 </style>
 
 <!--v2themelayer-->
@@ -996,17 +1008,6 @@ html[data-theme="light"] [style*="background:#1a1a1a"]{
   background-color:var(--card,#fff)!important;
   color:var(--text,#14181d)!important;
 }
-
-  /* v1.8.1（metro3d 定制）：隐藏门户注入的 4 个 FAB（🎨风格/🌗主题/←返回/⬆分享）。
-     本应用自带更完整的主题（深色/夜景/浅色）、分享（视角深链面板）与导航控件，
-     门户 FAB 在窄屏与「⚙ 视图 / 站点」浮钮重叠且功能重复。补丁层其余能力
-     （阅读进度/持久化）不受影响。 */
-  /* 门户补丁层用 display:inline-flex!important 且注入在文档末尾，
-     这里以更高优先级选择器（html body 前缀）确保隐藏生效 */
-  html body #v2-style-fab, html body #v2-theme-fab,
-  html body #v2-home-fab, html body #v2-share-fab { display:none !important; }
-  /* 补丁层引用但本页未定义的变量（有 var() 回退，定义以消除 CI 警告） */
-  :root{ --bg-2:#0d1520; --font:inherit; }
 </style>
 </head>
 <body><main style="display:contents">
