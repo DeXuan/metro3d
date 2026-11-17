@@ -28,7 +28,7 @@ echo "==> [3/3] 上传 index.html ($(du -h $LOCAL_FILE | cut -f1)) + PWA 资源"
 scp "$LOCAL_FILE" "$HOST:$REMOTE_DIR/"
 scp manifest.json sw.js "$HOST:$REMOTE_DIR/" 2>/dev/null || true
 ssh "$HOST" "mkdir -p $REMOTE_DIR/icons"
-scp icons/icon-192.png icons/icon-512.png "$HOST:$REMOTE_DIR/icons/" 2>/dev/null || true
+scp icons/*.png "$HOST:$REMOTE_DIR/icons/" 2>/dev/null || true
 
 echo "✅ 部署完成"
 if [[ -n "$PUBLIC_URL" ]]; then
