@@ -28,7 +28,11 @@ for c in d['cities']:
             if not (73 < s['lng'] < 136 and 3 < s['lat'] < 54):
                 issues.append(f"{c['name']}/{s['name']}: 坐标越界")
             if s['type'] == 'underground' and not (5 <= (s.get('depth') or 0) <= 45):
-                issues.append(f"{c['name']}/{s['name']}: 深度异常 {s.get('depth')}")
+                # 例外：公开资料实测的深埋站（如京张高铁八达岭长城站 102 米——
+                # 世界最深高铁站），需 depthSource 标注来源方可放行
+                ds_ok = isinstance(s.get('depthSource'), str) and s.get('depthSource').strip()
+                if not ds_ok:
+                    issues.append(f"{c['name']}/{s['name']}: 深度异常 {s.get('depth')}（>45m 需 depthSource 标注公开资料来源）")
             if s['type'] == 'elevated' and not (3 <= (s.get('height') or 0) <= 40):
                 issues.append(f"{c['name']}/{s['name']}: 高度异常 {s.get('height')}")
             ds = s.get('depthSource')
