@@ -145,8 +145,10 @@ test('E3 搜索：八达岭 → 下拉首项 → 信息卡显示埋深 102', asy
   }, null, { timeout: 5_000 });
 
   await expect(page.locator('#info-card')).toHaveClass(/show/);
-  await expect(page.locator('#info-card')).toContainText('102');
-  await expect(page.locator('#info-card')).toContainText('八达岭');
+  // 埋深必须出现在 #ic-depth（数值区），而不是只出现在 #ic-note 的说明文字里
+  // ——note 本身就带「埋深 102 米」字样，只断言整卡含 102 无法证明数值渲染没坏。
+  await expect(page.locator('#ic-depth')).toHaveText(/−102/);
+  await expect(page.locator('#ic-name')).toHaveText(/八达岭/);
 });
 
 test('E4 深度之最：榜单首行为八达岭 -102m，点击跨城直达信息卡', async ({ page }) => {
@@ -175,7 +177,8 @@ test('E5 星图：进入后 diag.nation=true，时间轴控件与总统计就位
 
   await expect.poll(async () => (await diag(page)).nation, { timeout: 10_000 }).toBe(true);
   await expect(page.locator('#nation-time')).toBeVisible();
-  await expect(page.locator('#nt-stat')).toHaveText(/53 城 · 377 线 · 8180 站/);
+  // toHaveText(/re/) 是「包含匹配」，必须加 ^$ 才能防止 "8180 站X" 之类的尾串污染通过
+  await expect(page.locator('#nt-stat')).toHaveText(/^53 城 · 377 线 · 8180 站$/);
   expect(page.url()).toContain('nation=1');
 });
 
@@ -191,10 +194,10 @@ test('E6 星图时间轴：滑杆到 1971 / 2010 时统计按建成年份收缩'
   }, y);
 
   await setYear(1971);
-  await expect(page.locator('#nt-stat')).toHaveText(/1 城 · 1 线 · 36 站/);
+  await expect(page.locator('#nt-stat')).toHaveText(/^1 城 · 1 线 · 36 站$/);
 
   await setYear(2010);
-  await expect(page.locator('#nt-stat')).toHaveText(/17 城 · 67 线 · 1493 站/);
+  await expect(page.locator('#nt-stat')).toHaveText(/^17 城 · 67 线 · 1493 站$/);
 
   await expect.poll(async () => (await diag(page)).nationYear, { timeout: 5_000 }).toBe(2010);
 });
@@ -251,14 +254,24 @@ test('E10 渲染健康：城市模式下渲染帧持续增长且未被暂停', a
   const before = await diag(page);
   expect(before.paused, 'headless 前台页面不应处于暂停态').toBe(false);
 
-  await page.waitForTimeout(3_000);
-  const after = await diag(page);
+  // 分 3 段采样：只比较首尾会把「中途卡死、末帧补一帧」也算通过。
+  // 应用有「空闲降帧」（无动画时降到 6fps），但渲染循环绝不停止，所以每段都必须增长。
+  const samples = [before.renders];
+  for (let i = 0; i < 3; i++) {
+    await page.waitForTimeout(1_000);
+    samples.push((await diag(page)).renders);
+  }
 
-  expect(after.renders, `渲染帧应从 ${before.renders} 继续增长`).toBeGreaterThan(before.renders);
-  expect(after.paused).toBe(false);
+  for (let i = 1; i < samples.length; i++) {
+    expect(samples[i], `第 ${i} 段渲染帧应增长（采样 ${samples.join(' → ')}）`).toBeGreaterThan(samples[i - 1]);
+  }
+  expect((await diag(page)).paused).toBe(false);
 });
 
 test('E11 无静默崩溃：多步交互全程零 pageerror / console.error / __diag().errors', async ({ page, errors }) => {
+  // 四段交互（切城/搜索/深埋榜/星图进出）各触发一次场景重建，合计必然超过单场景的 30s 预算。
+  // 这是用例本身的广度决定的，不是应用慢——单段实测都在 3s 内。
+  test.setTimeout(60_000);
   await boot(page);
 
   // 覆盖主要交互路径：切城 → 搜索 → 深度榜开合 → 星图进出

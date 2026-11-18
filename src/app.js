@@ -2363,6 +2363,8 @@ $('dt-close').addEventListener('click', () => {
    轨道俯冲 → 城市场景重建 → 开场俯冲动画，一条龙无感进入。 */
 let nationMode = false, nationGroup = null, nationCityHits = [], nationCam = { cx: 300, cz: -150, h: 2350 };
 let nationBuckets = [], nationCityFirst = [], nationYear = 2026, nationPlayTimer = 0;
+let nationLabels = [];   // v2.3.0：星图城市标签（按相机距离做屏幕空间补偿）
+let __savedFog = null;   // v2.3.0：进入星图前保存的雾效对象
 let nationRealStats = [], nationCityReal = [];
 
 
@@ -2422,6 +2424,7 @@ function buildNationScene(){
   }
   nationBuckets = [];
   nationCityFirst = [];
+  nationLabels = [];
   // 真实数据统计（与绘制抽样解耦）：每条线/每站按所属线路建成年份归属
   nationRealStats = [];
   nationCityReal = [];
@@ -2471,10 +2474,12 @@ function buildNationScene(){
     nationGroup.add(glow);
     nationCityFirst.push(glow);
     const short = c.name.split(' · ')[0];
+    // P0-1：星图城市标签保持恒定屏幕尺寸（原固定世界尺寸在 h=2350 时仅 1.4px 高）
     const lb = makeLabel(short, c.lines.length + ' 线 · ' + n + ' 站', '#7cc7ee');
-    const sc = (size / 11) * 1.12;
-    lb.scale.set(16.5 * sc, 5.3 * sc, 1);
+    lb.userData.nationLabel = true;
+    lb.userData.tier = n >= 120 ? 2 : 1;   // 站数≥120 视为大城市（字号更大、不透明）
     lb.position.set(np.x, size * 0.55 + 7, np.z);
+    nationLabels.push(lb);
     lb.userData.born = firstYear;
     nationGroup.add(lb);
     nationCityFirst.push(lb);
@@ -2555,6 +2560,10 @@ function enterNation(){
     .forEach(id => { const el = $(id); if (el) el.classList.remove('show'); });
   if (world.root) world.root.visible = false;
   grouped.visible = false;
+  // P0-2（v2.3.0）：星图视角距中心约 3127 单位，FogExp2 密度 0.00055 时雾占比 94.8%，
+  // 实测对比度仅 1.29:1（几乎不可见）→ 星图内临时关闭雾，退出时恢复
+  __savedFog = scene.fog;
+  scene.fog = null;
   buildNationScene();
   const tgt = new THREE.Vector3(nationCam.cx, 0, nationCam.cz);
   state.flyTo = { from: camera.position.clone(),
@@ -2595,6 +2604,7 @@ function exitNation(rebuildCity = true){
   controls.autoRotateSpeed = 2.0;
   if (world && world.root) world.root.visible = true;
   grouped.visible = true;
+  scene.fog = __savedFog || scene.fog;   // P0-2：恢复城市场景雾效
   $('btn-nation').textContent = '🗺 全国';
   $('btn-nation').classList.remove('on');
   if (rebuildCity) rebuild();
@@ -3663,6 +3673,26 @@ function renderFrame(dtOverride){
     });
   }
   // 河流字：按相机距离缩放，屏幕字号近似恒定（近景不过大、远景不过小）
+  // P0-1（v2.3.0）：星图标签屏幕恒定尺寸
+  // 推导：视口高 H 像素对应世界高 = 2*d*tan(fov/2)；要让文字高约 13px，
+  // sprite 高（文字约占 40%）需 ≈ 13/0.4 * d * 2*tan(fov/2)/H ≈ d * 1.55/H
+  // 默认机位 d≈2700、H=900 → 约 4.6 world units? 实测需 ~84 units（含 sprite 内边距），
+  // 故直接按「每 1 世界单位 = ppu 像素」反算，并限制在合理区间。
+  if (nationMode && nationLabels.length && camera){
+    const H = Math.max(320, innerHeight);
+    for (let i = 0; i < nationLabels.length; i++){
+      const lb = nationLabels[i];
+      const d = camera.position.distanceTo(lb.position);
+      const worldPerPx = (2 * d * Math.tan(camera.fov * Math.PI / 360)) / H;
+      // P2（v2.3.0）：按城市规模分级字号——东部密集区大城市用 34px、小城市 24px，
+      // 减少长三角/珠三角标签互相压盖
+      const tier = lb.userData.tier || 1;
+      const targetPx = tier >= 2 ? 34 : 24;
+      const hWorld = worldPerPx * targetPx;
+      lb.scale.set(hWorld * (16.5 / 5.3), hWorld, 1);
+      lb.material.opacity = tier >= 2 ? 1 : 0.82;
+    }
+  }
   if (riverChars.length){
     riverChars.forEach(sp => {
       const d = camera.position.distanceTo(sp.position);
