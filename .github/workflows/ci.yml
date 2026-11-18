@@ -25,3 +25,5 @@ jobs:
         run: python data/check_data.py
       - name: 结构与资源体检（重复 id / 孤儿引用 / meta / PWA / 版本徽章 / 无障碍）
         run: python data/check_html.py
+      - name: 静默失败门禁（空 catch 吞异常 / __errbuf 缺失）
+        run: python data/check_errors.py
