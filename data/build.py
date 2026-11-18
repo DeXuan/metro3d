@@ -16,10 +16,39 @@ import io, json, re, subprocess, sys, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HTML = os.path.join(ROOT, 'index.html')
 DATA = os.path.join(ROOT, 'data', 'metro_all.json')
+APP_JS = os.path.join(ROOT, 'src', 'app.js')
+APP_MARK = '/*__APP_INLINE__*/'
 
 def load_blob():
     d = json.load(open(DATA, encoding='utf-8'))
     return json.dumps(d, ensure_ascii=False, separators=(',', ':'))
+
+def load_app():
+    """业务 JS 源文件（v2.2.0 起外置，构建时内联回单文件交付）"""
+    return io.open(APP_JS, encoding='utf-8').read()
+
+def inline_app():
+    """把 src/app.js 回填到 index.html 的哨兵位置"""
+    h = io.open(HTML, encoding='utf-8').read()
+    if APP_MARK not in h:
+        return h                      # 未拆分形态（历史版本）直接返回
+    app = load_app()
+    h2 = h.replace(APP_MARK, '\n' + app, 1)
+    if h2 != h:
+        io.open(HTML, 'w', encoding='utf-8').write(h2)
+    return h2
+
+def check_app(h=None):
+    """校验 src/app.js 与 index.html 内联结果一致"""
+    h = h or io.open(HTML, encoding='utf-8').read()
+    if APP_MARK in h:
+        print('[build] index.html 仍是哨兵态——请运行 python data/build.py 内联 src/app.js')
+        return False
+    app = load_app()
+    if app not in h:
+        print('[build] src/app.js 与 index.html 内联内容不一致（产物被手改？）')
+        return False
+    return True
 
 def inline(blob):
     h = io.open(HTML, encoding='utf-8').read()
@@ -63,9 +92,13 @@ def sync_version():
 if __name__ == '__main__':
     blob = load_blob()
     if '--check' in sys.argv:
-        sys.exit(0 if check(blob) else 1)
+        ok_app = check_app()
+        sys.exit(0 if (check(blob) and ok_app) else 1)
+    # v2.2.0：先回填业务 JS（src/app.js），再内联数据，最后同步徽章
+    inline_app()
     inline(blob)
     sync_version()
-    ok = check(blob)
-    print('[build] 数据已内联 (%d KB)；语法校验: %s' % (len(blob) // 1024, '通过' if ok else '失败'))
+    ok = check(blob) and check_app()
+    print('[build] 数据已内联 (%d KB) + 业务 JS src/app.js 已内联；语法校验: %s'
+          % (len(blob) // 1024, '通过' if ok else '失败'))
     sys.exit(0 if ok else 1)

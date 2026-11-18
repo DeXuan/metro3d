@@ -57938,6 +57938,8 @@ return OrbitControls;
 </script>
 
 <script type="module">
+
+
 /* ---------------- 减少动态效果（无障碍 + 深链 &rm=1 可强制） ---------------- */
 const __rmParam = new URLSearchParams(location.search).get('rm');
 const __reduceMotion = __rmParam === '1' ? true : __rmParam === '0' ? false :
@@ -62090,7 +62092,8 @@ document.getElementById('loading').classList.add('hide');
     else { window.__posterReady = true; document.title = 'POSTER_READY · ' + document.title; }
   };
   tick();
-})();</script>
+})();
+</script>
 
 <script type="module">
 /* GLTFExporter (MIT) © three.js authors — 已内联适配全局 THREE，供场景 GLB 导出 */
