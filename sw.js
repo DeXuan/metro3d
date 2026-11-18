@@ -7,7 +7,8 @@ self.addEventListener('install', e => {
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    // 只清理本应用前缀的缓存，避免误删同源其它应用的缓存（同源还挂了 aihot 等多个站点）
+    Promise.all(keys.filter(k => k.indexOf('metro3d-') === 0 && k !== CACHE).map(k => caches.delete(k)))
   ).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {

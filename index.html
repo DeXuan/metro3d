@@ -561,6 +561,9 @@
     #deeptop-panel .pf-sub{ display:none; }
   }
 
+  /* 屏幕阅读器专用（视觉隐藏但可朗读）——v2.2.0 */
+  .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
   /* —— 星图生长史时间轴（v2.1.0）—— */
   #nation-time{ display:none; position:fixed; left:50%; transform:translateX(-50%);
     bottom:14px; z-index:30; width:min(620px, calc(100vw - 28px));
@@ -1153,6 +1156,8 @@ window.addEventListener('error', e => {
   <div class="pf-head"><b id="pf-title">线路纵断面</b><span class="pf-sub">横轴：站序 · 纵轴：高程 · 点击定位 · 📌 钉住当前线对比埋深</span><button class="pf-close" id="pf-pin" title="钉住当前线路剖面，切换另一条线对比埋深">📌</button><button class="pf-close" id="pf-close" aria-label="关闭纵断面">✕</button></div>
   <canvas id="profile-canvas" height="150"></canvas>
 </div>
+
+<div id="nation-kb-live" role="status" aria-live="polite" class="sr-only"></div>
 
 <div id="nation-time">
   <div class="nt-head">
@@ -57937,9 +57942,7 @@ return OrbitControls;
 })();
 </script>
 
-<script type="module">
-
-
+<script type="module">/*__APP_BEGIN__*/
 /* ---------------- 减少动态效果（无障碍 + 深链 &rm=1 可强制） ---------------- */
 const __rmParam = new URLSearchParams(location.search).get('rm');
 const __reduceMotion = __rmParam === '1' ? true : __rmParam === '0' ? false :
@@ -57956,8 +57959,10 @@ window.__diag = () => ({
   idleN: (typeof __idleN !== 'undefined') ? __idleN : -1,                 // 空闲帧数
   paused: (typeof __appPaused !== 'undefined') ? __appPaused : null,      // 可见性暂停态
   rec: (typeof __recState !== 'undefined') ? !!__recState : false,        // 录制中
-  nation: (typeof nationMode !== 'undefined') ? nationMode : false,           // 全国星图模式
-  nationYear: (typeof nationYear !== 'undefined') ? nationYear : null,           // 星图生长年份
+  // v2.2.0：nationMode/nationYear 在文件靠后以 let 声明，直接 typeof 会落入 TDZ 抛错，
+  // 必须用 try 包裹（诊断函数绝不能因为自身读取失败而误导排障）
+  nation: (() => { try { return nationMode; } catch(_) { return false; } })(),
+  nationYear: (() => { try { return nationYear; } catch(_) { return null; } })(),
   errors: (typeof __errbuf !== 'undefined') ? __errbuf.slice() : [],       // 近期错误环形缓冲（v2.2.0）
 });
 
@@ -57974,6 +57979,11 @@ window.__diag = () => ({
    - 通过 window.__diag().errors 暴露，供 E2E / 线上排障读取
    - 不改变任何业务逻辑，单条 200 字符截断以控内存                          */
 const __errbuf = [];
+
+/* 深链意图必须在任何 syncUrl() 之前求值（syncUrl 会改写 URL 并可能删掉 nation 参数） */
+const __wantNation = new URLSearchParams(location.search).get('nation') === '1';
+const __wantNationYear = +(new URLSearchParams(location.search).get('year') || 0) || 0;
+let __wantNationDone = false;   // 深链意图是否已处理
 const __ERR_MAX = 30;
 function __recErr(kind, msg, src){
   try {
@@ -59537,8 +59547,10 @@ canvas.addEventListener('pointerup', e => {
     ptr.x = (e.clientX/innerWidth)*2-1;
     ptr.y = -(e.clientY/innerHeight)*2+1;
     ray.setFromCamera(ptr, camera);
+    camera.updateMatrixWorld(true);   // 射线依赖最新世界矩阵（flyTo 结束时可能滞后）
     const nhit = ray.intersectObjects(nationCityHits, false);
     if (nhit.length) nationEnterCity(nhit[0].object.userData.cityId);
+    else window.__nationMiss = (window.__nationMiss || 0) + 1;   // 诊断：未命中计数
     return;
   }
   if (annoMode && world && world.city.kind !== 'bridges'){
@@ -60260,18 +60272,34 @@ function __deeptopOpen(){
         </div>
         <span class="dt-depth">-${r.depth} m</span>
       </div>`).join('');
-    [...list.querySelectorAll('.dt-row')].forEach(el => el.addEventListener('click', () => {
+    const __dtActivate = el => {
       const r = __deeptopRows[+el.dataset.i];
+      if (!r) return;
       $('deeptop-panel').classList.remove('show');
       searchGo({ type: 'st', name: r.name, cityId: r.cityId, li: r.li, si: r.si, color: '' });
-    }));
+    };
+    [...list.querySelectorAll('.dt-row')].forEach(el => {
+      el.addEventListener('click', () => __dtActivate(el));
+      // K1（v2.2.0）：键盘可达——Enter / Space 等同点击，Esc 关闭面板
+      el.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar'){
+          ev.preventDefault(); __dtActivate(el);
+        }
+      });
+    });
     list.dataset.built = '1';
   }
   $('deeptop-panel').classList.add('show');
   $('panel-ctrl').classList.remove('show');
+  // K3（v2.2.0）：焦点移入首个条目，关闭时归还触发按钮
+  const first = list.querySelector('.dt-row');
+  if (first) setTimeout(() => first.focus(), 30);
 }
 $('btn-deeptop').addEventListener('click', __deeptopOpen);
-$('dt-close').addEventListener('click', () => $('deeptop-panel').classList.remove('show'));
+$('dt-close').addEventListener('click', () => {
+  $('deeptop-panel').classList.remove('show');
+  $('btn-deeptop').focus();      // K3：焦点归还触发按钮
+});
 
 /* —— 🌌 全国星图模式（v2.0.0）：54 城地铁同时在线的轨道总览 ——
    真实经纬度投影的微缩线网星图：每城按站数定星图尺寸、按质心定位；
@@ -60280,7 +60308,11 @@ $('dt-close').addEventListener('click', () => $('deeptop-panel').classList.remov
 let nationMode = false, nationGroup = null, nationCityHits = [], nationCam = { cx: 300, cz: -150, h: 2350 };
 let nationBuckets = [], nationCityFirst = [], nationYear = 2026, nationPlayTimer = 0;
 let nationRealStats = [], nationCityReal = [];
-const __wantNation = new URLSearchParams(location.search).get('nation') === '1';
+
+
+/* v2.2.0：把星图状态同步到 window（跨 script 块可读，供自动化与遥测）
+   直接赋值不需要 try/catch——window 一定存在；写失败不应被静默吞掉 */
+function __setNationFlag(on){ window.__nationMode = !!on; }
 
 function natProject(lng, lat){ return { x: (lng - 105) * 85, z: -(lat - 36) * 85 }; }
 
@@ -60390,7 +60422,8 @@ function buildNationScene(){
     lb.userData.born = firstYear;
     nationGroup.add(lb);
     nationCityFirst.push(lb);
-    const hit = new THREE.Mesh(new THREE.SphereGeometry(Math.max(size * 0.8, 10), 12, 8),
+    // v2.2.0：拾取球需覆盖远景下的视觉半径（原 max(size*0.8,10) 在轨道高度难以命中）
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(Math.max(size * 1.6, 34), 12, 8),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
     hit.position.set(np.x, 0, np.z);
     hit.userData.cityId = c.id;
@@ -60478,6 +60511,15 @@ function enterNation(){
   $('stat-line').innerHTML = '<b>🌌 中国地铁星图</b> · 54 城同时在线<br>'
     + '377 条线路 · 8180 座车站 · 点击城市俯冲进入 · 🏆 看深度之最';
   $('nation-time').classList.add('show');
+  __wantNationDone = true;        // 深链意图已兑现，此后 syncUrl 由 nationMode 决定
+  __setNationFlag(true);
+  nationKbIdx = -1;               // K2：每次进入重置键盘游标
+  // K3：给画布可聚焦标记，键盘用户 Tab 可直接进入星图操作
+  const __cv = document.getElementById('c');
+  if (__cv){
+    __cv.setAttribute('tabindex', '0');
+    __cv.setAttribute('aria-label', '全国星图：方向键选择城市，Enter 进入，Esc 退出');
+  }
   nationStopPlay();
   const qy = +new URLSearchParams(location.search).get('year');
   applyNationYear((qy >= 1971 && qy <= 2026) ? qy : 2026);
@@ -60488,6 +60530,7 @@ function enterNation(){
 function exitNation(rebuildCity = true){
   if (!nationMode) return;
   nationMode = false;
+  __setNationFlag(false);
   nationStopPlay();
   $('nation-time').classList.remove('show');
   if (nationGroup){ scene.remove(nationGroup); disposeObj(nationGroup); nationGroup = null; }
@@ -60499,6 +60542,8 @@ function exitNation(rebuildCity = true){
   $('btn-nation').textContent = '🗺 全国';
   $('btn-nation').classList.remove('on');
   if (rebuildCity) rebuild();
+  // v2.2.0：确保下拉框与 state.cityId 一致（星图俯冲后曾出现 state=成都 / 下拉=上海 的错位）
+  try { populateSelectors(); } catch (e) { __recErr('selectors.sync', e && e.message, 'exitNation'); }
   syncUrl();
 }
 
@@ -60526,6 +60571,45 @@ function nationEnterCity(cityId){
 
 $('btn-nation').addEventListener('click', () => nationMode ? exitNation() : enterNation());
 
+/* K2（v2.2.0）：星图键盘可达——无需鼠标也能选城市
+   ←/→ 在 54 城间循环（按屏幕 X 排序，符合直觉），Enter 俯冲，Esc 退出星图。
+   当前高亮城市通过 aria-live 播报，供屏幕阅读器朗读。 */
+let nationKbIdx = -1;
+function nationKbCities(){
+  return nationCityHits
+    .map(h => ({ id: h.userData.cityId, x: h.position.x, z: h.position.z }))
+    .sort((a, b) => (a.x - b.x) || (a.z - b.z));
+}
+function nationKbAnnounce(){
+  const cities = nationKbCities();
+  const c = cities[nationKbIdx];
+  if (!c) return;
+  const city = METRO_DATA.cities.find(x => x.id === c.id);
+  const el = $('nt-stat');
+  if (el) el.setAttribute('data-kb-city', (city && city.name) || c.id);
+  const live = $('nation-kb-live');
+  if (live) live.textContent = '当前城市：' + ((city && city.name) || c.id) + '（Enter 进入）';
+}
+function nationKbStep(dir){
+  const cities = nationKbCities();
+  if (!cities.length) return;
+  nationKbIdx = nationKbIdx < 0
+    ? (dir > 0 ? 0 : cities.length - 1)
+    : (nationKbIdx + dir + cities.length) % cities.length;
+  nationKbAnnounce();
+}
+addEventListener('keydown', ev => {
+  if (!nationMode) return;
+  const t = ev.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+  if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown'){ ev.preventDefault(); nationKbStep(1); }
+  else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp'){ ev.preventDefault(); nationKbStep(-1); }
+  else if (ev.key === 'Enter' && nationKbIdx >= 0){
+    const c = nationKbCities()[nationKbIdx];
+    if (c){ ev.preventDefault(); nationEnterCity(c.id); }
+  }
+});
+
 /* 生长史控件（v2.1.0） */
 $('nt-range').addEventListener('input', e => {
   nationStopPlay();
@@ -60543,7 +60627,24 @@ window.__nationScreen = (id) => {
 };
 
 // 深链直达星图：?nation=1（模块加载即读参，避被启动期 syncUrl 抹除）
-if (__wantNation) setTimeout(() => { try { enterNation(); } catch(err){ __recErr('nation.enter', err && err.message, 'deep-link'); console.error('[nation] enter failed:', err); } }, 900);
+if (__wantNation){
+  /* 深链进入星图：必须等 world 就绪（enterNation 有 `!world` 守卫）。
+     轮询最多 8s，每 100ms 检查一次；成功即停。 */
+  let __wnTries = 0;
+  const __wnPoll = setInterval(() => {
+    __wnTries++;
+    if (world){                       // world 已构建
+      clearInterval(__wnPoll);
+      try { enterNation(); }
+      catch(err){ __recErr('nation.enter', err && err.message, 'deep-link'); console.error('[nation] enter failed:', err); }
+      return;
+    }
+    if (__wnTries > 80){
+      clearInterval(__wnPoll);
+      __recErr('nation.enter', 'world not ready after 8s', 'deep-link');
+    }
+  }, 100);
+}
 
 $('btn-ss').addEventListener('click', e => {
   if (state.screensaver) exitScreensaver();
@@ -61616,7 +61717,9 @@ function syncUrl(){
     if (state.night) u.searchParams.set('theme', 'night');
     else if (document.documentElement.getAttribute('data-theme') === 'light') u.searchParams.set('theme', 'light');
     else u.searchParams.delete('theme');
-    if (nationMode) u.searchParams.set('nation', '1');   // 🌌 星图深链
+    // 🌌 星图深链：nationMode 为真、或深链意图尚未消费（__wantNation）时都保留参数，
+    // 否则启动期 syncUrl 会抢在 enterNation(900ms) 之前把参数抹掉 → 深链失效。
+    if (nationMode || (__wantNation && !__wantNationDone)) u.searchParams.set('nation', '1');
     else u.searchParams.delete('nation');
     const L = state.layers, Ld = { landmarks: true, terrain: true, tombs: true, lakes: true, railways: true };
     if (Object.keys(Ld).some(k => !!L[k] !== Ld[k])){
@@ -62066,8 +62169,9 @@ document.getElementById('loading').classList.add('hide');
     const stCnt = (world && world.lines) ? world.lines.reduce((a,l)=>a+l.stations.length,0) : 0;
     const wm = document.createElement('div');
     wm.id = 'poster-wm';
-    const big = qp.get('wmsize') || '52';
-    wm.innerHTML = `<div style="font-size:${big}px;font-weight:700;letter-spacing:7px;color:#eaf4ff;line-height:1.18;text-shadow:0 6px 32px rgba(0,0,0,.9)">${cityName}轨道交通 · 地下三维线网</div>`
+    // 安全（v2.2.0）：wmsize 来自 URL，必须数字化后再插值——否则可注入 HTML（反射型 XSS）
+    const big = Math.min(200, Math.max(8, parseInt(qp.get('wmsize'), 10) || 52));
+    wm.innerHTML = `<div style="font-size:${big}px;font-weight:700;letter-spacing:7px;color:#eaf4ff;line-height:1.18;text-shadow:0 6px 32px rgba(0,0,0,.9)">${esc(cityName)}轨道交通 · 地下三维线网</div>`
       + `<div style="font-size:${Math.round(+big*0.42)}px;margin-top:14px;color:#9fc0d8;letter-spacing:3px;text-shadow:0 4px 20px rgba(0,0,0,.9)">${lineCnt} 条线路 · ${stCnt} 座车站 · 200× 垂直夸张</div>`;
     const pos = qp.get('wmpos') || 'bl';
     const css = { position:'fixed', zIndex:'99', pointerEvents:'none',
@@ -62093,7 +62197,7 @@ document.getElementById('loading').classList.add('hide');
   };
   tick();
 })();
-</script>
+/*__APP_END__*/</script>
 
 <script type="module">
 /* GLTFExporter (MIT) © three.js authors — 已内联适配全局 THREE，供场景 GLB 导出 */

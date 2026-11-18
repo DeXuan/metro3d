@@ -18,6 +18,8 @@ HTML = os.path.join(ROOT, 'index.html')
 DATA = os.path.join(ROOT, 'data', 'metro_all.json')
 APP_JS = os.path.join(ROOT, 'src', 'app.js')
 APP_MARK = '/*__APP_INLINE__*/'
+APP_BEGIN = '/*__APP_BEGIN__*/'
+APP_END = '/*__APP_END__*/'
 
 def load_blob():
     d = json.load(open(DATA, encoding='utf-8'))
@@ -28,25 +30,41 @@ def load_app():
     return io.open(APP_JS, encoding='utf-8').read()
 
 def inline_app():
-    """把 src/app.js 回填到 index.html 的哨兵位置"""
+    """把 src/app.js 整段回填到 index.html 的标记区（幂等：每次全量替换）
+
+    标记协议（首次拆分后 index.html 内保留）：
+        /*__APP_BEGIN__*/  ...构建时被 src/app.js 整体替换...  /*__APP_END__*/
+    源码是唯一事实源，产物不会与源码漂移。
+    """
     h = io.open(HTML, encoding='utf-8').read()
-    if APP_MARK not in h:
-        return h                      # 未拆分形态（历史版本）直接返回
-    app = load_app()
-    h2 = h.replace(APP_MARK, '\n' + app, 1)
+    app = load_app().strip("\n")
+    if APP_BEGIN in h and APP_END in h:
+        i0 = h.index(APP_BEGIN) + len(APP_BEGIN)
+        i1 = h.index(APP_END, i0)
+        h2 = h[:i0] + "\n" + app + "\n" + h[i1:]
+    elif APP_MARK in h:
+        h2 = h.replace(APP_MARK, "\n" + APP_BEGIN + "\n" + app + "\n" + APP_END + "\n", 1)
+    else:
+        return h                      # 未拆分形态（历史版本）
     if h2 != h:
         io.open(HTML, 'w', encoding='utf-8').write(h2)
     return h2
 
 def check_app(h=None):
-    """校验 src/app.js 与 index.html 内联结果一致"""
+    """校验 src/app.js 与 index.html 内联结果逐字节一致（标记协议）"""
     h = h or io.open(HTML, encoding='utf-8').read()
-    if APP_MARK in h:
-        print('[build] index.html 仍是哨兵态——请运行 python data/build.py 内联 src/app.js')
-        return False
-    app = load_app()
-    if app not in h:
-        print('[build] src/app.js 与 index.html 内联内容不一致（产物被手改？）')
+    if APP_BEGIN not in h or APP_END not in h:
+        if APP_MARK in h:
+            print('[build] index.html 仍是哨兵态——请运行 python data/build.py')
+            return False
+        return True                    # 未拆分形态
+    i0 = h.index(APP_BEGIN) + len(APP_BEGIN)
+    i1 = h.index(APP_END, i0)
+    embedded = h[i0:i1].strip("\n")
+    app = load_app().strip("\n")
+    if embedded != app:
+        print('[build] src/app.js 与 index.html 内联内容不一致（%d vs %d 字符）——请运行 python data/build.py'
+              % (len(embedded), len(app)))
         return False
     return True
 
