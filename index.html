@@ -597,6 +597,10 @@
     #nation-time{ bottom:calc(14px + env(safe-area-inset-bottom)); padding:8px 12px 9px; }
     #nation-time .nt-year{ font-size:15px; }
     #nation-time .nt-stat{ font-size:10.5px; }
+    /* v2.4.0 P1-3：星图模式下底部时间轴（~118px 高）会盖住「⚙视图/站点」浮钮，
+       实测浮钮中心被 nt-now / nt-range 抢占点击 → 上移到时间轴上方 */
+    body.in-nation #btn-ctrl-toggle{ bottom:calc(146px + env(safe-area-inset-bottom)); }
+    body.in-nation #btn-list-toggle{ bottom:calc(192px + env(safe-area-inset-bottom)); }
   }
 </style>
 
@@ -1255,7 +1259,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v2.3.1</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v2.4.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -60343,6 +60347,7 @@ let nationMode = false, nationGroup = null, nationCityHits = [], nationCam = { c
 let nationBuckets = [], nationCityFirst = [], nationYear = 2026, nationPlayTimer = 0;
 let nationLabels = [];   // v2.3.0：星图城市标签（按相机距离做屏幕空间补偿）
 let __savedFog = null;   // v2.3.0：进入星图前保存的雾效对象
+let nationGlows = [];    // v2.4.0：光晕 sprite（主题切换时按主题重涂）
 let nationRealStats = [], nationCityReal = [];
 
 
@@ -60350,21 +60355,38 @@ let nationRealStats = [], nationCityReal = [];
    直接赋值不需要 try/catch——window 一定存在；写失败不应被静默吞掉 */
 function __setNationFlag(on){ window.__nationMode = !!on; }
 
-function natProject(lng, lat){ return { x: (lng - 105) * 85, z: -(lat - 36) * 85 }; }
+/* P2-5（v2.4.0）：原投影对经纬度使用相同比例（各 85 单位/度），
+   在北纬 ~34° 处真实宽高比应为 cos(34°)≈0.83，导致中国版图被横向拉宽约 20%。
+   现按参考纬度余弦修正 x 方向，使星图形状更接近真实中国轮廓。 */
+const NAT_LAT0 = 34 * Math.PI / 180;
+const NAT_XSCALE = 85 * Math.cos(NAT_LAT0);
+function natProject(lng, lat){ return { x: (lng - 105) * NAT_XSCALE, z: -(lat - 36) * 85 }; }
 
 function nationGlowSprite(r){
   const dpr = 2, S = 128;
   const cv = document.createElement('canvas'); cv.width = S * dpr; cv.height = S * dpr;
   const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr);
   const gr = ctx.createRadialGradient(S/2, S/2, 4, S/2, S/2, S/2);
-  gr.addColorStop(0, 'rgba(140,214,246,.95)');
-  gr.addColorStop(.28, 'rgba(79,194,232,.42)');
-  gr.addColorStop(1, 'rgba(79,194,232,0)');
+  // P2-6（v2.4.0）：AdditiveBlending 在浅色背景上会被洗白、光晕完全消失
+  // （审计实测：浅底下城市只剩 2~4px 暗点）。按场景主题切换渐变色与混合模式。
+  const light = __sceneTheme === 'light';
+  if (light){
+    gr.addColorStop(0, 'rgba(6,104,168,.80)');      // 深蓝实心核
+    gr.addColorStop(.28, 'rgba(10,132,208,.30)');
+    gr.addColorStop(1, 'rgba(10,132,208,0)');
+  } else {
+    gr.addColorStop(0, 'rgba(140,214,246,.95)');
+    gr.addColorStop(.28, 'rgba(79,194,232,.42)');
+    gr.addColorStop(1, 'rgba(79,194,232,0)');
+  }
   ctx.fillStyle = gr; ctx.fillRect(0, 0, S, S);
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: tex, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending }));
+    map: tex, transparent: true, opacity: light ? .95 : .8, depthWrite: false,
+    blending: light ? THREE.NormalBlending : THREE.AdditiveBlending }));
   sp.scale.set(r * 2.1, r * 2.1, 1);
+  sp.userData.nationGlow = true;
+  nationGlows.push(sp);
   return sp;
 }
 
@@ -60403,6 +60425,7 @@ function buildNationScene(){
   nationBuckets = [];
   nationCityFirst = [];
   nationLabels = [];
+  nationGlows = [];
   // 真实数据统计（与绘制抽样解耦）：每条线/每站按所属线路建成年份归属
   nationRealStats = [];
   nationCityReal = [];
@@ -60581,6 +60604,7 @@ function enterNation(){
   $('stat-line').innerHTML = '<b>🌌 中国地铁星图</b> · 54 城同时在线<br>'
     + '377 条线路 · 8180 座车站 · 点击城市俯冲进入 · 🏆 看深度之最';
   $('nation-time').classList.add('show');
+  document.body.classList.add('in-nation');   // v2.4.0 P1-3：窄屏浮钮避让时间轴
   __wantNationDone = true;        // 深链意图已兑现，此后 syncUrl 由 nationMode 决定
   __setNationFlag(true);
   nationKbIdx = -1;               // K2：每次进入重置键盘游标
@@ -60593,7 +60617,9 @@ function enterNation(){
   nationStopPlay();
   const qy = +new URLSearchParams(location.search).get('year');
   applyNationYear((qy >= 1971 && qy <= 2026) ? qy : 2026);
-  if (qy && qy < 2026 && !__reduceMotion) nationPlay();   // 带年份深链 → 自动播放到当前
+  // P2-4（v2.4.0）：原先带年份深链会自动播放并在 1s 内把 year= 改写掉，
+  // 令「分享某个历史年份快照」变得不可能。改为停留在指定年份，用户点「▶ 播放生长」才演进。
+  if (qy && qy < 2026){ /* 保留静态年份快照，不自动播放 */ }
   syncUrl();
 }
 
@@ -60603,6 +60629,7 @@ function exitNation(rebuildCity = true){
   __setNationFlag(false);
   nationStopPlay();
   $('nation-time').classList.remove('show');
+  document.body.classList.remove('in-nation');
   if (nationGroup){ scene.remove(nationGroup); disposeObj(nationGroup); nationGroup = null; }
   nationCityHits = [];
   controls.autoRotate = false;
@@ -60775,6 +60802,17 @@ $('lp-close').addEventListener('click', () => {
 });
 function applySceneTheme(theme){
   __sceneTheme = theme;
+  // v2.4.0 P1-6 补：若已在星图中切换主题，已生成的光晕不会随 nationGlowSprite 重建
+  // → 这里重新设置混合模式（浅底 Additive 会把深色光晕洗白/消失）
+  if (typeof nationGlows !== 'undefined' && nationGlows.length){
+    const lightMode = theme === 'light';
+    nationGlows.forEach(sp => {
+      if (!sp.material) return;
+      sp.material.blending = lightMode ? THREE.NormalBlending : THREE.AdditiveBlending;
+      sp.material.opacity = lightMode ? .95 : .8;
+      sp.material.needsUpdate = true;
+    });
+  }
   const P = SCENE_THEME[theme] || SCENE_THEME.dark;
   renderer.setClearColor(P.clear);
   const night = theme === 'night';

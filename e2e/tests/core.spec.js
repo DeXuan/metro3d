@@ -239,13 +239,17 @@ test('E8 Esc：星图内按 Esc 退回城市模式并收起时间轴', async ({ 
   await expect(page.locator('#nation-time')).toBeHidden();
 });
 
-test('E9 深链：?nation=1&year=1993 直达星图并自动播放生长史', async ({ page }) => {
+test('E9 深链：?nation=1&year=1993 直达星图并保留年份快照（P2-4）', async ({ page }) => {
   await boot(page, '?nation=1&year=1993');
 
-  await page.waitForTimeout(8_000);          // 1971→2026 自动播放约 6s，留出余量
+  await page.waitForTimeout(8_000);          // 等深链进入稳定；v2.4 起不再自动播放，年份应停留
 
   expect((await diag(page)).nation, '深链应直接进入星图').toBe(true);
   await expect(page.locator('#nation-time'), '时间轴控件应显示').toBeVisible();
+  // P2-4：分享某个历史年份应得到静态快照，而不是 1s 内被自动播放改写掉
+  expect((await diag(page)).nationYear, '深链年份应保持不变（不被自动播放吞掉）').toBe(1993);
+  expect(page.url(), 'URL 应保留 year=1993').toContain('year=1993');
+  await expect(page.locator('#nt-year')).toHaveText('1993');
 });
 
 test('E10 渲染健康：城市模式下渲染帧持续增长且未被暂停', async ({ page }) => {
