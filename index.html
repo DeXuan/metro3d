@@ -1255,7 +1255,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v2.3.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v2.3.1</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -59269,6 +59269,22 @@ function disposeObj(root){
 
 /* ---------------- 相机适配 ---------------- */
 function fitAll(instant){
+  // P1-1（v2.3.0）：星图模式下 R / 重置视角 应回到全国机位而非城市机位
+  if (nationMode){
+    const t = new THREE.Vector3(nationCam.cx, 0, nationCam.cz);
+    controls.target.copy(t);
+    const pos = new THREE.Vector3(nationCam.cx, nationCam.h, nationCam.cz + nationCam.h * 0.55);
+    if (instant){
+      camera.position.copy(pos);
+      controls.minDistance = nationCam.h * 0.25;
+      controls.maxDistance = nationCam.h * 2.6;
+    } else {
+      state.flyTo = { from: camera.position.clone(), to: pos,
+        fromT: controls.target.clone(), toT: t, t: 0 };
+    }
+    controls.update();
+    return;
+  }
   const w = world;
   let target = w.center.clone(), size = w.lineSize || w.size;
   if (state.focusIdx >= 0){
@@ -59400,6 +59416,9 @@ function updateLegend(){
   $('legend').innerHTML = html;
   $('legend').querySelectorAll('.lg-chip-btn').forEach(b => {
     b.addEventListener('click', () => {
+      // P0-3（v2.3.0）：星图模式下点线路 chip 会造成「星图层 + 城市地域」混态
+      // （顶部切到线路统计、星点仍在、URL 变 ?nation=1&line=…）→ 先退回城市
+      if (nationMode) exitNation(false);
       state.focusLineId = b.dataset.id;
       $('sel-line').value = state.focusLineId;
       rebuild();
@@ -60474,6 +60493,7 @@ function buildNationScene(){
   });
   scene.add(nationGroup);
   nationCam = { cx: sumX / Math.max(1, placed.length), cz: sumZ / Math.max(1, placed.length), h: 2350 };
+  nationCam.h = __nationCameraHeight();   // P1-2：按视口宽高比自适应（移动端不再裁剪出屏）
 }
 
 function applyNationYear(y){
@@ -60510,6 +60530,26 @@ function nationPlay(){
   }, 110);
 }
 
+/* P1-2（v2.3.0）：按视口宽高比推算能容纳全国星图的相机高度。
+   星图横向跨度 spanX、纵向跨度 spanZ；水平 FOV = 2·atan(tan(fov/2)·aspect)，
+   取两向所需距离的较大值，再乘 1.15 安全边距。 */
+function __nationCameraHeight(){
+  let minX = 1e9, maxX = -1e9, minZ = 1e9, maxZ = -1e9;
+  nationCityHits.forEach(h => {
+    minX = Math.min(minX, h.position.x); maxX = Math.max(maxX, h.position.x);
+    minZ = Math.min(minZ, h.position.z); maxZ = Math.max(maxZ, h.position.z);
+  });
+  if (minX > maxX) return nationCam.h;
+  const spanX = Math.max(1, maxX - minX) * 1.16;
+  const spanZ = Math.max(1, maxZ - minZ) * 1.16;
+  const vFov = camera.fov * Math.PI / 180;
+  const aspect = Math.max(0.4, innerWidth / Math.max(320, innerHeight));
+  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+  const dV = (spanZ / 2) / Math.tan(vFov / 2);
+  const dH = (spanX / 2) / Math.tan(hFov / 2);
+  return Math.max(dV, dH) * 1.15;
+}
+
 function enterNation(){
   if (nationMode || !world) return;
   nationMode = true;
@@ -60530,6 +60570,12 @@ function enterNation(){
     fromT: controls.target.clone(), toT: tgt, t: 0 };
   controls.autoRotateSpeed = 0.25;
   controls.autoRotate = !__reduceMotion;   // P1-4：减少动态时不启动轨道漂移
+  // P1-1（v2.3.0）：星图距离钳制——原先沿用城市级 maxDistance=size*3，
+  // 连续缩小可漂到 1e8 量级且 R/重置视角无法回位（实测相机 (-5.0e7, 3.8e8, 2.0e8)）
+  controls.minDistance = nationCam.h * 0.25;
+  controls.maxDistance = nationCam.h * 2.6;
+  camera.far = Math.max(camera.far, nationCam.h * 8);
+  camera.updateProjectionMatrix();
   $('btn-nation').textContent = '↩ 返回城市';
   $('btn-nation').classList.add('on');
   $('stat-line').innerHTML = '<b>🌌 中国地铁星图</b> · 54 城同时在线<br>'
@@ -61646,7 +61692,13 @@ function renderFrame(dtOverride){
       // P2（v2.3.0）：按城市规模分级字号——东部密集区大城市用 34px、小城市 24px，
       // 减少长三角/珠三角标签互相压盖
       const tier = lb.userData.tier || 1;
-      const targetPx = tier >= 2 ? 34 : 24;
+      // P1-2b（v2.3.0）：窄屏下画布仅 390px，54 城全部标注必然互相压盖 →
+      // 小屏只显示大城市（tier>=2，站数≥120），中等频宽显示全部但小城市半透明
+      const narrow = innerWidth < 620;
+      const visible = !narrow || tier >= 2;
+      lb.visible = visible;
+      if (!visible) continue;
+      const targetPx = narrow ? (tier >= 2 ? 26 : 0) : (tier >= 2 ? 34 : 24);
       const hWorld = worldPerPx * targetPx;
       lb.scale.set(hWorld * (16.5 / 5.3), hWorld, 1);
       lb.material.opacity = tier >= 2 ? 1 : 0.82;
@@ -61935,6 +61987,9 @@ function searchDo(q){
 function searchGo(e){
   $('search-drop').style.display = 'none';
   $('st-search').value = ''; $('st-search').blur();
+  // P1-5（v2.3.0）：星图内搜索会把「当前城市」静默改掉而星图层仍在
+  //（点画布无效、URL 变 ?nation=1&city=…）→ 搜索前先退回城市模式
+  if (nationMode) exitNation(false);
   if (e.type === 'bridge'){
     state.cityId = 'bridges';
     populateSelectors();
@@ -62134,6 +62189,18 @@ addEventListener('resize', () => {
   camera.aspect = innerWidth/innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
+  // P1-2：星图内窗口变化时重新适配（否则窄屏会裁掉西部城市）
+  if (nationMode){
+    const h = __nationCameraHeight();
+    if (Math.abs(h - nationCam.h) > 1){
+      nationCam.h = h;
+      controls.maxDistance = h * 2.6; controls.minDistance = h * 0.25;
+      const t = new THREE.Vector3(nationCam.cx, 0, nationCam.cz);
+      controls.target.copy(t);
+      camera.position.set(nationCam.cx, h, nationCam.cz + h * 0.55);
+      controls.update();
+    }
+  }
 });
 
 setTimeout(() => { if ('serviceWorker' in navigator && location.protocol.startsWith('http')){

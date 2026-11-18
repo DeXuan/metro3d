@@ -302,15 +302,19 @@ test('E12 移动端冒烟：引导可关闭、无横向溢出、全国星图可�
   // 引导层已关闭（boot 里按「开始探索」关掉）
   await expect(page.locator('#tour-card')).not.toHaveClass(/show/);
 
+  // 横向溢出检查。注意 innerWidth 不能作为基准：
+  // isMobile 下 Chromium 的布局视口会随内容变宽（body{min-width:520px} 时
+  // innerWidth 也变成 520），于是 scrollWidth <= innerWidth 恒成立、断言失去意义。
+  // 用 clientWidth（布局视口原始宽度，不受内容撑开影响）作为基准才真正有效。
   const overflow = () => page.evaluate(() => ({
     sw: document.documentElement.scrollWidth,
     bsw: document.body.scrollWidth,
-    iw: window.innerWidth,
+    cw: document.documentElement.clientWidth,
   }));
 
   let m = await overflow();
-  expect(m.sw, `document.scrollWidth ${m.sw} 不应超过视口 ${m.iw}`).toBeLessThanOrEqual(m.iw + 2);
-  expect(Math.max(m.sw, m.bsw)).toBeLessThanOrEqual(m.iw + 2);
+  expect(m.sw, `document.scrollWidth ${m.sw} 不应超过布局视口 ${m.cw}`).toBeLessThanOrEqual(m.cw + 2);
+  expect(m.bsw, `body.scrollWidth ${m.bsw} 不应超过布局视口 ${m.cw}`).toBeLessThanOrEqual(m.cw + 2);
 
   // 移动端「视图」面板默认收起，展开后 #btn-nation 才可点（应用既有设计）
   if (!(await page.locator('#btn-nation').isVisible())) {
@@ -319,9 +323,9 @@ test('E12 移动端冒烟：引导可关闭、无横向溢出、全国星图可�
   await expect(page.locator('#btn-nation')).toBeVisible();
 
   m = await overflow();
-  expect(Math.max(m.sw, m.bsw), '展开控制面板后仍不应横向溢出').toBeLessThanOrEqual(m.iw + 2);
+  expect(m.sw, '展开控制面板后仍不应横向溢出').toBeLessThanOrEqual(m.cw + 2);
 
-  await page.evaluate(() => document.getElementById('btn-nation').click());
+  await page.click('#btn-nation');
   await expect.poll(async () => (await diag(page)).nation, { timeout: 10_000 }).toBe(true);
   await expect(page.locator('#nation-time')).toBeVisible();
 });
