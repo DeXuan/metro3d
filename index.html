@@ -560,6 +560,26 @@
       border-radius:16px 16px 0 0; padding-bottom:max(14px, env(safe-area-inset-bottom)); }
     #deeptop-panel .pf-sub{ display:none; }
   }
+
+  /* —— 星图生长史时间轴（v2.1.0）—— */
+  #nation-time{ display:none; position:fixed; left:50%; transform:translateX(-50%);
+    bottom:14px; z-index:30; width:min(620px, calc(100vw - 28px));
+    background:rgba(var(--panel-rgb), .9); border:1px solid var(--panel-border);
+    border-radius:14px; padding:10px 14px 11px; backdrop-filter:blur(12px);
+    box-shadow:0 8px 28px rgba(0,0,0,.35); }
+  #nation-time.show{ display:block; }
+  #nation-time .nt-head{ display:flex; align-items:center; gap:9px; font-size:11.5px; color:var(--text-dim); }
+  #nation-time .nt-year{ font-size:17px; font-weight:800; color:var(--accent); font-variant-numeric:tabular-nums; }
+  #nation-time .nt-stat{ flex:1; font-variant-numeric:tabular-nums; }
+  #nation-time .nt-btn{ background:none; border:1px solid var(--panel-border); color:var(--text);
+    border-radius:999px; font-size:11px; padding:4px 11px; cursor:pointer; min-height:26px; }
+  #nation-time .nt-btn.on{ color:var(--accent); border-color:var(--accent); }
+  #nation-time input[type=range]{ width:100%; margin-top:7px; accent-color:#4FC2E8; }
+  @media (max-width: 860px){
+    #nation-time{ bottom:calc(14px + env(safe-area-inset-bottom)); padding:8px 12px 9px; }
+    #nation-time .nt-year{ font-size:15px; }
+    #nation-time .nt-stat{ font-size:10.5px; }
+  }
 </style>
 
 <!--v2themelayer-->
@@ -1134,6 +1154,16 @@ window.addEventListener('error', e => {
   <canvas id="profile-canvas" height="150"></canvas>
 </div>
 
+<div id="nation-time">
+  <div class="nt-head">
+    <span class="nt-year" id="nt-year">1971</span>
+    <span class="nt-stat" id="nt-stat">—</span>
+    <button class="nt-btn" id="nt-play" type="button">▶ 播放生长</button>
+    <button class="nt-btn" id="nt-now" type="button">↦ 现在</button>
+  </div>
+  <input type="range" id="nt-range" min="1971" max="2026" value="2026" step="1" aria-label="星图生长年份">
+</div>
+
 <div id="deeptop-panel" class="panel">
   <div class="pf-head"><b>🏆 深度之最 · 全国深埋站</b><span class="pf-sub">按站台埋深排序 · 点击飞行定位</span><button class="pf-close" id="dt-close" aria-label="关闭深度之最">✕</button></div>
   <div id="deeptop-list"></div>
@@ -1205,7 +1235,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v2.0.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v2.1.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -57925,6 +57955,7 @@ window.__diag = () => ({
   paused: (typeof __appPaused !== 'undefined') ? __appPaused : null,      // 可见性暂停态
   rec: (typeof __recState !== 'undefined') ? !!__recState : false,        // 录制中
   nation: (typeof nationMode !== 'undefined') ? nationMode : false,           // 全国星图模式
+  nationYear: (typeof nationYear !== 'undefined') ? nationYear : null,           // 星图生长年份
 });
 
 /* =====================================================================
@@ -60220,6 +60251,8 @@ $('dt-close').addEventListener('click', () => $('deeptop-panel').classList.remov
    线色取官方线路色、光晕、城市名标签；点击任意城市 =
    轨道俯冲 → 城市场景重建 → 开场俯冲动画，一条龙无感进入。 */
 let nationMode = false, nationGroup = null, nationCityHits = [], nationCam = { cx: 300, cz: -150, h: 2350 };
+let nationBuckets = [], nationCityFirst = [], nationYear = 2026, nationPlayTimer = 0;
+let nationRealStats = [], nationCityReal = [];
 const __wantNation = new URLSearchParams(location.search).get('nation') === '1';
 
 function natProject(lng, lat){ return { x: (lng - 105) * 85, z: -(lat - 36) * 85 }; }
@@ -60260,7 +60293,23 @@ function buildNationScene(){
       color: 0x9fc8ee, size: 2.4, sizeAttenuation: true, transparent: true, opacity: .5 })));
   }
   // 2) 城市微缩线网：一次遍历取质心/包围盒，二阶段布点
-  const lp = [], lc = [], pp = [], pc = [];
+  //    v2.1.0 生长史：线段/站点按「建成年份」分桶（5 年一桶），
+  //    时间轴滑动时逐桶显隐——仍是少量 draw call，但能动画演进 55 年。
+  const BUCKET = 5, BMIN = 1970;
+  const buckets = new Map();   // bucketStart → {lp:[], lc:[], pp:[], pc:[]}
+  function bucketOf(y){
+    const yy = (typeof y === 'number' && y > 1900) ? y : 3000;
+    return Math.floor((yy - BMIN) / BUCKET) * BUCKET + BMIN;
+  }
+  function bucketGet(b){
+    if (!buckets.has(b)) buckets.set(b, { lp: [], lc: [], pp: [], pc: [] });
+    return buckets.get(b);
+  }
+  nationBuckets = [];
+  nationCityFirst = [];
+  // 真实数据统计（与绘制抽样解耦）：每条线/每站按所属线路建成年份归属
+  nationRealStats = [];
+  nationCityReal = [];
   const C = new THREE.Color();
   const placed = [];
   let sumX = 0, sumZ = 0;
@@ -60274,36 +60323,46 @@ function buildNationScene(){
     }));
     if (!n) return;
     const np = natProject(sLng / n, sLat / n);
-    placed.push({ c, np, n, clng: sLng / n, clat: sLat / n,
+    const years = c.lines.map(l => l.opened).filter(y => typeof y === 'number' && y > 1900);
+    const firstYear = years.length ? Math.min(...years) : 3000;
+    nationCityReal.push({ name: c.name, first: firstYear });
+    c.lines.forEach(l => nationRealStats.push({ y: (typeof l.opened === 'number' && l.opened > 1900) ? l.opened : 3000,
+      stations: l.stations.length }));
+    placed.push({ c, np, n, clng: sLng / n, clat: sLat / n, firstYear,
       spanLng: Math.max(1e-6, maxL - minL), spanLat: Math.max(1e-6, maxA - minA) });
     sumX += np.x; sumZ += np.z;
   });
-  placed.forEach(({ c, np, n, clng, clat, spanLng, spanLat }) => {
+  placed.forEach(({ c, np, n, clng, clat, spanLng, spanLat, firstYear }) => {
     const size = Math.max(11, Math.min(34, 6 + n / 26));       // 站数 → 星图半径
     const k = size / Math.max(spanLng * 85, spanLat * 85);      // 归一化到目标尺寸
     c.lines.forEach(l => {
       C.set(l.color || '#4FC2E8');
+      const B = bucketGet(bucketOf(l.opened));
       let prev = null;
       l.stations.forEach(st => {
         const x = np.x + (st.lng - clng) * 85 * k;
         const z = np.z - (st.lat - clat) * 85 * k;
-        pp.push(x, 0.5, z); pc.push(C.r, C.g, C.b);
+        B.pp.push(x, 0.5, z); B.pc.push(C.r, C.g, C.b);
         if (prev){
-          lp.push(prev[0], 0.5, prev[1], x, 0.5, z);
-          lc.push(C.r, C.g, C.b, C.r, C.g, C.b);
+          B.lp.push(prev[0], 0.5, prev[1], x, 0.5, z);
+          B.lc.push(C.r, C.g, C.b, C.r, C.g, C.b);
         }
         prev = [x, z];
       });
     });
     const glow = nationGlowSprite(size);
     glow.position.set(np.x, 0, np.z);
+    glow.userData.born = firstYear;
     nationGroup.add(glow);
+    nationCityFirst.push(glow);
     const short = c.name.split(' · ')[0];
     const lb = makeLabel(short, c.lines.length + ' 线 · ' + n + ' 站', '#7cc7ee');
     const sc = (size / 11) * 1.12;
     lb.scale.set(16.5 * sc, 5.3 * sc, 1);
     lb.position.set(np.x, size * 0.55 + 7, np.z);
+    lb.userData.born = firstYear;
     nationGroup.add(lb);
+    nationCityFirst.push(lb);
     const hit = new THREE.Mesh(new THREE.SphereGeometry(Math.max(size * 0.8, 10), 12, 8),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
     hit.position.set(np.x, 0, np.z);
@@ -60311,18 +60370,64 @@ function buildNationScene(){
     nationGroup.add(hit);
     nationCityHits.push(hit);
   });
-  const lg = new THREE.BufferGeometry();
-  lg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lp), 3));
-  lg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(lc), 3));
-  nationGroup.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({
-    vertexColors: true, transparent: true, opacity: 0.95 })));
-  const pg = new THREE.BufferGeometry();
-  pg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pp), 3));
-  pg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(pc), 3));
-  nationGroup.add(new THREE.Points(pg, new THREE.PointsMaterial({
-    vertexColors: true, size: 1.7, sizeAttenuation: true })));
+  // 逐桶构建（每年份桶 1 LineSegments + 1 Points，最多 12 桶）
+  const lineMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 });
+  const ptMat = new THREE.PointsMaterial({ vertexColors: true, size: 1.7, sizeAttenuation: true });
+  [...buckets.keys()].sort((a, b) => a - b).forEach(b => {
+    const D = buckets.get(b);
+    const o = { year: b };
+    if (D.lp.length){
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(D.lp), 3));
+      g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(D.lc), 3));
+      o.lines = new THREE.LineSegments(g, lineMat);
+      nationGroup.add(o.lines);
+    }
+    if (D.pp.length){
+      const g2 = new THREE.BufferGeometry();
+      g2.setAttribute('position', new THREE.BufferAttribute(new Float32Array(D.pp), 3));
+      g2.setAttribute('color', new THREE.BufferAttribute(new Float32Array(D.pc), 3));
+      o.pts = new THREE.Points(g2, ptMat);
+      nationGroup.add(o.pts);
+    }
+    nationBuckets.push(o);
+  });
   scene.add(nationGroup);
   nationCam = { cx: sumX / Math.max(1, placed.length), cz: sumZ / Math.max(1, placed.length), h: 2350 };
+}
+
+function applyNationYear(y){
+  nationYear = y;
+  nationBuckets.forEach(o => { o.lines && (o.lines.visible = o.year <= y); o.pts && (o.pts.visible = o.year <= y); });
+  nationCityFirst.forEach(sp => { sp.visible = sp.userData.born <= y; });
+  // 统计用真实数据：线 = 建成年 ≤ y 的线路数；站 = 其站点数之和；城 = 首线年份 ≤ y
+  let lines = 0, sts = 0;
+  nationRealStats.forEach(r => { if (r.y <= y){ lines++; sts += r.stations; } });
+  let cities = nationCityReal.filter(c => c.first <= y).length;
+  if ($('nt-year')) $('nt-year').textContent = y >= 2026 ? '2026 · 现在' : String(y);
+  if ($('nt-stat')) $('nt-stat').textContent = cities + ' 城 · ' + Math.round(lines) + ' 线 · ' + Math.round(sts) + ' 站';
+  if ($('nt-range')) $('nt-range').value = Math.min(y, 2026);
+  const u = new URL(location.href);
+  if (y >= 2026) u.searchParams.delete('year'); else u.searchParams.set('year', String(y));
+  if (u.search !== location.search) history.replaceState(null, '', u.toString());
+}
+
+function nationStopPlay(){
+  if (nationPlayTimer){ clearInterval(nationPlayTimer); nationPlayTimer = 0; }
+  if ($('nt-play')){ $('nt-play').textContent = '▶ 播放生长'; $('nt-play').classList.remove('on'); }
+}
+
+function nationPlay(){
+  nationStopPlay();
+  const startY = 1971;
+  $('nt-play').textContent = '⏸ 暂停';
+  $('nt-play').classList.add('on');
+  applyNationYear(startY);
+  nationPlayTimer = setInterval(() => {
+    const next = nationYear + 1;
+    if (next > 2026){ nationStopPlay(); applyNationYear(2026); return; }
+    applyNationYear(next);
+  }, 110);
 }
 
 function enterNation(){
@@ -60345,12 +60450,19 @@ function enterNation(){
   $('btn-nation').classList.add('on');
   $('stat-line').innerHTML = '<b>🌌 中国地铁星图</b> · 54 城同时在线<br>'
     + '377 条线路 · 8180 座车站 · 点击城市俯冲进入 · 🏆 看深度之最';
+  $('nation-time').classList.add('show');
+  nationStopPlay();
+  const qy = +new URLSearchParams(location.search).get('year');
+  applyNationYear((qy >= 1971 && qy <= 2026) ? qy : 2026);
+  if (qy && qy < 2026 && !__reduceMotion) nationPlay();   // 带年份深链 → 自动播放到当前
   syncUrl();
 }
 
 function exitNation(rebuildCity = true){
   if (!nationMode) return;
   nationMode = false;
+  nationStopPlay();
+  $('nation-time').classList.remove('show');
   if (nationGroup){ scene.remove(nationGroup); disposeObj(nationGroup); nationGroup = null; }
   nationCityHits = [];
   controls.autoRotate = false;
@@ -60387,6 +60499,14 @@ function nationEnterCity(cityId){
 
 $('btn-nation').addEventListener('click', () => nationMode ? exitNation() : enterNation());
 
+/* 生长史控件（v2.1.0） */
+$('nt-range').addEventListener('input', e => {
+  nationStopPlay();
+  applyNationYear(+e.target.value);
+});
+$('nt-play').addEventListener('click', () => nationPlayTimer ? nationStopPlay() : nationPlay());
+$('nt-now').addEventListener('click', () => { nationStopPlay(); applyNationYear(2026); });
+
 // 星图测试钩子（供自动化验收/后续遥测复用）：城市星点 → 屏幕坐标
 window.__nationScreen = (id) => {
   const h = nationCityHits.find(x => x.userData.cityId === id);
@@ -60396,7 +60516,7 @@ window.__nationScreen = (id) => {
 };
 
 // 深链直达星图：?nation=1（模块加载即读参，避被启动期 syncUrl 抹除）
-if (__wantNation) setTimeout(() => { try { enterNation(); } catch(_){} }, 900);
+if (__wantNation) setTimeout(() => { try { enterNation(); } catch(err){ console.error('[nation] enter failed:', err); } }, 900);
 
 $('btn-ss').addEventListener('click', e => {
   if (state.screensaver) exitScreensaver();
