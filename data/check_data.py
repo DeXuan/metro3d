@@ -22,8 +22,13 @@ for c in d['cities']:
         sn = [s['name'] for s in l['stations']]
         if len(sn) != len(set(sn)):
             issues.append(f"{c['name']}/{l['name']}: 线内站名重复")
-        if 'opened' in l and not (1900 <= l['opened'] <= 2030):
-            issues.append(f"{c['name']}/{l['name']}: opened 年份异常 {l['opened']}")
+        # v2.2.0：先做类型守卫再比较——历史上 '2019' 字符串会让本行 TypeError 崩溃，
+        # 校验器自身崩溃比数据缺陷更糟（CI 会误报为脚本错误而非数据错误）
+        _op = l.get('opened')
+        if _op is not None and (not isinstance(_op, int) or isinstance(_op, bool)):
+            issues.append(f"{c['name']}/{l['name']}: opened 必须是整数（实际 {type(_op).__name__} {_op!r}）")
+        elif _op is not None and not (1900 <= _op <= 2030):
+            issues.append(f"{c['name']}/{l['name']}: opened 年份异常 {_op}")
         for s in l['stations']:
             if not (73 < s['lng'] < 136 and 3 < s['lat'] < 54):
                 issues.append(f"{c['name']}/{s['name']}: 坐标越界")
@@ -73,6 +78,68 @@ for c in d['cities']:
             issues.append(f"{c['name']}/{lk.get('name')}: 湖泊点数不足")
     if c.get('climate') not in (None, 'snow'):
         issues.append(f"{c['name']}: climate 取值异常 {c.get('climate')}")
+
+# ---- v2.2.0 类型 schema 校验 ----
+# 背景：历史上 opened 曾被写成字符串 '2019'，导致 check_data 自身比较时
+# TypeError 崩溃、应用侧排序也异常。这里对关键字段做显式类型/枚举断言，
+# 让数据问题在 CI 阶段暴露，而不是运行时。
+CHANNEL_LIKE = {'id', 'name', 'color', 'from', 'to'}
+STATION_TYPES = {'underground', 'elevated', 'ground'}
+for c in d['cities']:
+    if not isinstance(c.get('id'), str) or not c['id'].strip():
+        issues.append(f"{c.get('name', '?')}: city.id 必须是非空字符串")
+    if c.get('kind') not in (None, 'bridges'):
+        issues.append(f"{c.get('name', '?')}: city.kind 取值异常 {c.get('kind')!r}")
+    for key in ('lines', 'bridges'):
+        v = c.get(key)
+        if v is not None and not isinstance(v, list):
+            issues.append(f"{c.get('name', '?')}: {key} 必须是数组（实际 {type(v).__name__}）")
+    for li, l in enumerate(c.get('lines') or []):
+        where = f"{c.get('name', '?')}/line[{li}]"
+        if not isinstance(l.get('id'), str) or not l['id'].strip():
+            issues.append(f"{where}: 线路 id 必须是非空字符串")
+        if not isinstance(l.get('name'), str) or not l['name'].strip():
+            issues.append(f"{where}: 线路 name 必须是非空字符串")
+        col = l.get('color')
+        if not isinstance(col, str) or not (col.startswith('#') and len(col) in (4, 7)):
+            issues.append(f"{where}: color 必须是 #hex（实际 {col!r}）")
+        if 'opened' in l and l['opened'] is not None:
+            if not isinstance(l['opened'], int) or isinstance(l['opened'], bool):
+                issues.append(f"{where}: opened 必须是整数（实际 {type(l['opened']).__name__} {l['opened']!r}）")
+            elif not (1900 <= l['opened'] <= 2030):
+                issues.append(f"{where}: opened 年份超出范围 {l['opened']}")
+        if 'lengthKm' in l and not isinstance(l.get('lengthKm'), (int, float)):
+            issues.append(f"{where}: lengthKm 必须是数字（实际 {type(l.get('lengthKm')).__name__}）")
+        sts = l.get('stations')
+        if not isinstance(sts, list) or not sts:
+            issues.append(f"{where}: stations 必须是非空数组")
+            continue
+        for si, st in enumerate(sts):
+            sw = f"{where}/st[{si}] {st.get('name', '?')}"
+            if not isinstance(st.get('name'), str) or not st['name'].strip():
+                issues.append(f"{sw}: 站名必须是非空字符串")
+            if st.get('type') not in STATION_TYPES:
+                issues.append(f"{sw}: type 必须是 {sorted(STATION_TYPES)} 之一（实际 {st.get('type')!r}）")
+            for axis in ('lng', 'lat'):
+                val = st.get(axis)
+                if not isinstance(val, (int, float)) or isinstance(val, bool):
+                    issues.append(f"{sw}: {axis} 必须是数字（实际 {type(val).__name__}）")
+            if st.get('depth') is not None and not isinstance(st['depth'], (int, float)):
+                issues.append(f"{sw}: depth 必须是数字（实际 {type(st.get('depth')).__name__}）")
+            if st.get('height') is not None and not isinstance(st['height'], (int, float)):
+                issues.append(f"{sw}: height 必须是数字（实际 {type(st.get('height')).__name__}）")
+            tr = st.get('transfer')
+            if tr is not None and not isinstance(tr, list):
+                issues.append(f"{sw}: transfer 必须是数组（实际 {type(tr).__name__}）")
+    # 桥梁字段
+    for bi, b in enumerate(c.get('bridges') or []):
+        bw = f"{c.get('name', '?')}/bridge[{bi}]"
+        if not isinstance(b.get('name'), str) or not b['name'].strip():
+            issues.append(f"{bw}: 桥名必须是非空字符串")
+        if not isinstance(b.get('points'), list) or len(b['points']) < 2:
+            issues.append(f"{bw}: points 至少 2 个点")
+        if b.get('year') is not None and not isinstance(b.get('year'), int):
+            issues.append(f"{bw}: year 必须是整数（实际 {type(b.get('year')).__name__}）")
 
 print('数据自检：城市 %d / 线路 %d / 站点 %d' % (
     len(d['cities']),

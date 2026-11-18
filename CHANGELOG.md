@@ -2,6 +2,44 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.2.0] — 2026-11-18
+
+### 工程革命：可观测性 / 安全 / 可维护性（多维度评审驱动）
+
+**可观测性（消灭「界面正常但功能已死」）**
+- 全局错误环形缓冲 `__errbuf`（30 条）+ `window.error` / `unhandledrejection` 兜底，`__diag().errors` 可查
+- 业务代码 **21 处空 catch 全部改为 `__recErr` 留证**（localStorage / 剪贴板 / 深链 / 录屏 / 主题…）
+- 新增 CI 门禁 `data/check_errors.py`：空 catch 阻断、仅 console 警告（作用域限定业务段，跳过 Three.js 与门户补丁层）
+
+**安全（修复 1 个真实 P0）**
+- **P0 反射型 XSS**：`?poster=1&wmsize=` 原样插入 `innerHTML` → 改为 `parseInt` 钳制 8~200；`cityName` 补 `esc()`；实测攻击载荷不再执行
+- **SW 缓存隔离**：activate 只清理 `metro3d-` 前缀缓存（原会误删同源其他应用缓存）
+- 移除重复 `__diag` 定义（后定义覆盖前者导致诊断失真）
+
+**可维护性（源码可定位）**
+- 业务 JS 外置 `src/app.js`（4,242 行独立源）+ `build.py` 标记协议内联回单文件——**保留单文件交付特性**（离线/零外链），`--check` 保证产物与源码逐字节一致
+
+**无障碍（WCAG 2.1 AA）**
+- 深度之最榜单键盘激活（Enter/Space）；星图新增**键盘选城**（←/→ 循环 + Enter 俯冲 + `aria-live` 播报当前城市 + canvas tabindex/aria-label）
+- 面板打开焦点自动移入、关闭归还触发按钮
+- `:focus-visible` 全局焦点环（原先 6 处 `outline:none` 无替代）
+- 对比度：`#note` 1.35:1 → 4.97:1；浅色 accent 3.24:1 → ~5:1；`.dt-src`/chip 浅色兜底
+- `prefers-reduced-motion` 全场景：星图漂移 / 屏保轮播 / 列车动画补齐（+ CSS 层动画过渡归零，实测）
+
+**缺陷修复（E2E 暴露）**
+- 星图俯冲后 `state.cityId` 与下拉框错位（成都已载入但下拉显示上海）→ `exitNation` 强制 `populateSelectors()`
+- 深链 `?nation=1` 被启动期 `syncUrl()` 抢删参数 → 意图前置求值 + `__wantNationDone` 标记
+- 漏斗：`?nation=1` 进入前 `world` 未就绪直接 return → 改为轮询等待（最多 8s）
+- 重复业务块（拆分迁移时产生两份 1090KB 模块）→ 以标记段为唯一事实源重建
+
+**测试（12 条 E2E 入库 + CI）**
+- `e2e/` Playwright 套件：启动 / 切城 / 搜索 / 深度之最跨城 / 星图进入 / 时间轴 1971·2010 / 俯冲 / Esc / 深链 / 渲染健康 / 零静默崩溃 / 移动端溢出 —— **12/12 全绿（3 分钟）**
+- CI 新增 `e2e` job（依赖静态检查通过，产物一致性前置校验）
+
+**数据校验增强**
+- `check_data.py` 增加类型 schema：`opened` 必须为 int、`color` 必须 #hex、`type` 枚举、坐标/深度/点名类型、桥梁字段
+- 修复校验器自身崩溃（`'2019' <= 2030` TypeError）——注入 3 类历史缺陷实测均被精确捕获
+
 ## [2.1.0] — 2026-11-18
 
 ### 新功能：星图「中国地铁 55 年生长史」
