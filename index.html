@@ -21,14 +21,14 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="中国 54 城轨道交通三维地下线网（含京张高铁与京津城际）+ 超级桥梁 11 座：真实经纬度投影、官方线路色、埋深起伏、越江隧道高亮，支持城市与线路切换。数据仅供演示，禁止用于工程/测绘/导航。">
+<meta name="description" content="中国 54 城轨道交通三维地下线网（含京张高铁八达岭长城站 -102m）+ 超级桥梁 11 座 + 🌌 全国星图总览（54 城微缩线网按真实经纬度同屏发光，点击城市俯冲进入）：真实经纬度投影、官方线路色、埋深起伏、越江隧道高亮。数据仅供演示，禁止用于工程/测绘/导航。">
 <meta name="theme-color" content="#060c16">
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230a1626%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2219%22%20fill%3D%22none%22%20stroke%3D%22%234FC2E8%22%20stroke-width%3D%225%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%226.5%22%20fill%3D%22%23FFC44D%22/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AI 每日晨报 · DIY 专栏">
 <meta property="og:title" content="城市地铁与超级桥梁 · 三维立体视图">
-<meta property="og:description" content="中国 54 城 · 377 条线路 · 8180 站点，3D 呈现地下埋深与越江隧道（含京张高铁八达岭长城站 -102 米——世界最深高铁站）；另有港珠澳、深中通道、北盘江特大桥等 11 座超级桥梁三维模型。">
+<meta property="og:description" content="中国 54 城 · 377 条线路 · 8180 站点：🌌 全国星图总览 + 3D 呈现地下埋深与越江隧道（含京张高铁八达岭长城站 -102 米——世界最深高铁站）+ 港珠澳、深中通道等 11 座超级桥梁三维模型。">
 <meta property="og:image" content="https://xn--888-vw3e05fxyzc07e.cn:9006/web/metro3d/poster/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -36,7 +36,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="城市地铁与超级桥梁 · 三维立体视图">
-<meta name="twitter:description" content="中国 54 城 · 377 条线路 · 8180 站点，3D 呈现地下埋深与越江隧道（含京张高铁八达岭长城站 -102 米——世界最深高铁站）；另有港珠澳、深中通道、北盘江特大桥等 11 座超级桥梁三维模型。">
+<meta name="twitter:description" content="中国 54 城 · 377 条线路 · 8180 站点：🌌 全国星图总览 + 3D 呈现地下埋深与越江隧道（含京张高铁八达岭长城站 -102 米——世界最深高铁站）+ 港珠澳、深中通道等 11 座超级桥梁三维模型。">
 <meta name="twitter:image" content="https://xn--888-vw3e05fxyzc07e.cn:9006/web/metro3d/poster/og-cover.jpg">
 
 <title>中国城市地铁与超级桥梁 · 三维立体视图 · 54 城线网</title>
@@ -1090,6 +1090,7 @@ window.addEventListener('error', e => {
     <button class="btn" id="btn-screenshot">📷 截图</button>
     <button class="btn" id="btn-rec">🎬 录制</button>
     <button class="btn" id="btn-deeptop">🏆 深度之最</button>
+    <button class="btn" id="btn-nation">🗺 全国</button>
     <button class="btn" id="btn-glb">⬇ GLB</button>
     <button class="btn" id="btn-fullscreen">⛶ 全屏</button>
     <button class="btn" id="btn-ss">🔌 屏保</button>
@@ -1204,7 +1205,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v1.9.1</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v2.0.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -57923,6 +57924,7 @@ window.__diag = () => ({
   idleN: (typeof __idleN !== 'undefined') ? __idleN : -1,                 // 空闲帧数
   paused: (typeof __appPaused !== 'undefined') ? __appPaused : null,      // 可见性暂停态
   rec: (typeof __recState !== 'undefined') ? !!__recState : false,        // 录制中
+  nation: (typeof nationMode !== 'undefined') ? nationMode : false,           // 全国星图模式
 });
 
 /* =====================================================================
@@ -59472,6 +59474,14 @@ canvas.addEventListener('pointerup', e => {
   const moved = Math.hypot(e.clientX-downXY[0], e.clientY-downXY[1]);
   downXY = null;
   if (moved > 7){ state.__camTouched = true; syncUrl(); return; }   // 拖拽改变视角 → 深链记录相机
+  if (nationMode){                    // 🌌 星图模式：点击城市 → 俯冲进入
+    ptr.x = (e.clientX/innerWidth)*2-1;
+    ptr.y = -(e.clientY/innerHeight)*2+1;
+    ray.setFromCamera(ptr, camera);
+    const nhit = ray.intersectObjects(nationCityHits, false);
+    if (nhit.length) nationEnterCity(nhit[0].object.userData.cityId);
+    return;
+  }
   if (annoMode && world && world.city.kind !== 'bridges'){
     ptr.x = (e.clientX/innerWidth)*2-1;
     ptr.y = -(e.clientY/innerHeight)*2+1;
@@ -59539,6 +59549,7 @@ canvas.addEventListener('wheel', () => { if (state.screensaver) exitScreensaver(
 document.addEventListener('keydown', () => { resetIdle(); }, { passive: true });
 
 $('sel-city').addEventListener('change', e => {
+  if (nationMode) exitNation(false);
   const c = METRO_DATA.cities.find(x => x.id === e.target.value);
   if (!c) return;   // 无效值防御（URL 篡改/数据异常时静默忽略）
   try {
@@ -60203,6 +60214,190 @@ function __deeptopOpen(){
 }
 $('btn-deeptop').addEventListener('click', __deeptopOpen);
 $('dt-close').addEventListener('click', () => $('deeptop-panel').classList.remove('show'));
+
+/* —— 🌌 全国星图模式（v2.0.0）：54 城地铁同时在线的轨道总览 ——
+   真实经纬度投影的微缩线网星图：每城按站数定星图尺寸、按质心定位；
+   线色取官方线路色、光晕、城市名标签；点击任意城市 =
+   轨道俯冲 → 城市场景重建 → 开场俯冲动画，一条龙无感进入。 */
+let nationMode = false, nationGroup = null, nationCityHits = [], nationCam = { cx: 300, cz: -150, h: 2350 };
+const __wantNation = new URLSearchParams(location.search).get('nation') === '1';
+
+function natProject(lng, lat){ return { x: (lng - 105) * 85, z: -(lat - 36) * 85 }; }
+
+function nationGlowSprite(r){
+  const dpr = 2, S = 128;
+  const cv = document.createElement('canvas'); cv.width = S * dpr; cv.height = S * dpr;
+  const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr);
+  const gr = ctx.createRadialGradient(S/2, S/2, 4, S/2, S/2, S/2);
+  gr.addColorStop(0, 'rgba(140,214,246,.95)');
+  gr.addColorStop(.28, 'rgba(79,194,232,.42)');
+  gr.addColorStop(1, 'rgba(79,194,232,0)');
+  ctx.fillStyle = gr; ctx.fillRect(0, 0, S, S);
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: tex, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending }));
+  sp.scale.set(r * 2.1, r * 2.1, 1);
+  return sp;
+}
+
+function buildNationScene(){
+  nationGroup = new THREE.Group();
+  nationCityHits = [];
+  // 1) 星空底（上半球）
+  {
+    const N = 1500, pos = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++){
+      const r = 4300 + Math.random() * 700;
+      const th = Math.random() * Math.PI * 2;
+      const ph = Math.acos(Math.random() * 1.4 - 0.4);   // 偏上半球
+      pos[i*3]   = r * Math.sin(ph) * Math.cos(th);
+      pos[i*3+1] = Math.abs(r * Math.cos(ph)) * 0.9;
+      pos[i*3+2] = r * Math.sin(ph) * Math.sin(th);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    nationGroup.add(new THREE.Points(g, new THREE.PointsMaterial({
+      color: 0x9fc8ee, size: 2.4, sizeAttenuation: true, transparent: true, opacity: .5 })));
+  }
+  // 2) 城市微缩线网：一次遍历取质心/包围盒，二阶段布点
+  const lp = [], lc = [], pp = [], pc = [];
+  const C = new THREE.Color();
+  const placed = [];
+  let sumX = 0, sumZ = 0;
+  METRO_DATA.cities.forEach(c => {
+    if (c.kind === 'bridges') return;
+    let sLng = 0, sLat = 0, n = 0, minL = 1e9, maxL = -1e9, minA = 1e9, maxA = -1e9;
+    c.lines.forEach(l => l.stations.forEach(st => {
+      sLng += st.lng; sLat += st.lat; n++;
+      minL = Math.min(minL, st.lng); maxL = Math.max(maxL, st.lng);
+      minA = Math.min(minA, st.lat); maxA = Math.max(maxA, st.lat);
+    }));
+    if (!n) return;
+    const np = natProject(sLng / n, sLat / n);
+    placed.push({ c, np, n, clng: sLng / n, clat: sLat / n,
+      spanLng: Math.max(1e-6, maxL - minL), spanLat: Math.max(1e-6, maxA - minA) });
+    sumX += np.x; sumZ += np.z;
+  });
+  placed.forEach(({ c, np, n, clng, clat, spanLng, spanLat }) => {
+    const size = Math.max(11, Math.min(34, 6 + n / 26));       // 站数 → 星图半径
+    const k = size / Math.max(spanLng * 85, spanLat * 85);      // 归一化到目标尺寸
+    c.lines.forEach(l => {
+      C.set(l.color || '#4FC2E8');
+      let prev = null;
+      l.stations.forEach(st => {
+        const x = np.x + (st.lng - clng) * 85 * k;
+        const z = np.z - (st.lat - clat) * 85 * k;
+        pp.push(x, 0.5, z); pc.push(C.r, C.g, C.b);
+        if (prev){
+          lp.push(prev[0], 0.5, prev[1], x, 0.5, z);
+          lc.push(C.r, C.g, C.b, C.r, C.g, C.b);
+        }
+        prev = [x, z];
+      });
+    });
+    const glow = nationGlowSprite(size);
+    glow.position.set(np.x, 0, np.z);
+    nationGroup.add(glow);
+    const short = c.name.split(' · ')[0];
+    const lb = makeLabel(short, c.lines.length + ' 线 · ' + n + ' 站', '#7cc7ee');
+    const sc = (size / 11) * 1.12;
+    lb.scale.set(16.5 * sc, 5.3 * sc, 1);
+    lb.position.set(np.x, size * 0.55 + 7, np.z);
+    nationGroup.add(lb);
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(Math.max(size * 0.8, 10), 12, 8),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+    hit.position.set(np.x, 0, np.z);
+    hit.userData.cityId = c.id;
+    nationGroup.add(hit);
+    nationCityHits.push(hit);
+  });
+  const lg = new THREE.BufferGeometry();
+  lg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lp), 3));
+  lg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(lc), 3));
+  nationGroup.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({
+    vertexColors: true, transparent: true, opacity: 0.95 })));
+  const pg = new THREE.BufferGeometry();
+  pg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pp), 3));
+  pg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(pc), 3));
+  nationGroup.add(new THREE.Points(pg, new THREE.PointsMaterial({
+    vertexColors: true, size: 1.7, sizeAttenuation: true })));
+  scene.add(nationGroup);
+  nationCam = { cx: sumX / Math.max(1, placed.length), cz: sumZ / Math.max(1, placed.length), h: 2350 };
+}
+
+function enterNation(){
+  if (nationMode || !world) return;
+  nationMode = true;
+  stopCruise();
+  if (state.screensaver) exitScreensaver();
+  ['panel-ctrl','panel-list','cmp-panel','profile-panel','deeptop-panel','share-panel','info-card']
+    .forEach(id => { const el = $(id); if (el) el.classList.remove('show'); });
+  if (world.root) world.root.visible = false;
+  grouped.visible = false;
+  buildNationScene();
+  const tgt = new THREE.Vector3(nationCam.cx, 0, nationCam.cz);
+  state.flyTo = { from: camera.position.clone(),
+    to: new THREE.Vector3(nationCam.cx, nationCam.h, nationCam.cz + nationCam.h * 0.55),
+    fromT: controls.target.clone(), toT: tgt, t: 0 };
+  controls.autoRotateSpeed = 0.25;
+  controls.autoRotate = true;      // flyTo 结束后开始缓慢轨道漂移
+  $('btn-nation').textContent = '↩ 返回城市';
+  $('btn-nation').classList.add('on');
+  $('stat-line').innerHTML = '<b>🌌 中国地铁星图</b> · 54 城同时在线<br>'
+    + '377 条线路 · 8180 座车站 · 点击城市俯冲进入 · 🏆 看深度之最';
+  syncUrl();
+}
+
+function exitNation(rebuildCity = true){
+  if (!nationMode) return;
+  nationMode = false;
+  if (nationGroup){ scene.remove(nationGroup); disposeObj(nationGroup); nationGroup = null; }
+  nationCityHits = [];
+  controls.autoRotate = false;
+  controls.autoRotateSpeed = 2.0;
+  if (world && world.root) world.root.visible = true;
+  grouped.visible = true;
+  $('btn-nation').textContent = '🗺 全国';
+  $('btn-nation').classList.remove('on');
+  if (rebuildCity) rebuild();
+  syncUrl();
+}
+
+function nationEnterCity(cityId){
+  if (!nationMode) return;
+  const hitObj = nationCityHits.find(h => h.userData.cityId === cityId);
+  const np = hitObj ? hitObj.position.clone() : null;
+  const to = np ? np.clone().add(new THREE.Vector3(0, 95, 95)) : camera.position.clone();
+  state.flyTo = { from: camera.position.clone(), to,
+    fromT: controls.target.clone(), toT: np ? np.clone() : controls.target.clone(), t: 0 };
+  state.cityId = cityId;
+  setTimeout(() => {
+    exitNation(true);          // 重建目标城市并复位相机
+    if (world && !__reduceMotion){   // 复刻开场俯冲：轨道高度扫入
+      const dir = new THREE.Vector3(0.15, 0.55, 0.95).normalize();
+      introTo = camera.position.clone();
+      introFrom = world.center.clone().addScaledVector(dir, world.size * 2.2);
+      introFrom.y = world.size * 1.05;
+      camera.position.copy(introFrom);
+      controls.enabled = false;
+      introT = 0;
+    }
+  }, 1150);
+}
+
+$('btn-nation').addEventListener('click', () => nationMode ? exitNation() : enterNation());
+
+// 星图测试钩子（供自动化验收/后续遥测复用）：城市星点 → 屏幕坐标
+window.__nationScreen = (id) => {
+  const h = nationCityHits.find(x => x.userData.cityId === id);
+  if (!h) return null;
+  const v = h.position.clone().project(camera);
+  return [Math.round((v.x + 1) / 2 * innerWidth), Math.round((1 - v.y) / 2 * innerHeight)];
+};
+
+// 深链直达星图：?nation=1（模块加载即读参，避被启动期 syncUrl 抹除）
+if (__wantNation) setTimeout(() => { try { enterNation(); } catch(_){} }, 900);
+
 $('btn-ss').addEventListener('click', e => {
   if (state.screensaver) exitScreensaver();
   else startScreensaver();
@@ -61041,6 +61236,7 @@ document.addEventListener('keydown', e => {
     const sh = $('share-panel');
     if (sh.classList.contains('show')){ sh.classList.remove('show'); return; }
     if ($('cmp-panel').classList.contains('show')){ openCmp(false); $('btn-compare').classList.remove('on'); return; }
+    if (nationMode){ exitNation(); return; }
     if ($('deeptop-panel').classList.contains('show')){ $('deeptop-panel').classList.remove('show'); return; }
     if ($('profile-panel').classList.contains('show')){ $('pf-close').click(); return; }
     $('info-card').classList.remove('show');
@@ -61273,6 +61469,8 @@ function syncUrl(){
     if (state.night) u.searchParams.set('theme', 'night');
     else if (document.documentElement.getAttribute('data-theme') === 'light') u.searchParams.set('theme', 'light');
     else u.searchParams.delete('theme');
+    if (nationMode) u.searchParams.set('nation', '1');   // 🌌 星图深链
+    else u.searchParams.delete('nation');
     const L = state.layers, Ld = { landmarks: true, terrain: true, tombs: true, lakes: true, railways: true };
     if (Object.keys(Ld).some(k => !!L[k] !== Ld[k])){
       u.searchParams.set('layers', Object.keys(Ld).filter(k => L[k]).join(','));
