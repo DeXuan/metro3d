@@ -19,12 +19,16 @@ module.exports = defineConfig({
   testDir: './tests',
   timeout: 30_000,
   retries: 0,
+  // 单文件应用（Three.js + 数据内联 ≈2.7MB）每个 page 都是一次全量解析 + WebGL 初始化。
+  // 并行上下文会互相抢 CPU 反而更慢，串行跑总耗时更低也更稳定。
+  workers: 1,
+  fullyParallel: false,
   reporter: 'list',
+  // 期望断言默认 5s；WebGL 页面在 CI 上主线程很忙，给到 8s 降低偶发抖动
+  expect: { timeout: 8_000 },
   use: {
     baseURL: process.env.BASE || LOCAL_INDEX,
     locale: 'zh-CN',
-    trace: 'retain-on-failure',
-    screenshot: 'only-on-failure',
   },
   projects: [
     {

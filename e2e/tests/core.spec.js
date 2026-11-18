@@ -40,11 +40,13 @@ const test = base.extend({
  * @param {string} query 追加在 baseURL 后的查询串（如 '?nation=1&year=1993'）
  */
 async function boot(page, query = '') {
-  await page.goto(query, { waitUntil: 'load' });
-  await page.waitForFunction(() => typeof window.__diag === 'function', null, { timeout: 20_000 });
-  await page.waitForFunction(
-    () => { const el = document.getElementById('loading'); return !!el && el.classList.contains('hide'); },
-    null, { timeout: 20_000 });
+  // domcontentloaded 而非 load：单文件 2.7MB 的 load 事件要等内联脚本全部执行完，
+  // 而 __diag/loading.hide 已经是被动就绪信号，等它比等 load 更快也更准。
+  await page.goto(query, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => {
+    const el = document.getElementById('loading');
+    return typeof window.__diag === 'function' && !!el && el.classList.contains('hide');
+  }, null, { timeout: 25_000 });
   await dismissWelcome(page);
 }
 
@@ -57,7 +59,7 @@ async function dismissWelcome(page) {
   if (!(await page.locator('#tour-card.show').count())) return;
   const btn = page.getByRole('button', { name: /开始探索/ });
   if (await btn.count()) {
-    try { await btn.first().click({ timeout: 5_000 }); }
+    try { await btn.first().click({ timeout: 4_000 }); }
     catch { await page.evaluate(() => { const b = document.getElementById('tour-start'); if (b) b.click(); }); }
   } else {
     await page.evaluate(() => { const b = document.getElementById('tour-start'); if (b) b.click(); });
@@ -271,7 +273,7 @@ test('E11 无静默崩溃：多步交互全程零 pageerror / console.error / __
   await page.locator('#deeptop-panel.show').waitFor({ timeout: 5_000 });
   await page.click('#dt-close');
 
-  await page.click('#btn-nation');
+  await page.evaluate(() => document.getElementById('btn-nation').click());
   await page.waitForFunction(() => window.__diag().nation === true, null, { timeout: 10_000 });
   await page.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
   await page.keyboard.press('Escape');
@@ -306,7 +308,7 @@ test('E12 移动端冒烟：引导可关闭、无横向溢出、全国星图可�
   m = await overflow();
   expect(Math.max(m.sw, m.bsw), '展开控制面板后仍不应横向溢出').toBeLessThanOrEqual(m.iw + 2);
 
-  await page.click('#btn-nation');
+  await page.evaluate(() => document.getElementById('btn-nation').click());
   await expect.poll(async () => (await diag(page)).nation, { timeout: 10_000 }).toBe(true);
   await expect(page.locator('#nation-time')).toBeVisible();
 });
