@@ -2561,7 +2561,7 @@ function enterNation(){
     to: new THREE.Vector3(nationCam.cx, nationCam.h, nationCam.cz + nationCam.h * 0.55),
     fromT: controls.target.clone(), toT: tgt, t: 0 };
   controls.autoRotateSpeed = 0.25;
-  controls.autoRotate = true;      // flyTo 结束后开始缓慢轨道漂移
+  controls.autoRotate = !__reduceMotion;   // P1-4：减少动态时不启动轨道漂移
   $('btn-nation').textContent = '↩ 返回城市';
   $('btn-nation').classList.add('on');
   $('stat-line').innerHTML = '<b>🌌 中国地铁星图</b> · 54 城同时在线<br>'
@@ -3036,6 +3036,7 @@ function updateRiverFlows(dt){
 
 function updateTrains(dt){
   if (!state.trains || !trainsMesh) return;
+  if (__reduceMotion) return;        // P1-6：减少动态时列车静止
   const factor = state.schedule ? serviceFactor() : 1;
   let visibleCap = Math.round(trains.length * factor);   // 按 index 截取（列车按线路成组插入）
   if (factor === 0 && !updateTrains._nightToasted){
@@ -3579,9 +3580,9 @@ function renderFrame(dtOverride){
   updateSnow(dt);
   updateAirportPlanes(dt);
   updateAnnoPins(dt);
-  if (state.screensaver && performance.now() - (state._ssLast || 0) >= 22000){
+  if (state.screensaver && !__reduceMotion && performance.now() - (state._ssLast || 0) >= 22000){
     state._ssLast = performance.now();
-    ssNext();
+    ssNext();                        // P1-5：减少动态时不做城市瞬移轮播
   }
   checkPerf();
   // 罗盘：N 标记随相机方位角旋转（正北 = 场景 -Z = 纬度增大方向）

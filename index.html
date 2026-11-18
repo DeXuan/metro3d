@@ -60,7 +60,7 @@
     --panel-border: rgba(var(--border-rgb), 0.30);
     --text: #1a2a3a;
     --text-dim: #5a708a;
-    --accent: #0a84d0;
+    --accent: #0768a8;   /* v2.2.0 无障碍：原 #0a84d0 在浅底仅 3.2~3.9:1，加深至 ~5:1 */
     --panel-rgb: 255, 255, 255;
     --border-rgb: 60, 100, 150;
     --input-rgb: 240, 245, 250;
@@ -170,7 +170,7 @@
     padding:6px 16px; white-space:nowrap; pointer-events:none;
     transition:opacity 1s; backdrop-filter:blur(8px);
   }
-  #note{ position:fixed; z-index:9; right:14px; bottom:14px; font-size:10px; color:rgba(143,176,201,.55); text-align:right; line-height:1.5; pointer-events:none; max-width:46vw; }
+  #note{ position:fixed; z-index:9; right:14px; bottom:14px; font-size:10px; color:var(--text-dim); text-align:right; line-height:1.5; pointer-events:none; max-width:46vw; }
 
   /* ---------- 加载/错误 ---------- */
   #loading{
@@ -559,6 +559,21 @@
     #deeptop-panel{ top:auto; bottom:0; left:0; right:0; width:auto; max-height:52vh;
       border-radius:16px 16px 0 0; padding-bottom:max(14px, env(safe-area-inset-bottom)); }
     #deeptop-panel .pf-sub{ display:none; }
+  }
+
+  /* ===== v2.2.0 无障碍补强（审计 P1-3/P1-9）===== */
+  /* 键盘焦点环：原先多处 outline:none 无替代（WCAG 2.4.7） */
+  :where(button, a, input, select, textarea, [tabindex]):focus-visible{
+    outline:2px solid var(--accent); outline-offset:2px; border-radius:6px;
+  }
+  /* 浅色主题下 .dt-src（#30d158 在浅底仅 1.97:1）与来源 chip 加深 */
+  html[data-theme="light"] .dt-src{ color:#0a7a3d; }
+  html[data-theme="light"] .chip.u{ color:#076b47; }
+  html[data-theme="light"] .chip.e{ color:#7a4d00; }
+  /* 减少动态（系统偏好或 &rm=1）：CSS 层一并关闭过渡与旋转动画 */
+  html[data-reduce-motion="1"] *, html[data-reduce-motion="1"] *::before, html[data-reduce-motion="1"] *::after{
+    animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important; scroll-behavior:auto !important;
   }
 
   /* 屏幕阅读器专用（视觉隐藏但可朗读）——v2.2.0 */
@@ -60505,7 +60520,7 @@ function enterNation(){
     to: new THREE.Vector3(nationCam.cx, nationCam.h, nationCam.cz + nationCam.h * 0.55),
     fromT: controls.target.clone(), toT: tgt, t: 0 };
   controls.autoRotateSpeed = 0.25;
-  controls.autoRotate = true;      // flyTo 结束后开始缓慢轨道漂移
+  controls.autoRotate = !__reduceMotion;   // P1-4：减少动态时不启动轨道漂移
   $('btn-nation').textContent = '↩ 返回城市';
   $('btn-nation').classList.add('on');
   $('stat-line').innerHTML = '<b>🌌 中国地铁星图</b> · 54 城同时在线<br>'
@@ -60980,6 +60995,7 @@ function updateRiverFlows(dt){
 
 function updateTrains(dt){
   if (!state.trains || !trainsMesh) return;
+  if (__reduceMotion) return;        // P1-6：减少动态时列车静止
   const factor = state.schedule ? serviceFactor() : 1;
   let visibleCap = Math.round(trains.length * factor);   // 按 index 截取（列车按线路成组插入）
   if (factor === 0 && !updateTrains._nightToasted){
@@ -61523,9 +61539,9 @@ function renderFrame(dtOverride){
   updateSnow(dt);
   updateAirportPlanes(dt);
   updateAnnoPins(dt);
-  if (state.screensaver && performance.now() - (state._ssLast || 0) >= 22000){
+  if (state.screensaver && !__reduceMotion && performance.now() - (state._ssLast || 0) >= 22000){
     state._ssLast = performance.now();
-    ssNext();
+    ssNext();                        // P1-5：减少动态时不做城市瞬移轮播
   }
   checkPerf();
   // 罗盘：N 标记随相机方位角旋转（正北 = 场景 -Z = 纬度增大方向）

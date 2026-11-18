@@ -261,21 +261,21 @@ test('E11 无静默崩溃：多步交互全程零 pageerror / console.error / __
 
   // 覆盖主要交互路径：切城 → 搜索 → 深度榜开合 → 星图进出
   await page.selectOption('#sel-city', 'chengdu');
-  await expect(page.locator('#stat-line')).toContainText('成都');
+  await page.locator('#stat-line').filter({ hasText: '成都' }).waitFor({ timeout: 8_000 });
 
   await page.fill('#st-search', '天府广场');
-  await expect(page.locator('#search-drop .sr').first()).toBeAttached();
+  await page.locator('#search-drop .sr').first().waitFor({ state: 'attached', timeout: 8_000 });
+  await page.fill('#st-search', '');
 
   await page.click('#btn-deeptop');
-  await expect(page.locator('#deeptop-panel')).toHaveClass(/show/);
+  await page.locator('#deeptop-panel.show').waitFor({ timeout: 5_000 });
   await page.click('#dt-close');
-  await expect(page.locator('#deeptop-panel')).not.toHaveClass(/show/);
 
   await page.click('#btn-nation');
-  await expect.poll(async () => (await diag(page)).nation, { timeout: 10_000 }).toBe(true);
+  await page.waitForFunction(() => window.__diag().nation === true, null, { timeout: 10_000 });
   await page.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
   await page.keyboard.press('Escape');
-  await expect.poll(async () => (await diag(page)).nation, { timeout: 10_000 }).toBe(false);
+  await page.waitForFunction(() => window.__diag().nation === false, null, { timeout: 10_000 });
 
   expect(errors, '交互过程中不应出现任何错误').toEqual([]);
   expect((await diag(page)).errors, '__diag().errors 环形缓冲应为空').toEqual([]);

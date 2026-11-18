@@ -101,8 +101,8 @@ Test timeout of 30000ms exceeded.
         - option "27号线 · 蜀鑫路—石佛"
         - option "30号线 · 双流机场2航站楼东—龙泉驿火车站南"
         - option "更多线路 · 敬请期待" [disabled]
-    - textbox "🔍 搜索站点 / 线路 / 大桥" [ref=e13]: 天府广场
-    - generic [ref=e14]: 成都轨道交通线网 · 18 条线路 · 476 座车站全线地下埋深示意 0~31.4 m · 点击线路可聚焦查看
+    - textbox "🔍 搜索站点 / 线路 / 大桥" [ref=e13]
+    - generic [ref=e14]: 🌌 中国地铁星图 · 54 城同时在线377 条线路 · 8180 座车站 · 点击城市俯冲进入 · 🏆 看深度之最
     - generic [ref=e15]:
       - generic [ref=e16]:
         - button "1号线" [ref=e17] [cursor=pointer]
@@ -165,7 +165,7 @@ Test timeout of 30000ms exceeded.
       - button "📷 截图" [ref=e106] [cursor=pointer]
       - button "🎬 录制" [ref=e107] [cursor=pointer]
       - button "🏆 深度之最" [ref=e108] [cursor=pointer]
-      - button "🗺 全国" [ref=e109] [cursor=pointer]
+      - button "↩ 返回城市" [active] [ref=e109] [cursor=pointer]
       - button "⬇ GLB" [ref=e110] [cursor=pointer]
       - button "⛶ 全屏" [ref=e111] [cursor=pointer]
       - button "🔌 屏保" [ref=e112] [cursor=pointer]
@@ -176,16 +176,23 @@ Test timeout of 30000ms exceeded.
       - button "▶ 沿线巡航" [ref=e117] [cursor=pointer]
   - text: ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶ ▶
   - status [ref=e118]
-  - button "☰ 476" [ref=e119] [cursor=pointer]:
-    - generic [ref=e120]: ☰
-    - generic [ref=e121]: "476"
-  - generic "罗盘：N=正北 · 点击回正北" [ref=e122] [cursor=pointer]:
-    - generic [ref=e123]:
-      - generic [ref=e124]: "N"
-      - generic [ref=e125]: W
-      - generic [ref=e126]: E
-      - generic [ref=e127]: S
-    - generic [ref=e129]: 351°
+  - generic [ref=e119]:
+    - generic [ref=e120]:
+      - generic [ref=e121]: 2026 · 现在
+      - generic [ref=e122]: 53 城 · 377 线 · 8180 站
+      - button "▶ 播放生长" [ref=e123] [cursor=pointer]
+      - button "↦ 现在" [ref=e124] [cursor=pointer]
+    - slider "星图生长年份" [ref=e125]: "2026"
+  - button "☰ 476" [ref=e126] [cursor=pointer]:
+    - generic [ref=e127]: ☰
+    - generic [ref=e128]: "476"
+  - generic "罗盘：N=正北 · 点击回正北" [ref=e129] [cursor=pointer]:
+    - generic [ref=e130]:
+      - generic [ref=e131]: "N"
+      - generic [ref=e132]: W
+      - generic [ref=e133]: E
+      - generic [ref=e134]: S
+    - generic [ref=e136]: 349°
   - generic: 拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板
   - generic: v2.1.0 · 数据快照 2026-11 · 53 城 / 377 线 / 8180 站 · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap线路走向与深度以官方资料为准
   - generic: 正在加载 3D 引擎与线路数据…
