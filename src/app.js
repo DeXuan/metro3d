@@ -4423,7 +4423,7 @@ function showOtaBanner(m){
     b.querySelector('#ota-go').addEventListener('click', () => { location.reload(); });
     b.querySelector('#ota-x').addEventListener('click', () => {
       b.remove();
-      try { sessionStorage.setItem('metro3d-ota-dismissed', m.version); } catch(e){}
+      try { sessionStorage.setItem('metro3d-ota-dismissed', m.version); } catch(e){ __recErr('ota.dismiss', e && e.message, 'showOtaBanner'); }
     });
     document.body.appendChild(b);
   }

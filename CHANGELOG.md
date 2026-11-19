@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.4.2] — 2026-11-19
+
+### 修复（OTA 正确性基础）
+
+- **行尾统一为 LF**：`build.py` 全部 HTML 写出改走 `write_html()`（`newline='
+'`）+ 新增 `.gitattributes`（index.html / src/app.js / 清单文件 `eol=lf`）——根治「本地 CRLF、Git/CI LF、自建站 CRLF」三端 md5 不一致导致的 OTA 哈希校验失败
+- **静默失败门禁**：OTA 横幅关闭的空 catch 改为 `__recErr` 上报（CI `check_errors.py` 精准拦截）
+
 ## [2.4.1] — 2026-11-19
 
 ### 节点 OTA 一键更新（新功能）

@@ -1,0 +1,5 @@
+index.html text eol=lf
+src/app.js text eol=lf
+version.json text eol=lf
+ota-manifest.js text eol=lf
+*.sh text eol=lf

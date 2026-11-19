@@ -20,6 +20,11 @@ APP_JS = os.path.join(ROOT, 'src', 'app.js')
 APP_MARK = '/*__APP_INLINE__*/'
 APP_BEGIN = '/*__APP_BEGIN__*/'
 APP_END = '/*__APP_END__*/'
+
+def write_html(text):
+    """统一以 LF 写出 index.html——本地/CI/服务器三端 md5 一致（OTA 校验基础）"""
+    io.open(HTML, 'w', encoding='utf-8', newline='\n').write(text)
+
 OTA_URL_DEFAULT = 'https://dexuan.github.io/metro3d/ota-manifest.js'
 
 def load_blob():
@@ -48,7 +53,7 @@ def inline_app():
     else:
         return h                      # 未拆分形态（历史版本）
     if h2 != h:
-        io.open(HTML, 'w', encoding='utf-8').write(h2)
+        write_html(h2)
     return h2
 
 def check_app(h=None):
@@ -78,7 +83,7 @@ def inline(blob):
     h = io.open(HTML, encoding='utf-8').read()
     i0 = h.index('const METRO_DATA = ')
     i1 = h.index(';\n', h.index('"cities"', i0))
-    io.open(HTML, 'w', encoding='utf-8').write(h[:i0] + 'const METRO_DATA = ' + blob + h[i1:])
+    write_html(h[:i0] + 'const METRO_DATA = ' + blob + h[i1:])
 
 def check(blob):
     h = io.open(HTML, encoding='utf-8').read()
@@ -113,7 +118,7 @@ def sync_version():
     h = io.open(HTML, encoding='utf-8').read()
     h2 = re.sub(r'(id="app-ver"[^>]*>)[^<]*(</b>)', r'\g<1>v' + ver + r'\g<2>', h)
     if h2 != h:
-        io.open(HTML, 'w', encoding='utf-8').write(h2)
+        write_html(h2)
         print('[build] 版本徽章同步为 v' + ver)
 
 def apply_placeholders(text, ver=None):
@@ -138,7 +143,7 @@ def sync_ota():
     released = m.group(2) if m else date.today().isoformat()
     h = io.open(HTML, encoding='utf-8').read()
     h = apply_placeholders(h, ver)
-    io.open(HTML, 'w', encoding='utf-8').write(h)
+    write_html(h)
     md5 = hashlib.md5(h.encode('utf-8')).hexdigest()
     size_kb = len(h.encode('utf-8')) // 1024
     data = {'version': ver, 'released': released, 'hash': md5,
