@@ -447,6 +447,23 @@
   #train-card .tc-close{ background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:13px; margin-left:auto; }
   #train-card .tc-bar{ height:4px; border-radius:2px; background:rgba(var(--border-rgb), .2); margin-top:9px; overflow:hidden; }
   #train-card .tc-bar i{ display:block; height:100%; border-radius:2px; }
+  /* ---------- OTA 更新提醒 ---------- */
+  #ota-banner{
+    position:fixed; z-index:85; left:14px; bottom:16px;
+    display:flex; align-items:center; gap:10px;
+    background:rgba(var(--panel-rgb), .94); border:1px solid rgba(79,194,232,.4);
+    border-radius:10px; padding:8px 12px; font-size:12px; color:var(--text);
+    box-shadow:0 2px 14px rgba(0,0,0,.4); animation:ota-pop .25s ease;
+  }
+  @keyframes ota-pop{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+  #ota-banner .ota-sub{ color:var(--text-dim); font-size:11px; }
+  #ota-banner #ota-go{
+    border:1px solid rgba(79,194,232,.6); background:rgba(79,194,232,.18); color:var(--accent);
+    border-radius:7px; padding:5px 12px; font-size:12px; cursor:pointer;
+  }
+  #ota-banner #ota-x{
+    background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:12px;
+  }
   /* ---------- 标注编辑器 ---------- */
   #anno-card{
     left:50%; bottom:100px; transform:translateX(-50%);
@@ -1259,7 +1276,7 @@ window.addEventListener('error', e => {
 </div>
 
 <div id="hint">拖拽旋转 · 滚轮缩放 · 点击站点/列车查看详情 · / 搜索 · R 复位 · T 列车 · 📷 截图 · ⛶ 全屏 · Esc 关闭面板</div>
-<div id="note"><b id="app-ver" style="color:var(--accent)">v2.4.0</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
+<div id="note"><b id="app-ver" style="color:var(--accent)">v2.4.1</b> · <span id="data-snapshot"></span> · 车站埋深为依据公开资料整理的近似示意值 · 站点坐标源自 OpenStreetMap<br>线路走向与深度以官方资料为准</div>
 
 <div id="loading">
   <div class="spinner"></div>
@@ -62348,6 +62365,55 @@ document.getElementById('loading').classList.add('hide');
   };
   tick();
 })();
+
+/* ---------------- 应用版本与 OTA 清单地址（build.py 注入，勿手改） ---------------- */
+const __APP_VERSION = 'v2.4.1';
+const __OTA_URL = 'https://dexuan.github.io/metro3d/ota-manifest.js';
+
+/* ---------------- OTA 更新提醒（页面端） ---------------- */
+function otaVerNum(v){ return parseInt(String(v).replace(/[^0-9]/g, '') || '0', 10); }
+function loadOtaManifest(url){
+  // 用 script 注入加载清单（跨域安全，无需 CORS）；SW 不拦截 script 请求
+  return new Promise((res, rej) => {
+    const prev = window.__OTA_MANIFEST;
+    const s = document.createElement('script');
+    s.src = url;
+    s.onload = () => { const m = window.__OTA_MANIFEST; window.__OTA_MANIFEST = prev; res(m || null); };
+    s.onerror = () => rej(new Error('manifest load fail'));
+    document.head.appendChild(s);
+  });
+}
+async function otaCheckNow(){
+  const url = new URLSearchParams(location.search).get('ota') || __OTA_URL;
+  if (!url || location.protocol === 'file:') return;
+  try {
+    const m = await loadOtaManifest(url);
+    if (!m || !m.version) return;
+    if (otaVerNum(m.version) <= otaVerNum(__APP_VERSION)) return;
+    if (sessionStorage.getItem('metro3d-ota-dismissed') === m.version) return;
+    showOtaBanner(m);
+  } catch(e){ /* 离线或清单不可达时静默 */ }
+}
+function showOtaBanner(m){
+  let b = $('ota-banner');
+  if (!b){
+    b = document.createElement('div');
+    b.id = 'ota-banner';
+    b.innerHTML = `<b>🆕 发现新版本 <span id="ota-ver"></span></b><span class="ota-sub" id="ota-sub"></span><button id="ota-go">一键更新</button><button id="ota-x" aria-label="关闭更新提醒">✕</button>`;
+    b.querySelector('#ota-go').addEventListener('click', () => { location.reload(); });
+    b.querySelector('#ota-x').addEventListener('click', () => {
+      b.remove();
+      try { sessionStorage.setItem('metro3d-ota-dismissed', m.version); } catch(e){}
+    });
+    document.body.appendChild(b);
+  }
+  $('ota-ver').textContent = m.version + (m.released ? '（' + m.released + '）' : '');
+  $('ota-sub').textContent = '刷新页面获取最新版';
+}
+
+
+setTimeout(otaCheckNow, 30000);
+setInterval(otaCheckNow, 3600000);
 /*__APP_END__*/</script>
 
 <script type="module">

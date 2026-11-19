@@ -2,6 +2,26 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.4.1] — 2026-11-19
+
+### 节点 OTA 一键更新（新功能）
+
+- **发布清单**：`build.py` 每次构建自动生成 `version.json`（节点脚本用）+ `ota-manifest.js`（浏览器端用，script 注入免 CORS），含 version / released / md5 / pagesUrl；`check_html.py` 增加清单一致性校验（版本对齐 CHANGELOG、hash 对齐 index.html）
+- **节点更新脚本**：`deploy-ota.sh`（Linux/macOS/Git Bash）与 `deploy-ota.bat` + `deploy-ota.ps1`（Windows）——比对本地版本 → 下载 → **MD5 完整性校验（不匹配拒绝部署）** → 自动备份 → 就地升级；支持 `--watch` 常驻轮询、`--notify` 通知钩子（env 传入 NEW_VERSION/RELEASED/HASH）、`--yes` 无人值守、`--manifest` 自定义清单源、`METRO3D_NO_PROXY=1` 内网直连
+- **页面端更新提醒**：页面打开 30 秒后（此后每小时）拉取清单比对，发现新版弹出「🆕 发现新版本」横幅，一键刷新即升级；关闭记忆按版本号（sessionStorage）；`&ota=<url>` 可临时指定清单
+- **部署链**：`deploy.sh` 同步上传清单文件
+
+### 修复
+
+- 构建占位符注入幂等化（`__APP_VER__`/`__OTA_URL__` 双 v 前缀与默认值不一致问题），`check_app` 归一化消除跨平台行尾空白误报
+- OTA 模块迁入 `src/app.js`（适配 v2.2.0 内联标记协议，避免下次构建覆盖）
+- `check_html` 动态元素白名单补充（ota-banner 等）
+- PowerShell 脚本 UTF-8 BOM + 全角括号修正（Windows PowerShell 5.1 兼容）
+
+### 验证记录
+
+节点脚本 7 条路径全部实测通过：正常升级（v2.0.0→v2.4.0）、幂等（已最新）、**哈希防篡改（伪造清单被拒且节点无损）**、通知钩子、watch 轮询、bat 包装、PowerShell 版；页面端横幅弹出/关闭记忆/一键更新按钮实测通过。
+
 ## [2.4.0] — 2026-11-18
 
 ### 审计遗留 P2 闭环（按 ROI 逐项推进）

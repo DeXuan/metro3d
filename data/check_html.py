@@ -26,7 +26,7 @@ if dup: issues.append(f'重复 id: {dup}')
 # ---- 2. JS 孤儿引用 ----
 refs = set(re.findall(r"\$\('([\w-]+)'\)", a)) | set(re.findall(r'getElementById\([\'"]([\w-]+)[\'"]\)', a))
 dynamic = {'tomb-card','tc-name','tc-era','tc-chips','tc-intro','tc-close','tomb-canvas','perf-toast',
-           'train-card','tcn-line','tcn-name','tcn-dir','tcn-seg','tcn-pos','tcn-fill','tcn-close'}
+           'train-card','tcn-line','tcn-name','tcn-dir','tcn-seg','tcn-pos','tcn-fill','tcn-close','ota-banner','ota-ver','ota-sub','ota-go','ota-x'}
 orph = sorted(r for r in refs if r not in set(ids) and r not in dynamic)
 if orph: issues.append(f'JS 孤儿引用: {orph}')
 
@@ -57,6 +57,22 @@ mv = re.search(r'^## \[(\d+\.\d+\.\d+)\]', cl, re.M)
 mb = re.search(r'id="app-ver"[^>]*>([^<]+)<', h)
 if mv and mb and mb.group(1) != 'v' + mv.group(1):
     issues.append(f"版本徽章 {mb.group(1)} ≠ CHANGELOG v{mv.group(1)}（运行 python data/build.py 同步）")
+
+# ---- 6b. OTA 发布清单一致性 ----
+import json, hashlib
+for f in ['version.json', 'ota-manifest.js']:
+    if not os.path.exists(os.path.join(ROOT, f)):
+        issues.append(f'缺 OTA 清单: {f}（运行 python data/build.py）')
+if os.path.exists(os.path.join(ROOT, 'version.json')):
+    try:
+        vj = json.load(io.open(os.path.join(ROOT, 'version.json'), encoding='utf-8'))
+        if mv and vj.get('version') != 'v' + mv.group(1):
+            issues.append(f"version.json 版本 {vj.get('version')} ≠ CHANGELOG v{mv.group(1)}")
+        real = hashlib.md5(h.encode('utf-8')).hexdigest()
+        if vj.get('hash') != real:
+            issues.append('version.json hash 与 index.html 不一致（清单过期，运行 python data/build.py）')
+    except Exception as e:
+        issues.append('version.json 解析失败: %s' % e)
 
 # ---- 7. 无障碍 ----
 if 'prefers-reduced-motion' not in h: issues.append('未支持 prefers-reduced-motion')

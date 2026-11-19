@@ -321,6 +321,40 @@ io.open('index.html','w',encoding='utf-8').write(h[:i0] + 'const METRO_DATA = ' 
 
 ---
 
+## 🔄 节点 OTA 一键更新
+
+除 GitHub Pages 自动发布外，任意自建节点可通过 OTA 脚本感知新版并一键升级（版本清单 + MD5 完整性校验，杜绝半包/篡改）。
+
+### 发布清单（自动生成）
+
+`data/build.py` 每次构建都会生成两个文件并随站点发布：
+
+| 文件 | 用途 |
+|---|---|
+| `version.json` | 供节点脚本/curl 使用的纯 JSON 清单（version / released / hash / pagesUrl） |
+| `ota-manifest.js` | 供浏览器端注入读取（`window.__OTA_MANIFEST`，免 CORS） |
+
+### 节点端用法
+
+```bash
+# 单次检查（有新版时交互确认后部署）
+./deploy-ota.sh --deploy-dir /var/www/metro3d
+
+# 无人值守直接部署
+./deploy-ota.sh --deploy-dir /var/www/metro3d --yes
+
+# 常驻守护：每 30 分钟检查一次，发现新版执行通知钩子并部署
+./deploy-ota.sh --watch --interval 30 --yes   --notify 'curl -s "https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<ID>&text=metro3d $NEW_VERSION 已发布"'
+```
+
+Windows：`deploy-ota.bat`（包装 `deploy-ota.ps1`），参数相同。
+
+自建清单源（如私有镜像）用 `--manifest <url>` 或环境变量 `OTA_MANIFEST` 指定；内网环境若代理干扰可加 `METRO3D_NO_PROXY=1`。
+
+### 页面端更新提醒
+
+已部署站点会在页面打开 30 秒后（之后每小时）拉取清单比对版本：发现新版时左下角弹出「🆕 发现新版本」横幅，点「一键更新」刷新即达最新版（配合 SW network-first 策略）。默认清单地址为 GitHub Pages；可用构建变量 `METRO3D_OTA_URL` 覆盖，或页面深链 `&ota=<清单url>` 临时指定。
+
 ## 🎨 海报 / 视频生成
 
 页面内置 **poster 模式**（`?poster=1`）用于出图：

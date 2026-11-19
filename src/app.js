@@ -4385,3 +4385,53 @@ document.getElementById('loading').classList.add('hide');
   };
   tick();
 })();
+
+/* ---------------- 应用版本与 OTA 清单地址（build.py 注入，勿手改） ---------------- */
+const __APP_VERSION = '__APP_VER__';
+const __OTA_URL = '__OTA_URL__';
+
+/* ---------------- OTA 更新提醒（页面端） ---------------- */
+function otaVerNum(v){ return parseInt(String(v).replace(/[^0-9]/g, '') || '0', 10); }
+function loadOtaManifest(url){
+  // 用 script 注入加载清单（跨域安全，无需 CORS）；SW 不拦截 script 请求
+  return new Promise((res, rej) => {
+    const prev = window.__OTA_MANIFEST;
+    const s = document.createElement('script');
+    s.src = url;
+    s.onload = () => { const m = window.__OTA_MANIFEST; window.__OTA_MANIFEST = prev; res(m || null); };
+    s.onerror = () => rej(new Error('manifest load fail'));
+    document.head.appendChild(s);
+  });
+}
+async function otaCheckNow(){
+  const url = new URLSearchParams(location.search).get('ota') || __OTA_URL;
+  if (!url || location.protocol === 'file:') return;
+  try {
+    const m = await loadOtaManifest(url);
+    if (!m || !m.version) return;
+    if (otaVerNum(m.version) <= otaVerNum(__APP_VERSION)) return;
+    if (sessionStorage.getItem('metro3d-ota-dismissed') === m.version) return;
+    showOtaBanner(m);
+  } catch(e){ /* 离线或清单不可达时静默 */ }
+}
+function showOtaBanner(m){
+  let b = $('ota-banner');
+  if (!b){
+    b = document.createElement('div');
+    b.id = 'ota-banner';
+    b.innerHTML = `<b>🆕 发现新版本 <span id="ota-ver"></span></b><span class="ota-sub" id="ota-sub"></span><button id="ota-go">一键更新</button><button id="ota-x" aria-label="关闭更新提醒">✕</button>`;
+    b.querySelector('#ota-go').addEventListener('click', () => { location.reload(); });
+    b.querySelector('#ota-x').addEventListener('click', () => {
+      b.remove();
+      try { sessionStorage.setItem('metro3d-ota-dismissed', m.version); } catch(e){}
+    });
+    document.body.appendChild(b);
+  }
+  $('ota-ver').textContent = m.version + (m.released ? '（' + m.released + '）' : '');
+  $('ota-sub').textContent = '刷新页面获取最新版';
+}
+
+
+setTimeout(otaCheckNow, 30000);
+setInterval(otaCheckNow, 3600000);
+
